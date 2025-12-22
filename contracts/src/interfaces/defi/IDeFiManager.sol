@@ -1,0 +1,141 @@
+/*
+ * Copyright (C) 2025-2026 brick.credit
+ * https://github.com/brick-dot-credit/brick-contracts
+ *
+ * This file is derived from the Ultrachess project under the Apache 2.0 license.
+ * Copyright (C) 2022-2023 Ultrachess team
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later AND Apache-2.0
+ * See the file LICENSE.txt for more information.
+ */
+
+pragma solidity 0.8.28;
+
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/ERC165.sol";
+
+/**
+ * @dev DeFi manager interface
+ */
+interface IDeFiManager is IERC165 {
+  //////////////////////////////////////////////////////////////////////////////
+  // Public accessors
+  //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * @dev The YIELD balance of the LP-SFT
+   *
+   * @param tokenId The token ID of the LP-SFT
+   *
+   * @return The YIELD balance
+   */
+  function yieldBalance(uint256 tokenId) external view returns (uint256);
+
+  /**
+   * @dev The YIELD balances of multiple LP-SFTs
+   *
+   * @param tokenIds The token IDs of the LP-SFTs
+   *
+   * @return The YIELD balances for all LP-SFTs
+   */
+  function yieldBalanceBatch(
+    uint256[] memory tokenIds
+  ) external view returns (uint256[] memory);
+
+  /**
+   * @dev The BORROW balance of the LP-SFT
+   *
+   * @param tokenId The token ID of the LP-SFT
+   *
+   * @return The BORROW balance
+   */
+  function borrowBalance(uint256 tokenId) external view returns (uint256);
+
+  /**
+   * @dev The BORROW balances of multiple LP-SFTs
+   *
+   * @param tokenIds The token IDs of the LP-SFTs
+   *
+   * @return The BORROW balances for all LP-SFTs
+   */
+  function borrowBalanceBatch(
+    uint256[] memory tokenIds
+  ) external view returns (uint256[] memory);
+
+  /**
+   * @dev The LPYIELD balance of the LP-SFT
+   *
+   * @param tokenId The token ID of the LP-SFT
+   *
+   * @return The LPYIELD balance
+   */
+  function lpYieldBalance(uint256 tokenId) external view returns (uint256);
+
+  /**
+   * @dev The LPYIELD balances of multiple LP-SFTs
+   *
+   * @param tokenIds The tokens ID of the LP-SFTs
+   *
+   * @return The LPYIELD balances for all LP-SFTs
+   */
+  function lpYieldBalanceBatch(
+    uint256[] memory tokenIds
+  ) external view returns (uint256[] memory);
+
+  /**
+   * @dev The LPBORROW balance of the LP-SFT
+   *
+   * @param tokenId The token ID of the LP-SFT
+   *
+   * @return The LPBORROW balance
+   */
+  function lpBorrowBalance(uint256 tokenId) external view returns (uint256);
+
+  /**
+   * @dev The LPBORROW balances of multiple LP-SFTs
+   *
+   * @param tokenIds The token IDs of the LP-SFTs
+   *
+   * @return The LPBORROW balances for all LP-SFTs
+   */
+  function lpBorrowBalanceBatch(
+    uint256[] memory tokenIds
+  ) external view returns (uint256[] memory);
+
+  /**
+   * @dev The DEBT balance of the LP-SFT
+   *
+   * @param tokenId The token ID of the LP-SFT
+   *
+   * @return The DEBT balance
+   */
+  function debtBalance(uint256 tokenId) external view returns (uint256);
+
+  /**
+   * @dev The DEBT balances of multiple LP-SFTs
+   *
+   * @param tokenIds The token IDs of the LP-SFTs
+   *
+   * @return The DEBT balances for all LP-SFTs
+   */
+  function debtBalanceBatch(
+    uint256[] memory tokenIds
+  ) external view returns (uint256[] memory);
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Liquidity Forge functions
+  //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * @dev Issue a BORROW loan using the LP-NFT as collateral
+   */
+  function issueBorrow(
+    uint256 tokenId,
+    uint256 amount,
+    address recipient
+  ) external;
+
+  /**
+   * @dev Repay a BORROW loan
+   */
+  function repayBorrow(uint256 tokenId, uint256 amount) external;
+}

@@ -1,0 +1,58 @@
+From 11f5d8d704f2e1ec2f40bab8e980a157add9cc75 Mon Sep 17 00:00:00 2001
+From: juztamau5 <juztamau5@gmail.com>
+Date: Sun, 5 Jun 2022 17:48:27 -0700
+Subject: [PATCH] Update for Solidity 0.8
+
+---
+ contracts/WETH9.sol | 9 +++++----
+ 1 file changed, 5 insertions(+), 4 deletions(-)
+
+diff --git a/contracts/WETH9.sol b/contracts/WETH9.sol
+index 3660ff2..182b76e 100644
+--- a/contracts/WETH9.sol
++++ b/contracts/WETH9.sol
+@@ -1,4 +1,5 @@
+ // Copyright (C) 2015, 2016, 2017 Dapphub
++// SPDX-License-Identifier: GPL-3.0-or-later
+ 
+ // This program is free software: you can redistribute it and/or modify
+ // it under the terms of the GNU General Public License as published by
+@@ -13,7 +14,7 @@
+ // You should have received a copy of the GNU General Public License
+ // along with this program.  If not, see <http://www.gnu.org/licenses/>.
+ 
+-pragma solidity >=0.4.22 <0.6;
++pragma solidity >=0.4.22;
+ 
+ contract WETH9 {
+     string public name     = "Wrapped Ether";
+@@ -28,7 +29,7 @@ contract WETH9 {
+     mapping (address => uint)                       public  balanceOf;
+     mapping (address => mapping (address => uint))  public  allowance;
+ 
+-    function() external payable {
++    receive() external payable {
+         deposit();
+     }
+     function deposit() public payable {
+@@ -38,7 +39,7 @@ contract WETH9 {
+     function withdraw(uint wad) public {
+         require(balanceOf[msg.sender] >= wad);
+         balanceOf[msg.sender] -= wad;
+-        msg.sender.transfer(wad);
++        payable(msg.sender).transfer(wad);
+         emit Withdrawal(msg.sender, wad);
+     }
+ 
+@@ -62,7 +63,7 @@ contract WETH9 {
+     {
+         require(balanceOf[src] >= wad);
+ 
+-        if (src != msg.sender && allowance[src][msg.sender] != uint(-1)) {
++        if (src != msg.sender && allowance[src][msg.sender] != type(uint256).max) {
+             require(allowance[src][msg.sender] >= wad);
+             allowance[src][msg.sender] -= wad;
+         }
+-- 
+2.34.1
+
