@@ -1,0 +1,164 @@
+################################################################################
+# This workflow will do a clean install of node dependencies, build the source
+# code and run tests across different versions of node.
+#
+# For more information see:
+#
+#   https://help.github.com/actions/language-and-framework-guides/using-nodejs-with-github-actions
+#
+################################################################################
+
+name: Node.js CI
+
+# Controls when the action will run. Triggers the workflow on push or pull
+# request events
+on: [push, pull_request]
+
+# A workflow run is made up of one or more jobs that can run sequentially or in
+# parallel
+jobs:
+  # This workflow contains a single job called "build"
+  build:
+    # The type of runner that the job will run on
+    runs-on: ${{ matrix.os }}
+
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-24.04
+            node-version: 24
+          - os: ubuntu-24.04
+            node-version: 25
+
+    # Steps represent a sequence of tasks that will be executed as part of the
+    # job
+    steps:
+      - name: Build environment information
+        run: 'echo "Matrix OS: ${{ matrix.os }} on $HOSTNAME with $(getconf _NPROCESSORS_ONLN) cores"'
+
+        # Check-out the repository under $GITHUB_WORKSPACE, so the job can
+        # access it
+      - name: Checkout main repo
+        uses: actions/checkout@v6
+
+      - name: Restore node modules
+        id: restore-node
+        uses: actions/cache@v5
+        with:
+          path: |
+            node_modules
+          key: node-install-${{ matrix.node-version }}-${{ hashFiles('package.json', 'pnpm-lock.yaml') }}
+
+      - name: Restore Solidity compilers
+        id: restore-solc
+        uses: actions/cache@v5
+        with:
+          path: |
+            ~/.cache/hardhat-nodejs
+          key: restore-solc-${{ hashFiles('hardhat.config.ts') }}
+
+      - name: Restore smart contract dependencies
+        id: restore-contract-depends
+        uses: actions/cache@v5
+        with:
+          path: |
+            contracts/depends
+            contracts/interfaces
+          key: restore-contract-depends-${{ hashFiles('tools/build-depends.sh', 'tools/depends/**') }}
+
+      - name: Restore smart contract artifacts
+        id: restore-contract-artifacts
+        uses: actions/cache@v5
+        with:
+          path: |
+            artifacts
+            src/abi
+            src/types
+          key: restore-contract-artifacts-${{ matrix.os }}-${{ hashFiles('contracts/**', 'requirements.txt', 'tools/build-depends.sh', 'tools/depends/**') }}
+
+      - name: Restore Python virtual environment
+        id: restore-python-venv
+        uses: actions/cache@v5
+        with:
+          path: |
+            .venv
+          key: restore-python-venv-${{ matrix.os }}-${{ hashFiles('requirements.txt') }}
+
+      - name: Use Node.js ${{ matrix.node-version }}
+        uses: actions/setup-node@v6
+        with:
+          node-version: ${{ matrix.node-version }}
+
+      # Set up static analysis
+      - name: Setup Python virtual environment
+        if: steps.restore-python-venv.outputs.cache-hit != 'true'
+        run: |
+          python -m venv .venv
+          . ./.venv/bin/activate
+          pip3 install --upgrade pip setuptools
+          pip3 install -r requirements.txt
+
+      - name: Install pnpm
+        uses: pnpm/action-setup@v4
+        with:
+          version: 9
+
+      - name: pnpm install
+        if: steps.restore-node.outputs.cache-hit != 'true'
+        run: pnpm install
+
+      - name: pnpm audit-ci
+        run: pnpm audit-ci
+
+      - name: pnpm build:depends
+        if: steps.restore-contract-depends.outputs.cache-hit != 'true'
+        run: pnpm build:depends
+
+      - name: pnpm lint:prettier
+        run: pnpm lint:prettier
+
+      - name: pnpm lint:eslint
+        run: pnpm lint:eslint
+
+      - name: pnpm lint:solhint
+        if: steps.restore-contract-artifacts.outputs.cache-hit != 'true'
+        run: pnpm lint:solhint
+
+      #- name: pnpm lint:slither
+      #  if: steps.restore-contract-artifacts.outputs.cache-hit != 'true'
+      #  run: |
+      #    . ./.venv/bin/activate
+      #    slither .
+
+      - name: pnpm build:solidity
+        run: pnpm build:solidity
+
+      - name: pnpm build:typescript
+        run: pnpm build:typescript
+
+      - name: Start dev chain in the background
+        run: |
+          pnpm start &
+          echo $! > dev_chain_pid.txt
+
+      - name: Wait for Hardhat node to be ready
+        run: |
+          while ! curl -s http://localhost:8545 > /dev/null; do
+            echo "Waiting for Hardhat node to be ready..."
+            sleep 1
+          done
+          echo "Hardhat node is up!"
+
+      - name: pnpm game:init
+        run: |
+          pnpm game:init
+
+      - name: Stop the dev chain
+        run: |
+          kill $(cat dev_chain_pid.txt)
+
+      - name: pnpm test
+        env:
+          WEB_SOCKET_URL: ${{ secrets.WEB_SOCKET_URL }}
+        run: pnpm test
