@@ -1,0 +1,61 @@
+{
+  "compilerOptions": {
+    /*
+     * Set the JavaScript language version for emitted JavaScript and include
+     * compatible library declarations.
+     */
+    "target": "ESNext",
+
+    /*
+     * Specify what module code is generated.
+     */
+    "module": "commonjs",
+
+    /*
+     * Enable importing .json files.
+     */
+    "resolveJsonModule": true,
+
+    /*
+     * Specify an output folder for all emitted files.
+     */
+    "outDir": "./dist",
+
+    /*
+     * Emit additional JavaScript to ease support for importing CommonJS
+     * modules. This enables 'allowSyntheticDefaultImports' for type
+     * compatibility.
+     */
+    "esModuleInterop": true,
+
+    /*
+     * Ensure that casing is correct in imports.
+     */
+    "forceConsistentCasingInFileNames": true,
+
+    /*
+     * Enable all strict type-checking options.
+     */
+    "strict": true,
+
+    /*
+     * Skip type checking all .d.ts files.
+     */
+    "skipLibCheck": true,
+
+    /*
+     * Include type definitions from 'node' and 'hardhat-deploy'
+     */
+    "types": ["node", "hardhat-deploy", "hardhat-deploy-ethers"]
+  },
+
+  /*
+   * Include your source and test files
+   */
+  "include": ["src/**/*.ts", "test/**/*.ts"],
+
+  /*
+   * Exclude node_modules and any other directories you don't want to compile
+   */
+  "exclude": ["node_modules", "tools"]
+}
