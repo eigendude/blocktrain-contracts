@@ -27,7 +27,7 @@ import {
   POW5_STABLE_SWAPPER_CONTRACT,
   UNI_V3_POOL_FACTORY_CONTRACT,
 } from "../src/names/dapp";
-import { LPPOW1_POOL_FEE, LPPOW5_POOL_FEE } from "../src/utils/constants";
+import { LPPOW5_POOL_FEE, LPYIELD_POOL_FEE } from "../src/utils/constants";
 
 //
 // Deploy the Uniswap V3 pool factory and token routes
@@ -66,7 +66,7 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
         addressBook.uniswapV3Factory!, // factory
         addressBook.pow1Token!, // gameToken
         addressBook.wrappedNativeToken!, // assetToken
-        LPPOW1_POOL_FEE, // swapFee
+        LPYIELD_POOL_FEE, // swapFee
       ],
     },
   );

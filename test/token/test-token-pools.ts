@@ -25,18 +25,18 @@ import { ETH_PRICE, USDC_PRICE } from "../../src/testing/defiMetrics";
 import { setupFixture } from "../../src/testing/setupFixture";
 import { TokenTracker } from "../../src/testing/tokenTracker";
 import {
-  INITIAL_LPPOW1_AMOUNT,
-  INITIAL_LPPOW1_WETH_VALUE,
   INITIAL_LPPOW5_AMOUNT,
   INITIAL_LPPOW5_USDC_VALUE,
+  INITIAL_LPYIELD_AMOUNT,
+  INITIAL_LPYIELD_WETH_VALUE,
   INITIAL_POW1_PRICE,
   INITIAL_POW1_SUPPLY,
   INITIAL_POW5_DEPOSIT,
   INITIAL_POW5_PRICE,
-  LPPOW1_DECIMALS,
-  LPPOW1_POOL_FEE,
   LPPOW5_DECIMALS,
   LPPOW5_POOL_FEE,
+  LPYIELD_DECIMALS,
+  LPYIELD_POOL_FEE,
   POW1_DECIMALS,
   POW5_DECIMALS,
   USDC_DECIMALS,
@@ -54,24 +54,24 @@ const setupTest = hardhat.deployments.createFixture(setupFixture);
 // Test parameters
 //
 
-// POW1 test reward for LPPOW1 and LPPOW5 staking incentives, in wei of POW1
-const LPPOW1_REWARD_AMOUNT: bigint = 1_000_000n;
+// POW1 test reward for LPYIELD and LPPOW5 staking incentives, in wei of POW1
+const LPYIELD_REWARD_AMOUNT: bigint = 1_000_000n;
 const LPPOW5_REWARD_AMOUNT: bigint = 1_000n;
 
 // Initial amount of WETH to deposit into the Dutch Auction
 const WETH_TOKEN_AMOUNT: bigint =
-  ethers.parseEther(INITIAL_LPPOW1_WETH_VALUE.toString()) / BigInt(ETH_PRICE); // $100 in WETH
+  ethers.parseEther(INITIAL_LPYIELD_WETH_VALUE.toString()) / BigInt(ETH_PRICE); // $100 in WETH
 const USDC_TOKEN_AMOUNT: bigint =
   ethers.parseUnits(INITIAL_LPPOW5_USDC_VALUE.toString(), USDC_DECIMALS) /
   BigInt(USDC_PRICE); // 100 USDC ($100)
 
-// The LPPOW1 and LPPOW5 LP-NFT token IDs
+// The LPYIELD and LPPOW5 LP-NFT token IDs
 const POW1_LPNFT_TOKEN_ID: bigint = 1n;
 const POW5_LPNFT_TOKEN_ID: bigint = 2n;
 
 // Remaining dust balances after depositing into LP pools
-const LPPOW1_POW1_DUST: bigint = 443n;
-const LPPOW1_WETH_DUST: bigint = 0n;
+const LPYIELD_POW1_DUST: bigint = 443n;
+const LPYIELD_WETH_DUST: bigint = 0n;
 const LPPOW5_POW5_DUST: bigint = 355_055n;
 const LPPOW5_USDC_DUST: bigint = 0n;
 
@@ -146,10 +146,10 @@ describe("Token Pools", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Test setup: Wrap into WETH for LPPOW1 pool
+  // Test setup: Wrap into WETH for LPYIELD pool
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should wrap ETH for LPPOW1 pool", async function (): Promise<void> {
+  it("should wrap ETH for LPYIELD pool", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     const { wrappedNativeContract } = deployerContracts;
@@ -192,7 +192,7 @@ describe("Token Pools", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Test setup: Mint LPPOW1 and LPPOW5 staking rewards
+  // Test setup: Mint LPYIELD and LPPOW5 staking rewards
   //////////////////////////////////////////////////////////////////////////////
 
   it("should grant POW1 issuer role to deployer", async function (): Promise<void> {
@@ -204,7 +204,7 @@ describe("Token Pools", () => {
     await pow1Contract.grantRole(ERC20_ISSUER_ROLE, deployerAddress);
   });
 
-  it("should mint LPPOW1 reward to deployer", async function (): Promise<void> {
+  it("should mint LPYIELD reward to deployer", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     const { pow1Contract } = deployerContracts;
@@ -212,7 +212,7 @@ describe("Token Pools", () => {
     // Mint POW1
     const receipt: ethers.ContractTransactionReceipt = await pow1Contract.mint(
       deployerAddress,
-      LPPOW1_REWARD_AMOUNT,
+      LPYIELD_REWARD_AMOUNT,
     );
 
     // Check token transfers
@@ -228,7 +228,7 @@ describe("Token Pools", () => {
       token: pow1Contract.address,
       from: ZERO_ADDRESS,
       to: deployerAddress,
-      value: LPPOW1_REWARD_AMOUNT,
+      value: LPYIELD_REWARD_AMOUNT,
     });
   });
 
@@ -464,13 +464,13 @@ describe("Token Pools", () => {
   // Spec: Grant ERC20 issuer role to LPSFT
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should grant LPPOW1 issuer role to LPSFT", async function (): Promise<void> {
+  it("should grant LPYIELD issuer role to LPSFT", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { lpPow1Contract, lpSftContract } = deployerContracts;
+    const { lpYieldContract, lpSftContract } = deployerContracts;
 
     // Grant issuer role
-    await lpPow1Contract.grantRole(ERC20_ISSUER_ROLE, lpSftContract.address);
+    await lpYieldContract.grantRole(ERC20_ISSUER_ROLE, lpSftContract.address);
   });
 
   it("should grant LPPOW5 issuer role to LPSFT", async function (): Promise<void> {
@@ -483,10 +483,10 @@ describe("Token Pools", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Approve spending POW1 reward for LPPOW1 staking incentive
+  // Spec: Approve spending POW1 reward for LPYIELD staking incentive
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should approve spending POW1 for LPPOW1", async function (): Promise<void> {
+  it("should approve spending POW1 for LPYIELD", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     const { pow1Contract } = deployerContracts;
@@ -495,7 +495,7 @@ describe("Token Pools", () => {
     const receipt: ethers.ContractTransactionReceipt =
       await pow1Contract.approve(
         testPow1MarketStakerContract.address,
-        LPPOW1_REWARD_AMOUNT,
+        LPYIELD_REWARD_AMOUNT,
       );
 
     const logs: (ethers.EventLog | ethers.Log)[] = receipt.logs;
@@ -507,10 +507,10 @@ describe("Token Pools", () => {
     chai.expect(log.args.length).to.equal(3);
     chai.expect(log.args[0]).to.equal(deployerAddress);
     chai.expect(log.args[1]).to.equal(testPow1MarketStakerContract.address);
-    chai.expect(log.args[2]).to.equal(LPPOW1_REWARD_AMOUNT);
+    chai.expect(log.args[2]).to.equal(LPYIELD_REWARD_AMOUNT);
   });
 
-  it("should check POW1 allowance for LPPOW1", async function (): Promise<void> {
+  it("should check POW1 allowance for LPYIELD", async function (): Promise<void> {
     const { pow1Contract } = deployerContracts;
 
     // Check allowance
@@ -518,7 +518,7 @@ describe("Token Pools", () => {
       deployerAddress,
       testPow1MarketStakerContract.address,
     );
-    chai.expect(allowance).to.equal(LPPOW1_REWARD_AMOUNT);
+    chai.expect(allowance).to.equal(LPYIELD_REWARD_AMOUNT);
   });
 
   //////////////////////////////////////////////////////////////////////////////
@@ -561,15 +561,15 @@ describe("Token Pools", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Create incentive for LPPOW1 pool
+  // Spec: Create incentive for LPYIELD pool
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should create incentive for LPPOW1", async function (): Promise<void> {
+  it("should create incentive for LPYIELD", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     // Create incentive
     const receipt: ethers.ContractTransactionReceipt =
-      await testPow1MarketStakerContract.createIncentive(LPPOW1_REWARD_AMOUNT);
+      await testPow1MarketStakerContract.createIncentive(LPYIELD_REWARD_AMOUNT);
     chai.expect(receipt.logs.length).to.equal(4);
 
     // Check token transfers
@@ -585,21 +585,21 @@ describe("Token Pools", () => {
       token: addressBook.pow1Token,
       from: deployerAddress,
       to: testPow1MarketStakerContract.address,
-      value: LPPOW1_REWARD_AMOUNT,
+      value: LPYIELD_REWARD_AMOUNT,
     });
 
     chai.expect(tokenRoutes[1]).to.deep.equal({
       token: addressBook.pow1Token,
       from: testPow1MarketStakerContract.address,
       to: addressBook.uniswapV3Staker,
-      value: LPPOW1_REWARD_AMOUNT,
+      value: LPYIELD_REWARD_AMOUNT,
     });
   });
 
-  it("should check incentive for LPPOW1", async function (): Promise<void> {
+  it("should check incentive for LPYIELD", async function (): Promise<void> {
     // Check incentive
     const incentive = await testPow1MarketStakerContract.getIncentive();
-    chai.expect(incentive.totalRewardUnclaimed).to.equal(LPPOW1_REWARD_AMOUNT); // totalRewardUnclaimed
+    chai.expect(incentive.totalRewardUnclaimed).to.equal(LPYIELD_REWARD_AMOUNT); // totalRewardUnclaimed
     chai.expect(incentive.totalSecondsClaimedX128).to.equal(0n); // totalSecondsClaimedX128
     chai.expect(incentive.numberOfStakes).to.equal(0n); // numberOfStakes
   });
@@ -651,10 +651,10 @@ describe("Token Pools", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Initialize the LPPOW1 pool
+  // Spec: Initialize the LPYIELD pool
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should get pool token order for LPPOW1", async function (): Promise<void> {
+  it("should get pool token order for LPYIELD", async function (): Promise<void> {
     const { pow1MarketPoolerContract } = deployerContracts;
 
     // Get pool token order
@@ -664,7 +664,7 @@ describe("Token Pools", () => {
     console.log(`    POW1 is ${pow1IsToken0 ? "token0" : "token1"}`);
   });
 
-  it("should initialize the LPPOW1 pool", async function (): Promise<void> {
+  it("should initialize the LPYIELD pool", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     const { pow1MarketPoolContract } = deployerContracts;
@@ -720,7 +720,7 @@ describe("Token Pools", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Approve the LPPOW1 pool spending POW1 and WETH tokens
+  // Spec: Approve the LPYIELD pool spending POW1 and WETH tokens
   //////////////////////////////////////////////////////////////////////////////
 
   it("should check POW1 and WETH balances", async function (): Promise<void> {
@@ -785,7 +785,7 @@ describe("Token Pools", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Stake POW1 and WETH tokens and mint LPPOW1 LP-NFT
+  // Spec: Stake POW1 and WETH tokens and mint LPYIELD LP-NFT
   //////////////////////////////////////////////////////////////////////////////
 
   it("should mint POW1/WETH LP-NFT", async function (): Promise<void> {
@@ -896,7 +896,7 @@ describe("Token Pools", () => {
       token: addressBook.pow1Token,
       from: addressBook.pow1MarketPooler,
       to: addressBook.pow1MarketPool,
-      value: INITIAL_POW1_SUPPLY - LPPOW1_POW1_DUST,
+      value: INITIAL_POW1_SUPPLY - LPYIELD_POW1_DUST,
     });
 
     chai.expect(tokenRoutes[6]).to.deep.equal({
@@ -910,43 +910,43 @@ describe("Token Pools", () => {
       token: addressBook.pow1Token,
       from: addressBook.pow1MarketPooler,
       to: testPow1MarketStakerContract.address,
-      value: LPPOW1_POW1_DUST,
+      value: LPYIELD_POW1_DUST,
     });
 
     chai.expect(tokenRoutes[8]).to.deep.equal({
-      token: addressBook.lpPow1Token,
+      token: addressBook.lpYieldToken,
       from: ZERO_ADDRESS,
       to: await lpSftContract.tokenIdToAddress(POW1_LPNFT_TOKEN_ID),
-      value: INITIAL_LPPOW1_AMOUNT,
+      value: INITIAL_LPYIELD_AMOUNT,
     });
 
     chai.expect(tokenRoutes[9]).to.deep.equal({
       token: addressBook.pow1Token,
       from: testPow1MarketStakerContract.address,
       to: deployerAddress,
-      value: LPPOW1_POW1_DUST,
+      value: LPYIELD_POW1_DUST,
     });
     */
   });
 
-  it("should check LPPOW1 LP-NFT position", async function (): Promise<void> {
+  it("should check LPYIELD LP-NFT position", async function (): Promise<void> {
     const { pow1Contract, uniswapV3NftManagerContract, wrappedNativeContract } =
       deployerContracts;
 
     // Calculate DeFi metrics
-    const lpPow1Price: number = INITIAL_POW5_PRICE;
-    const lpPow1Value: number = parseInt(
+    const lpYieldPrice: number = INITIAL_POW5_PRICE;
+    const lpYieldValue: number = parseInt(
       ethers.formatUnits(
-        INITIAL_LPPOW1_AMOUNT / BigInt(1 / lpPow1Price),
-        LPPOW1_DECIMALS,
+        INITIAL_LPYIELD_AMOUNT / BigInt(1 / lpYieldPrice),
+        LPYIELD_DECIMALS,
       ),
     );
 
     // Log DeFi metrics
     console.log(
       `    Minted: ${ethers
-        .formatUnits(INITIAL_LPPOW1_AMOUNT, LPPOW1_DECIMALS)
-        .toLocaleString()} LPPOW1 ($${lpPow1Value.toLocaleString()})`,
+        .formatUnits(INITIAL_LPYIELD_AMOUNT, LPYIELD_DECIMALS)
+        .toLocaleString()} LPYIELD ($${lpYieldValue.toLocaleString()})`,
     );
 
     const position: {
@@ -973,10 +973,10 @@ describe("Token Pools", () => {
       token1: pow1IsToken0
         ? wrappedNativeContract.address
         : pow1Contract.address,
-      fee: LPPOW1_POOL_FEE,
-      tickLower: getMinTick(LPPOW1_POOL_FEE),
-      tickUpper: getMaxTick(LPPOW1_POOL_FEE),
-      liquidity: INITIAL_LPPOW1_AMOUNT,
+      fee: LPYIELD_POOL_FEE,
+      tickLower: getMinTick(LPYIELD_POOL_FEE),
+      tickUpper: getMaxTick(LPYIELD_POOL_FEE),
+      liquidity: INITIAL_LPYIELD_AMOUNT,
       feeGrowthInside0LastX128: 0n,
       feeGrowthInside1LastX128: 0n,
       tokensOwed0: 0n,
@@ -989,11 +989,11 @@ describe("Token Pools", () => {
 
     const deployerBalance: bigint =
       await pow1Contract.balanceOf(deployerAddress);
-    chai.expect(deployerBalance).to.equal(LPPOW1_POW1_DUST);
+    chai.expect(deployerBalance).to.equal(LPYIELD_POW1_DUST);
 
     // Log DeFi metrics
     console.log(
-      `    Beneficiary POW1 dust: ${LPPOW1_POW1_DUST.toLocaleString()}`,
+      `    Beneficiary POW1 dust: ${LPYIELD_POW1_DUST.toLocaleString()}`,
     );
 
     const pow1MarketPoolBalance: bigint = await pow1Contract.balanceOf(
@@ -1001,7 +1001,7 @@ describe("Token Pools", () => {
     );
     chai
       .expect(pow1MarketPoolBalance)
-      .to.equal(INITIAL_POW1_SUPPLY - LPPOW1_POW1_DUST);
+      .to.equal(INITIAL_POW1_SUPPLY - LPYIELD_POW1_DUST);
   });
 
   it("should check WETH balances", async function (): Promise<void> {
@@ -1009,7 +1009,7 @@ describe("Token Pools", () => {
 
     const deployerBalance: bigint =
       await wrappedNativeContract.balanceOf(deployerAddress);
-    chai.expect(deployerBalance).to.equal(LPPOW1_WETH_DUST);
+    chai.expect(deployerBalance).to.equal(LPYIELD_WETH_DUST);
 
     const pow1MarketPoolBalance: bigint = await wrappedNativeContract.balanceOf(
       pow1MarketPoolContract.address,
@@ -1017,18 +1017,18 @@ describe("Token Pools", () => {
     try {
       chai
         .expect(pow1MarketPoolBalance)
-        .to.equal(WETH_TOKEN_AMOUNT - LPPOW1_WETH_DUST);
+        .to.equal(WETH_TOKEN_AMOUNT - LPYIELD_WETH_DUST);
     } catch (error: unknown) {
       if (error instanceof chai.AssertionError) {
         // Handle rounding error
         chai
           .expect(pow1MarketPoolBalance)
-          .to.equal(WETH_TOKEN_AMOUNT - LPPOW1_WETH_DUST - 1n);
+          .to.equal(WETH_TOKEN_AMOUNT - LPYIELD_WETH_DUST - 1n);
       }
     }
   });
 
-  it("should check LPPOW1 LP-NFT properties", async function (): Promise<void> {
+  it("should check LPYIELD LP-NFT properties", async function (): Promise<void> {
     this.timeout(10 * 1000);
 
     const { lpSftContract } = deployerContracts;
@@ -1301,11 +1301,11 @@ describe("Token Pools", () => {
 
     /*
     // Calculate DeFi metrics
-    const lpPow1Price: number = INITIAL_POW5_PRICE;
-    const lpPow1Value: number = parseInt(
+    const lpYieldPrice: number = INITIAL_POW5_PRICE;
+    const lpYieldValue: number = parseInt(
       ethers.formatUnits(
-        (INITIAL_LPPOW1_AMOUNT * 1n) / BigInt(1 / lpPow1Price),
-        LPPOW1_DECIMALS,
+        (INITIAL_LPYIELD_AMOUNT * 1n) / BigInt(1 / lpYieldPrice),
+        LPYIELD_DECIMALS,
       ),
     );
     */

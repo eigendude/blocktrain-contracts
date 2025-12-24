@@ -23,9 +23,9 @@ import {
   DEFI_MANAGER_CONTRACT,
   DUTCH_AUCTION_CONTRACT,
   LIQUIDITY_FORGE_CONTRACT,
-  LPPOW1_TOKEN_CONTRACT,
   LPPOW5_TOKEN_CONTRACT,
   LPSFT_CONTRACT,
+  LPYIELD_TOKEN_CONTRACT,
   MARKET_STABLE_SWAPPER_CONTRACT,
   NOLPSFT_CONTRACT,
   POW1_LPNFT_STAKE_FARM_CONTRACT,
@@ -96,9 +96,9 @@ async function getAddressBook(networkName: string): Promise<AddressBook> {
       LIQUIDITY_FORGE_CONTRACT,
       networkName,
     ),
-    lpPow1Token: await getContractAddress(
-      "lpPow1Token",
-      LPPOW1_TOKEN_CONTRACT,
+    lpYieldToken: await getContractAddress(
+      "lpYieldToken",
+      LPYIELD_TOKEN_CONTRACT,
       networkName,
     ),
     lpPow5Token: await getContractAddress(

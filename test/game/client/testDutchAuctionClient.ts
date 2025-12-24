@@ -21,7 +21,7 @@ import { AddressBook } from "../../../src/interfaces/addressBook";
 import { ETH_PRICE } from "../../../src/testing/defiMetrics";
 import { setupFixture } from "../../../src/testing/setupFixture";
 import { TokenTracker } from "../../../src/testing/tokenTracker";
-import { LPPOW1_DECIMALS } from "../../../src/utils/constants";
+import { LPYIELD_DECIMALS } from "../../../src/utils/constants";
 
 // Setup Hardhat
 const setupTest = hardhat.deployments.createFixture(setupFixture);
@@ -42,7 +42,7 @@ const POW1_LPNFT_THIRD_TOKEN_ID: bigint = 4n;
 const POW1_LPNFT_FIRST_WETH_AMOUNT: bigint =
   ethers.parseEther("10") / BigInt(ETH_PRICE); // $10 in WETH
 
-const LPPOW1_AMOUNT: bigint = 972_835_178_603_057_829n; // About 97e16 LP-POW1
+const LPYIELD_AMOUNT: bigint = 972_835_178_603_057_829n; // About 97e16 LP-POW1
 
 //
 // Test cases
@@ -130,7 +130,7 @@ describe("DutchAuctionClient", () => {
       {
         pow1Token: addressBook.pow1Token!,
         pow5Token: addressBook.pow5Token!,
-        lpPow1Token: addressBook.lpPow1Token!,
+        lpYieldToken: addressBook.lpYieldToken!,
         lpPow5Token: addressBook.lpPow5Token!,
         debtToken: addressBook.debtToken!,
         lpSft: addressBook.lpSft!,
@@ -374,22 +374,22 @@ describe("DutchAuctionClient", () => {
       value: bigint;
     }> = TokenTracker.getErc20Routes(receipt!.logs);
 
-    let lpPow1Amount: bigint = 0n;
+    let lpYieldAmount: bigint = 0n;
 
     chai.expect(tokenRoutes.length).to.equal(17);
     for (const tokenRoute of tokenRoutes) {
-      if (tokenRoute.token === addressBook.lpPow1Token!) {
-        lpPow1Amount = tokenRoute.value;
+      if (tokenRoute.token === addressBook.lpYieldToken!) {
+        lpYieldAmount = tokenRoute.value;
         break;
       }
     }
 
     // Calculate DeFi metrics
     console.log(
-      `    LP-POW1: ${ethers.formatUnits(lpPow1Amount, LPPOW1_DECIMALS)}`,
+      `    LP-POW1: ${ethers.formatUnits(lpYieldAmount, LPYIELD_DECIMALS)}`,
     );
 
-    chai.expect(lpPow1Amount).to.equal(LPPOW1_AMOUNT);
+    chai.expect(lpYieldAmount).to.equal(LPYIELD_AMOUNT);
   });
 
   //////////////////////////////////////////////////////////////////////////////

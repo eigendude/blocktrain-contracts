@@ -53,7 +53,7 @@ contract DeFiManager is ReentrancyGuard, AccessControl, IDeFiManager {
   /**
    * @dev The LP POW1 token
    */
-  IERC20Issuable public immutable lpPow1Token;
+  IERC20Issuable public immutable lpYieldToken;
 
   /**
    * @dev The LP POW5 token
@@ -89,7 +89,7 @@ contract DeFiManager is ReentrancyGuard, AccessControl, IDeFiManager {
    * @param owner_ The owner of the contract
    * @param pow1Token_ The POW1 token
    * @param pow5Token_ The POW5 token
-   * @param lpPow1Token_ The LPPOW1 token
+   * @param lpYieldToken_ The LPYIELD token
    * @param lpPow5Token_ The LPPOW5 token
    * @param debtToken_ The POW5 debt token
    * @param lpSft_ The LP-SFT contract
@@ -98,7 +98,7 @@ contract DeFiManager is ReentrancyGuard, AccessControl, IDeFiManager {
     address owner_,
     address pow1Token_,
     address pow5Token_,
-    address lpPow1Token_,
+    address lpYieldToken_,
     address lpPow5Token_,
     address debtToken_,
     address lpSft_
@@ -107,7 +107,7 @@ contract DeFiManager is ReentrancyGuard, AccessControl, IDeFiManager {
     require(owner_ != address(0), "Invalid owner");
     require(pow1Token_ != address(0), "Invalid POW1");
     require(pow5Token_ != address(0), "Invalid POW5");
-    require(lpPow1Token_ != address(0), "Invalid LPPOW1");
+    require(lpYieldToken_ != address(0), "Invalid LPYIELD");
     require(lpPow5Token_ != address(0), "Invalid LPPOW5");
     require(debtToken_ != address(0), "Invalid POW5 debt");
     require(lpSft_ != address(0), "Invalid LP-SFT");
@@ -118,7 +118,7 @@ contract DeFiManager is ReentrancyGuard, AccessControl, IDeFiManager {
     // Initialize routes
     pow1Token = IERC20(pow1Token_);
     pow5Token = IERC20Issuable(pow5Token_);
-    lpPow1Token = IERC20Issuable(lpPow1Token_);
+    lpYieldToken = IERC20Issuable(lpYieldToken_);
     lpPow5Token = IERC20Issuable(lpPow5Token_);
     debtToken = IERC20Issuable(debtToken_);
     lpSft = ILPSFT(lpSft_);
@@ -242,9 +242,9 @@ contract DeFiManager is ReentrancyGuard, AccessControl, IDeFiManager {
   }
 
   /**
-   * @dev See {IDeFiManager-lpPow1Balance}
+   * @dev See {IDeFiManager-lpYieldBalance}
    */
-  function lpPow1Balance(
+  function lpYieldBalance(
     uint256 tokenId
   ) external view override returns (uint256) {
     // Read state
@@ -256,13 +256,13 @@ contract DeFiManager is ReentrancyGuard, AccessControl, IDeFiManager {
     }
 
     // Read external state
-    return lpPow1Token.balanceOf(lpNftAddress);
+    return lpYieldToken.balanceOf(lpNftAddress);
   }
 
   /**
-   * @dev See {IDeFiManager-lpPow1BalanceBatch}
+   * @dev See {IDeFiManager-lpYieldBalanceBatch}
    */
-  function lpPow1BalanceBatch(
+  function lpYieldBalanceBatch(
     uint256[] memory tokenIds
   ) external view override returns (uint256[] memory) {
     // Return value
@@ -284,7 +284,7 @@ contract DeFiManager is ReentrancyGuard, AccessControl, IDeFiManager {
 
       // Update return value
       // slither-disable-next-line calls-loop
-      balances[i] = lpPow1Token.balanceOf(lpNftAddress);
+      balances[i] = lpYieldToken.balanceOf(lpNftAddress);
     }
 
     return balances;
@@ -408,14 +408,14 @@ contract DeFiManager is ReentrancyGuard, AccessControl, IDeFiManager {
     }
 
     // Read DeFi state
-    uint256 lpPow1Balance_ = lpPow1Token.balanceOf(lpNftAddress);
+    uint256 lpYieldBalance_ = lpYieldToken.balanceOf(lpNftAddress);
     uint256 debtBalance_ = debtToken.balanceOf(lpNftAddress);
 
     // Calculate new DeFi state
     uint256 newNoPow5Balance = debtBalance_ + amount;
 
     // Verify new collateralization ratio is below the threshold
-    require(newNoPow5Balance <= lpPow1Balance_, "Insufficent collateral");
+    require(newNoPow5Balance <= lpYieldBalance_, "Insufficent collateral");
 
     // Call external contracts
     pow5Token.mint(recipient, amount);

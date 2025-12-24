@@ -21,7 +21,7 @@ import {ERC20Nontransferable} from "./extensions/ERC20Nontransferable.sol";
  *
  * @dev See https://eips.ethereum.org/EIPS/eip-20
  */
-contract LPPOW1 is ERC20Issuable, ERC20Nontransferable {
+contract LPYIELD is ERC20Issuable, ERC20Nontransferable {
   //////////////////////////////////////////////////////////////////////////////
   // Constants
   //////////////////////////////////////////////////////////////////////////////
@@ -35,7 +35,7 @@ contract LPPOW1 is ERC20Issuable, ERC20Nontransferable {
    * @dev The ERC 20 token symbol used as an abbreviation of the token, such
    * as BTC, ETH, AUG or SJCX.
    */
-  string private constant TOKEN_SYMBOL = "LPPOW1";
+  string private constant TOKEN_SYMBOL = "LPYIELD";
 
   /**
    * @dev The number of decimal places to which the token is divisible

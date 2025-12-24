@@ -62,22 +62,22 @@ interface IDeFiManager is IERC165 {
   ) external view returns (uint256[] memory);
 
   /**
-   * @dev The LPPOW1 balance of the LP-SFT
+   * @dev The LPYIELD balance of the LP-SFT
    *
    * @param tokenId The token ID of the LP-SFT
    *
-   * @return The LPPOW1 balance
+   * @return The LPYIELD balance
    */
-  function lpPow1Balance(uint256 tokenId) external view returns (uint256);
+  function lpYieldBalance(uint256 tokenId) external view returns (uint256);
 
   /**
-   * @dev The LPPOW1 balances of multiple LP-SFTs
+   * @dev The LPYIELD balances of multiple LP-SFTs
    *
    * @param tokenIds The tokens ID of the LP-SFTs
    *
-   * @return The LPPOW1 balances for all LP-SFTs
+   * @return The LPYIELD balances for all LP-SFTs
    */
-  function lpPow1BalanceBatch(
+  function lpYieldBalanceBatch(
     uint256[] memory tokenIds
   ) external view returns (uint256[] memory);
 

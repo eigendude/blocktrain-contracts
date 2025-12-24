@@ -52,7 +52,7 @@ interface IDutchAuctionEvents {
    * @dev Event to emit when an LP-NFT is purchased
    *
    * @param lpNftTokenId The token ID of the LP-NFT purchased
-   * @param liquidityAmount The amount of LPPOW1 tokens in the purchased LP-NFT
+   * @param liquidityAmount The amount of LPYIELD tokens in the purchased LP-NFT
    * @param beneficiaryTip The beneficiary tip, in bips scaled by 1e18
    * @param buyer The address of the buyer of the LP-NFT
    * @param receiver The address of the receiver of the LP-NFT

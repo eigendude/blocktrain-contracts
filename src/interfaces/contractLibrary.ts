@@ -21,8 +21,8 @@ import { POW5InterestFarmContract } from "./defi/pow5InterestFarmContract";
 import { POW5LpNftStakeFarmContract } from "./defi/pow5LpNftStakeFarmContract";
 import { POW5LpSftLendFarmContract } from "./defi/pow5LpSftLendFarmContract";
 import { DEBTContract } from "./token/erc20/debtContract";
-import { LPPOW1Contract } from "./token/erc20/lpPow1Contract";
 import { LPPOW5Contract } from "./token/erc20/lpPow5Contract";
+import { LPYIELDContract } from "./token/erc20/lpYieldContract";
 import { POW1Contract } from "./token/erc20/pow1Contract";
 import { POW5Contract } from "./token/erc20/pow5Contract";
 import { WrappedNativeContract } from "./token/erc20/wrappedNativeContract";
@@ -45,7 +45,7 @@ interface ContractLibrary {
   defiManagerContract: DeFiManagerContract;
   dutchAuctionContract: DutchAuctionContract;
   liquidityForgeContract: LiquidityForgeContract;
-  lpPow1Contract: LPPOW1Contract;
+  lpYieldContract: LPYIELDContract;
   lpPow5Contract: LPPOW5Contract;
   lpSftContract: LPSFTContract;
   noLpSftContract: NOLPSFTContract;

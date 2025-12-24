@@ -18,9 +18,9 @@ import { AddressBook } from "../src/interfaces/addressBook";
 import {
   DEBT_TOKEN_CONTRACT,
   LPNFT_CONTRACT,
-  LPPOW1_TOKEN_CONTRACT,
   LPPOW5_TOKEN_CONTRACT,
   LPSFT_CONTRACT,
+  LPYIELD_TOKEN_CONTRACT,
   NOLPSFT_CONTRACT,
   POW1_TOKEN_CONTRACT,
   POW5_TOKEN_CONTRACT,
@@ -84,20 +84,22 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
   }
 
   //
-  // Deploy LPPOW1 token
+  // Deploy LPYIELD token
   //
 
-  if (addressBook.lpPow1Token && networkName !== "localhost") {
-    console.log(`Using ${LPPOW1_TOKEN_CONTRACT} at ${addressBook.lpPow1Token}`);
+  if (addressBook.lpYieldToken && networkName !== "localhost") {
+    console.log(
+      `Using ${LPYIELD_TOKEN_CONTRACT} at ${addressBook.lpYieldToken}`,
+    );
   } else {
-    console.log(`Deploying ${LPPOW1_TOKEN_CONTRACT}`);
-    const tx = await deployments.deploy(LPPOW1_TOKEN_CONTRACT, {
+    console.log(`Deploying ${LPYIELD_TOKEN_CONTRACT}`);
+    const tx = await deployments.deploy(LPYIELD_TOKEN_CONTRACT, {
       ...opts,
       args: [
         deployer, // owner
       ],
     });
-    addressBook.lpPow1Token = tx.address as `0x${string}`;
+    addressBook.lpYieldToken = tx.address as `0x${string}`;
   }
 
   //
@@ -147,7 +149,7 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
       args: [
         addressBook.pow1Token!, // pow1Token
         addressBook.pow5Token!, // pow5Token
-        addressBook.lpPow1Token!, // lpPow1Token
+        addressBook.lpYieldToken!, // lpYieldToken
         addressBook.lpPow5Token!, // lpPow5Token
         addressBook.debtToken!, // debtToken
         addressBook.uniswapV3NftManager!, // uniswapV3NftManager
@@ -171,7 +173,7 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
         addressBook.lpNft!, // lpNftTemplate
         addressBook.pow1Token!, // pow1Token
         addressBook.pow5Token!, // pow5Token
-        addressBook.lpPow1Token!, // lpPow1Token
+        addressBook.lpYieldToken!, // lpYieldToken
         addressBook.lpPow5Token!, // lpPow5Token
         addressBook.uniswapV3NftManager!, // uniswapV3NftManager
       ],

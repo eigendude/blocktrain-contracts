@@ -22,10 +22,10 @@ import { ERC20Contract } from "../../src/interfaces/zeppelin/token/erc20/erc20Co
 import { ETH_PRICE, USDC_PRICE } from "../../src/testing/defiMetrics";
 import { setupFixture } from "../../src/testing/setupFixture";
 import {
-  INITIAL_LPPOW1_AMOUNT,
-  INITIAL_LPPOW1_WETH_VALUE,
   INITIAL_LPPOW5_AMOUNT,
   INITIAL_LPPOW5_USDC_VALUE,
+  INITIAL_LPYIELD_AMOUNT,
+  INITIAL_LPYIELD_WETH_VALUE,
   INITIAL_POW1_PRICE,
   INITIAL_POW1_SUPPLY,
   INITIAL_POW5_AMOUNT,
@@ -53,15 +53,15 @@ const INITIAL_ETH: string = "1"; // 1 ETH
 
 // Initial amount of WETH to deposit into the Dutch Auction
 const INITIAL_WETH_AMOUNT: bigint =
-  ethers.parseEther(INITIAL_LPPOW1_WETH_VALUE.toString()) / BigInt(ETH_PRICE); // $100 in ETH
+  ethers.parseEther(INITIAL_LPYIELD_WETH_VALUE.toString()) / BigInt(ETH_PRICE); // $100 in ETH
 
 // Initial amount of USDC to deposit into the Reverse Repo
 const INITIAL_USDC_AMOUNT: bigint =
   ethers.parseUnits(INITIAL_LPPOW5_USDC_VALUE.toString(), USDC_DECIMALS) /
   BigInt(USDC_PRICE); // 100 USDC ($100)
 
-// POW1 test reward for LPPOW1 staking incentive
-const LPPOW1_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1 ($10)
+// POW1 test reward for LPYIELD staking incentive
+const LPYIELD_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1 ($10)
 
 // POW1 test reward for LPPOW5 staking incentive
 const LPPOW5_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1 ($10)
@@ -71,7 +71,7 @@ const LPPOW5_POW5_DUST: bigint = 355_055n;
 const LPPOW5_USDC_DUST: bigint = 0n;
 
 // Token IDs of minted LP-NFTs
-const LPPOW1_LPNFT_TOKEN_ID: bigint = 1n;
+const LPYIELD_LPNFT_TOKEN_ID: bigint = 1n;
 const LPPOW5_LPNFT_TOKEN_ID: bigint = 2n;
 const PURCHASED_LPNFT_TOKEN_ID: bigint = 3n;
 
@@ -176,7 +176,7 @@ describe("Bureau 4: Reverse Repo", () => {
       {
         pow1Token: addressBook.pow1Token!,
         pow5Token: addressBook.pow5Token!,
-        lpPow1Token: addressBook.lpPow1Token!,
+        lpYieldToken: addressBook.lpYieldToken!,
         lpPow5Token: addressBook.lpPow5Token!,
         debtToken: addressBook.debtToken!,
         lpSft: addressBook.lpSft!,
@@ -279,14 +279,14 @@ describe("Bureau 4: Reverse Repo", () => {
     // Mint POW1 to the POW1 LP-SFT lend farm
     await pow1Contract.mint(
       pow1LpSftLendFarmContract.address,
-      LPPOW1_REWARD_AMOUNT,
+      LPYIELD_REWARD_AMOUNT,
     );
 
     // Lend LP-SFT to YieldHarvest
     await lpSftContract.safeTransferFrom(
       beneficiaryAddress,
       yieldHarvestContract.address,
-      LPPOW1_LPNFT_TOKEN_ID,
+      LPYIELD_LPNFT_TOKEN_ID,
       1n,
     );
   });
@@ -302,7 +302,7 @@ describe("Bureau 4: Reverse Repo", () => {
 
     // Borrow POW5 from LiquidityForge
     await liquidityForgeContract.borrowPow5(
-      LPPOW1_LPNFT_TOKEN_ID, // tokenId
+      LPYIELD_LPNFT_TOKEN_ID, // tokenId
       INITIAL_POW5_AMOUNT, // amount
       beneficiaryAddress, // receiver
     );
@@ -1097,7 +1097,7 @@ describe("Bureau 4: Reverse Repo", () => {
 
     // Check DEBT balance
     const debtBalance: bigint = await defiManagerContract.debtBalance(
-      LPPOW1_LPNFT_TOKEN_ID,
+      LPYIELD_LPNFT_TOKEN_ID,
     );
 
     // Calculate DeFi metrics
@@ -1122,7 +1122,7 @@ describe("Bureau 4: Reverse Repo", () => {
     const pow5Balance: bigint =
       await pow5Contract.balanceOf(beneficiaryAddress);
     const debtBalance: bigint = await defiManagerContract.debtBalance(
-      LPPOW1_LPNFT_TOKEN_ID,
+      LPYIELD_LPNFT_TOKEN_ID,
     );
 
     // Calculate deficit
@@ -1157,7 +1157,7 @@ describe("Bureau 4: Reverse Repo", () => {
     const pow5Balance: bigint =
       await pow5Contract.balanceOf(beneficiaryAddress);
     const debtBalance: bigint = await defiManagerContract.debtBalance(
-      LPPOW1_LPNFT_TOKEN_ID,
+      LPYIELD_LPNFT_TOKEN_ID,
     );
 
     // Calculate deficit
@@ -1212,7 +1212,7 @@ describe("Bureau 4: Reverse Repo", () => {
 
     // Repay POW5 loan
     liquidityForgeContract.repayPow5(
-      LPPOW1_LPNFT_TOKEN_ID, // tokenId
+      LPYIELD_LPNFT_TOKEN_ID, // tokenId
       INITIAL_POW5_AMOUNT, // amount
     );
   });
@@ -1230,7 +1230,7 @@ describe("Bureau 4: Reverse Repo", () => {
     await noLpSftContract.safeTransferFrom(
       beneficiaryAddress,
       yieldHarvestContract.address,
-      LPPOW1_LPNFT_TOKEN_ID,
+      LPYIELD_LPNFT_TOKEN_ID,
       1n,
     );
   });
@@ -1243,17 +1243,17 @@ describe("Bureau 4: Reverse Repo", () => {
     const { defiManagerContract } = beneficiaryContracts;
 
     const pow1Amount: bigint = await defiManagerContract.pow1Balance(
-      LPPOW1_LPNFT_TOKEN_ID,
+      LPYIELD_LPNFT_TOKEN_ID,
     );
     chai.expect(pow1Amount).to.not.equal(0n);
 
-    const lpPow1Amount: bigint = await defiManagerContract.lpPow1Balance(
-      LPPOW1_LPNFT_TOKEN_ID,
+    const lpYieldAmount: bigint = await defiManagerContract.lpYieldBalance(
+      LPYIELD_LPNFT_TOKEN_ID,
     );
-    chai.expect(lpPow1Amount).to.equal(INITIAL_LPPOW1_AMOUNT);
+    chai.expect(lpYieldAmount).to.equal(INITIAL_LPYIELD_AMOUNT);
 
     const debtAmount: bigint = await defiManagerContract.debtBalance(
-      LPPOW1_LPNFT_TOKEN_ID,
+      LPYIELD_LPNFT_TOKEN_ID,
     );
     chai.expect(debtAmount).to.equal(0n);
   });

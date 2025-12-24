@@ -39,9 +39,9 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
   IERC20 public immutable pow5Token;
 
   /**
-   * @dev The LPPOW1 token contract
+   * @dev The LPYIELD token contract
    */
-  IERC20 public immutable lpPow1Token;
+  IERC20 public immutable lpYieldToken;
 
   /**
    * @dev The LPPOW5 token contract
@@ -68,7 +68,7 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
   uint256 private _tokenId = 0;
 
   /**
-   * @dev Enum for which pool the LP-NFT belongs to, either LPPOW1 or LPPOW5
+   * @dev Enum for which pool the LP-NFT belongs to, either LPYIELD or LPPOW5
    */
   Pool private _pool = Pool.INVALID;
 
@@ -81,7 +81,7 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
    *
    * @param pow1Token_ The POW1 token
    * @param pow5Token_ The POW5 token
-   * @param lpPow1Token_ The LPPOW1 token
+   * @param lpYieldToken_ The LPYIELD token
    * @param lpPow5Token_ The LPPOW5 token
    * @param debtToken_ The DEBT token
    * @param uniswapV3NftManager_ The Uniswap V3 NFT manager
@@ -89,7 +89,7 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
   constructor(
     address pow1Token_,
     address pow5Token_,
-    address lpPow1Token_,
+    address lpYieldToken_,
     address lpPow5Token_,
     address debtToken_,
     address uniswapV3NftManager_
@@ -97,7 +97,7 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
     // Validate parameters
     require(pow1Token_ != address(0), "Invalid POW1");
     require(pow5Token_ != address(0), "Invalid POW5");
-    require(lpPow1Token_ != address(0), "Invalid LPPOW1");
+    require(lpYieldToken_ != address(0), "Invalid LPYIELD");
     require(lpPow5Token_ != address(0), "Invalid LPPOW5");
     require(debtToken_ != address(0), "Invalid DEBT");
     require(uniswapV3NftManager_ != address(0), "Invalid NFT mgr");
@@ -108,7 +108,7 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
     // Initialize routes
     pow1Token = IERC20(pow1Token_);
     pow5Token = IERC20(pow5Token_);
-    lpPow1Token = IERC20(lpPow1Token_);
+    lpYieldToken = IERC20(lpYieldToken_);
     lpPow5Token = IERC20(lpPow5Token_);
     debtToken = IERC20(debtToken_);
     uniswapV3NftManager = INonfungiblePositionManager(uniswapV3NftManager_);
@@ -158,7 +158,7 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
 
     // Update state
     if (token0 == address(pow1Token) || token1 == address(pow1Token)) {
-      _pool = Pool.LPPOW1;
+      _pool = Pool.LPYIELD;
     } else if (token0 == address(pow5Token) || token1 == address(pow5Token)) {
       _pool = Pool.LPPOW5;
     } else {
@@ -257,11 +257,11 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
   }
 
   /**
-   * @dev See {ILPNFT-lpPow1Balance}
+   * @dev See {ILPNFT-lpYieldBalance}
    */
-  function lpPow1Balance() public view override returns (uint256) {
+  function lpYieldBalance() public view override returns (uint256) {
     // Read external state
-    return lpPow1Token.balanceOf(address(this));
+    return lpYieldToken.balanceOf(address(this));
   }
 
   /**

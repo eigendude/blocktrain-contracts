@@ -13,7 +13,7 @@ import { WrappedNativeContract } from "../../interfaces/token/erc20/wrappedNativ
 import { ERC20Contract } from "../../interfaces/zeppelin/token/erc20/erc20Contract";
 import { ETH_PRICE } from "../../testing/defiMetrics";
 import {
-  INITIAL_LPPOW1_WETH_VALUE,
+  INITIAL_LPYIELD_WETH_VALUE,
   INITIAL_POW1_SUPPLY,
 } from "../../utils/constants";
 
@@ -29,7 +29,7 @@ const INITIAL_WETH_DUST: bigint = 1_000n; // 1,000 wei
 
 // Initial amount of WETH to deposit into the Dutch Auction
 const INITIAL_WETH_AMOUNT: bigint =
-  ethers.parseEther(INITIAL_LPPOW1_WETH_VALUE.toString()) / BigInt(ETH_PRICE); // $100 in ETH
+  ethers.parseEther(INITIAL_LPYIELD_WETH_VALUE.toString()) / BigInt(ETH_PRICE); // $100 in ETH
 
 //////////////////////////////////////////////////////////////////////////////
 // Types

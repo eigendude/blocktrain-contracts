@@ -20,7 +20,7 @@ import { ContractLibrary } from "../../src/interfaces/contractLibrary";
 import { ETH_PRICE } from "../../src/testing/defiMetrics";
 import { setupFixture } from "../../src/testing/setupFixture";
 import {
-  INITIAL_LPPOW1_WETH_VALUE,
+  INITIAL_LPYIELD_WETH_VALUE,
   INITIAL_POW1_SUPPLY,
   POW1_DECIMALS,
   ZERO_ADDRESS,
@@ -39,10 +39,10 @@ const INITIAL_ETH: string = "1"; // 1 ETH
 
 // Initial amount of WETH to deposit into the Dutch Auction
 const INITIAL_WETH_AMOUNT: bigint =
-  ethers.parseEther(INITIAL_LPPOW1_WETH_VALUE.toString()) / BigInt(ETH_PRICE); // $100 in ETH
+  ethers.parseEther(INITIAL_LPYIELD_WETH_VALUE.toString()) / BigInt(ETH_PRICE); // $100 in ETH
 
 // Token IDs of minted LP-NFTs
-const LPPOW1_LPNFT_TOKEN_ID: bigint = 1n;
+const LPYIELD_LPNFT_TOKEN_ID: bigint = 1n;
 
 //
 // Test cases
@@ -113,10 +113,10 @@ describe("Bureau 2: Yield Harvest", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Initialize the LPPOW1 pool
+  // Spec: Initialize the LPYIELD pool
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should initialize the LPPOW1 pool", async function (): Promise<void> {
+  it("should initialize the LPYIELD pool", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     const poolManager: PoolManager = new PoolManager(deployer, {
@@ -146,7 +146,7 @@ describe("Bureau 2: Yield Harvest", () => {
       {
         pow1Token: addressBook.pow1Token!,
         pow5Token: addressBook.pow5Token!,
-        lpPow1Token: addressBook.lpPow1Token!,
+        lpYieldToken: addressBook.lpYieldToken!,
         lpPow5Token: addressBook.lpPow5Token!,
         debtToken: addressBook.debtToken!,
         lpSft: addressBook.lpSft!,
@@ -230,10 +230,10 @@ describe("Bureau 2: Yield Harvest", () => {
     const { lpSftContract, noLpSftContract } = deployerContracts;
 
     chai
-      .expect(await lpSftContract.ownerOf(LPPOW1_LPNFT_TOKEN_ID))
+      .expect(await lpSftContract.ownerOf(LPYIELD_LPNFT_TOKEN_ID))
       .to.equal(beneficiaryAddress);
     chai
-      .expect(await noLpSftContract.ownerOf(LPPOW1_LPNFT_TOKEN_ID))
+      .expect(await noLpSftContract.ownerOf(LPYIELD_LPNFT_TOKEN_ID))
       .to.equal(ZERO_ADDRESS);
   });
 
@@ -246,7 +246,7 @@ describe("Bureau 2: Yield Harvest", () => {
     await lpSftContract.safeTransferFrom(
       beneficiaryAddress,
       yieldHarvestContract.address,
-      LPPOW1_LPNFT_TOKEN_ID,
+      LPYIELD_LPNFT_TOKEN_ID,
       1n,
     );
   });
@@ -258,10 +258,10 @@ describe("Bureau 2: Yield Harvest", () => {
       deployerContracts;
 
     chai
-      .expect(await lpSftContract.ownerOf(LPPOW1_LPNFT_TOKEN_ID))
+      .expect(await lpSftContract.ownerOf(LPYIELD_LPNFT_TOKEN_ID))
       .to.equal(yieldHarvestContract.address);
     chai
-      .expect(await noLpSftContract.ownerOf(LPPOW1_LPNFT_TOKEN_ID))
+      .expect(await noLpSftContract.ownerOf(LPYIELD_LPNFT_TOKEN_ID))
       .to.equal(beneficiaryAddress);
   });
 
@@ -278,7 +278,7 @@ describe("Bureau 2: Yield Harvest", () => {
     await noLpSftContract.safeTransferFrom(
       beneficiaryAddress,
       yieldHarvestContract.address,
-      LPPOW1_LPNFT_TOKEN_ID,
+      LPYIELD_LPNFT_TOKEN_ID,
       1n,
     );
   });
@@ -289,10 +289,10 @@ describe("Bureau 2: Yield Harvest", () => {
     const { lpSftContract, noLpSftContract } = deployerContracts;
 
     chai
-      .expect(await lpSftContract.ownerOf(LPPOW1_LPNFT_TOKEN_ID))
+      .expect(await lpSftContract.ownerOf(LPYIELD_LPNFT_TOKEN_ID))
       .to.equal(beneficiaryAddress);
     chai
-      .expect(await noLpSftContract.ownerOf(LPPOW1_LPNFT_TOKEN_ID))
+      .expect(await noLpSftContract.ownerOf(LPYIELD_LPNFT_TOKEN_ID))
       .to.equal(ZERO_ADDRESS);
   });
 });

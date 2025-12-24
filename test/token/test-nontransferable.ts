@@ -18,8 +18,8 @@ import { ContractLibraryEthers } from "../../src/hardhat/contractLibraryEthers";
 import { setupFixture } from "../../src/testing/setupFixture";
 import {
   DEBT_DECIMALS,
-  LPPOW1_DECIMALS,
   LPPOW5_DECIMALS,
+  LPYIELD_DECIMALS,
   POW1_DECIMALS,
   POW5_DECIMALS,
 } from "../../src/utils/constants";
@@ -34,7 +34,7 @@ const setupTest = hardhat.deployments.createFixture(setupFixture);
 // Amounts of tokens to mint for testing
 const POW1_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1
 const POW5_AMOUNT: bigint = ethers.parseUnits("1000", POW5_DECIMALS); // 1,000 POW5
-const LPPOW1_AMOUNT: bigint = ethers.parseUnits("1000", LPPOW1_DECIMALS); // 1,000 LPPOW1
+const LPYIELD_AMOUNT: bigint = ethers.parseUnits("1000", LPYIELD_DECIMALS); // 1,000 LPYIELD
 const LPPOW5_AMOUNT: bigint = ethers.parseUnits("1000", LPPOW5_DECIMALS); // 1,000 LPPOW5
 const DEBT_AMOUNT: bigint = ethers.parseUnits("1000", DEBT_DECIMALS); // 1,000 DEBT
 
@@ -103,14 +103,14 @@ describe("ERC20Nontransferable", () => {
     await tx.wait();
   });
 
-  it("should grant ERC20_ISSUER_ROLE for LPPOW1", async function () {
+  it("should grant ERC20_ISSUER_ROLE for LPYIELD", async function () {
     this.timeout(60 * 1000);
 
-    const { lpPow1TokenContract } = contracts;
+    const { lpYieldTokenContract } = contracts;
 
     // Grant issuer role to deployer
     const tx: ethers.ContractTransactionResponse = await (
-      lpPow1TokenContract.connect(deployer) as ethers.Contract
+      lpYieldTokenContract.connect(deployer) as ethers.Contract
     ).grantRole(ERC20_ISSUER_ROLE, await deployer.getAddress());
     await tx.wait();
   });
@@ -167,15 +167,15 @@ describe("ERC20Nontransferable", () => {
     await tx.wait();
   });
 
-  it("should mint LPPOW1", async function (): Promise<void> {
+  it("should mint LPYIELD", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { lpPow1TokenContract } = contracts;
+    const { lpYieldTokenContract } = contracts;
 
-    // Mint LPPOW1
+    // Mint LPYIELD
     const tx: ethers.ContractTransactionResponse = await (
-      lpPow1TokenContract.connect(deployer) as ethers.Contract
-    ).mint(await deployer.getAddress(), LPPOW1_AMOUNT);
+      lpYieldTokenContract.connect(deployer) as ethers.Contract
+    ).mint(await deployer.getAddress(), LPYIELD_AMOUNT);
     await tx.wait();
   });
 
@@ -231,17 +231,16 @@ describe("ERC20Nontransferable", () => {
     await tx.wait();
   });
 
-  it("should fail to transfer LPPOW1", async function () {
+  it("should fail to transfer LPYIELD", async function () {
     this.timeout(60 * 1000);
 
-    const { lpPow1TokenContract } = contracts;
+    const { lpYieldTokenContract } = contracts;
 
-    // Attempt to transfer LPPOW1
+    // Attempt to transfer LPYIELD
     try {
-      await (lpPow1TokenContract.connect(deployer) as ethers.Contract).transfer(
-        beneficiaryAddress,
-        LPPOW1_AMOUNT,
-      );
+      await (
+        lpYieldTokenContract.connect(deployer) as ethers.Contract
+      ).transfer(beneficiaryAddress, LPYIELD_AMOUNT);
       chai.assert.fail("Expected to fail");
     } catch (error: unknown) {
       chai.expect(error).to.be.an("error");

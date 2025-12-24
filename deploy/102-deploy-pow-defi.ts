@@ -34,11 +34,11 @@ import { POW1_DECIMALS } from "../src/utils/constants";
 const POW1_LPNFT_STAKE_FARM_REWARD_RATE: bigint = ethers.parseUnits(
   "1",
   POW1_DECIMALS,
-); // 1 POW1 per lent LPPOW1 per second
+); // 1 POW1 per lent LPYIELD per second
 const POW1_LPSFT_LEND_FARM_REWARD_RATE: bigint = ethers.parseUnits(
   "1",
   POW1_DECIMALS,
-); // 1 POW1 per lent LPPOW1 per second
+); // 1 POW1 per lent LPYIELD per second
 const POW5_LPSFT_LEND_FARM_REWARD_RATE: bigint = ethers.parseUnits(
   "1",
   POW1_DECIMALS,
@@ -80,7 +80,7 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
       deployer, // owner
       addressBook.pow1Token!, // pow1Token
       addressBook.pow5Token!, // pow5Token
-      addressBook.lpPow1Token!, // lpPow1Token
+      addressBook.lpYieldToken!, // lpYieldToken
       addressBook.lpPow5Token!, // lpPow5Token
       addressBook.debtToken!, // debtToken
       addressBook.lpSft!, // lpSft
@@ -105,7 +105,7 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
       args: [
         addressBook.lpSft!, // sftToken
         addressBook.pow1Token!, // rewardToken
-        addressBook.lpPow1Token!, // lpToken
+        addressBook.lpYieldToken!, // lpToken
         addressBook.pow1Token!, // pow1Token
         addressBook.pow5Token!, // pow5Token
         addressBook.uniswapV3NftManager!, // uniswapV3NftManager
@@ -130,7 +130,7 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
         deployer, // owner
         addressBook.lpSft!, // sftToken
         addressBook.pow1Token!, // rewardToken
-        addressBook.lpPow1Token!, // lpToken
+        addressBook.lpYieldToken!, // lpToken
         POW1_LPSFT_LEND_FARM_REWARD_RATE, // rewardRate
       ],
     },

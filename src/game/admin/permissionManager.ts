@@ -13,8 +13,8 @@ import { POW1LpSftLendFarmContract } from "../../interfaces/defi/pow1LpSftLendFa
 import { POW5InterestFarmContract } from "../../interfaces/defi/pow5InterestFarmContract";
 import { POW5LpSftLendFarmContract } from "../../interfaces/defi/pow5LpSftLendFarmContract";
 import { DEBTContract } from "../../interfaces/token/erc20/debtContract";
-import { LPPOW1Contract } from "../../interfaces/token/erc20/lpPow1Contract";
 import { LPPOW5Contract } from "../../interfaces/token/erc20/lpPow5Contract";
+import { LPYIELDContract } from "../../interfaces/token/erc20/lpYieldContract";
 import { POW5Contract } from "../../interfaces/token/erc20/pow5Contract";
 import { LPSFTContract } from "../../interfaces/token/erc1155/lpSftContract";
 import { NOLPSFTContract } from "../../interfaces/token/erc1155/noLpSftContract";
@@ -45,7 +45,7 @@ const LPSFT_FARM_OPERATOR_ROLE: string = ethers.encodeBytes32String(
 type Addresses = {
   pow1Token: `0x${string}`;
   pow5Token: `0x${string}`;
-  lpPow1Token: `0x${string}`;
+  lpYieldToken: `0x${string}`;
   lpPow5Token: `0x${string}`;
   debtToken: `0x${string}`;
   lpSft: `0x${string}`;
@@ -101,9 +101,9 @@ class PermissionManager {
       this.admin,
       this.addresses.pow5Token,
     );
-    const lpPow1Contract: LPPOW1Contract = new LPPOW1Contract(
+    const lpYieldContract: LPYIELDContract = new LPYIELDContract(
       this.admin,
-      this.addresses.lpPow1Token,
+      this.addresses.lpYieldToken,
     );
     const lpPow5Contract: LPPOW5Contract = new LPPOW5Contract(
       this.admin,
@@ -151,7 +151,7 @@ class PermissionManager {
         [this.addresses.lpSft]: [
           {
             role: ERC20_ISSUER_ROLE,
-            contract: lpPow1Contract,
+            contract: lpYieldContract,
           },
         ],
       },

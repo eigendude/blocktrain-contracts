@@ -20,12 +20,12 @@ import { ContractLibrary } from "../../src/interfaces/contractLibrary";
 import { ETH_PRICE } from "../../src/testing/defiMetrics";
 import { setupFixture } from "../../src/testing/setupFixture";
 import {
-  INITIAL_LPPOW1_AMOUNT,
-  INITIAL_LPPOW1_WETH_VALUE,
+  INITIAL_LPYIELD_AMOUNT,
+  INITIAL_LPYIELD_WETH_VALUE,
   INITIAL_POW1_PRICE,
   INITIAL_POW1_SUPPLY,
   INITIAL_POW5_PRICE,
-  LPPOW1_DECIMALS,
+  LPYIELD_DECIMALS,
   POW1_DECIMALS,
 } from "../../src/utils/constants";
 import { getContractLibrary } from "../../src/utils/getContractLibrary";
@@ -43,7 +43,7 @@ const INITIAL_ETH: string = "1"; // 1 ETH
 
 // Initial amount of WETH to deposit into the Dutch Auction
 const INITIAL_WETH_AMOUNT: bigint =
-  ethers.parseEther(INITIAL_LPPOW1_WETH_VALUE.toString()) / BigInt(ETH_PRICE); // $100 in WETH
+  ethers.parseEther(INITIAL_LPYIELD_WETH_VALUE.toString()) / BigInt(ETH_PRICE); // $100 in WETH
 
 // Initial amount of WETH to mint initial auction LP-NFTs
 const INITIAL_WETH_DUST: bigint =
@@ -55,12 +55,12 @@ const INITIAL_WETH_LOSS: bigint = 42n; // 42 wei
 // Amount of WETH lost to the pool when minting next two auction LP-NFTs
 const NEXT_WETH_LOSS: bigint = 42n; // 42 wei
 
-// POW1 test reward for LPPOW1 staking incentive
-const LPPOW1_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1 ($10)
+// POW1 test reward for LPYIELD staking incentive
+const LPYIELD_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1 ($10)
 
 // Remaining dust balances after depositing into LP pool
-const LPPOW1_POW1_DUST: bigint = 443n;
-const LPPOW1_WETH_DUST: bigint = 1n;
+const LPYIELD_POW1_DUST: bigint = 443n;
+const LPYIELD_WETH_DUST: bigint = 1n;
 
 // Token ID of initial minted LP-NFT/L-SFT
 const POW1_LPNFT_TOKEN_ID: bigint = 1n;
@@ -218,7 +218,7 @@ describe("Bureau 1: Dutch Auction", () => {
       {
         pow1Token: addressBook.pow1Token!,
         pow5Token: addressBook.pow5Token!,
-        lpPow1Token: addressBook.lpPow1Token!,
+        lpYieldToken: addressBook.lpYieldToken!,
         lpPow5Token: addressBook.lpPow5Token!,
         debtToken: addressBook.debtToken!,
         lpSft: addressBook.lpSft!,
@@ -263,7 +263,7 @@ describe("Bureau 1: Dutch Auction", () => {
     // Mint POW1 to the POW1 LP-SFT lend farm
     await pow1Contract.mint(
       pow1LpNftStakeFarmContract.address,
-      LPPOW1_REWARD_AMOUNT,
+      LPYIELD_REWARD_AMOUNT,
     );
   });
 
@@ -271,7 +271,7 @@ describe("Bureau 1: Dutch Auction", () => {
   // Spec: Get pool token order
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should get pool token order for LPPOW1", async function (): Promise<void> {
+  it("should get pool token order for LPYIELD", async function (): Promise<void> {
     const { pow1Contract, pow1MarketPoolContract, wrappedNativeContract } =
       deployerContracts;
 
@@ -302,10 +302,10 @@ describe("Bureau 1: Dutch Auction", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Initialize the LPPOW1 pool
+  // Spec: Initialize the LPYIELD pool
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should initialize the LPPOW1 pool", async function (): Promise<void> {
+  it("should initialize the LPYIELD pool", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     const poolManager: PoolManager = new PoolManager(deployer, {
@@ -505,7 +505,7 @@ describe("Bureau 1: Dutch Auction", () => {
       ).toLocaleString()} POW1 wei ($${pow1Value.toLocaleString()})`,
     );
 
-    chai.expect(pow1Balance).to.equal(LPPOW1_POW1_DUST);
+    chai.expect(pow1Balance).to.equal(LPYIELD_POW1_DUST);
   });
 
   it("should check beneficiary WETH balance", async function (): Promise<void> {
@@ -524,7 +524,7 @@ describe("Bureau 1: Dutch Auction", () => {
       );
     }
 
-    chai.expect(wethBalance).to.equal(LPPOW1_WETH_DUST);
+    chai.expect(wethBalance).to.equal(LPYIELD_WETH_DUST);
   });
 
   it("should log Uniswap pool reserves", async function (): Promise<void> {
@@ -555,45 +555,45 @@ describe("Bureau 1: Dutch Auction", () => {
         .toLocaleString()})`,
     );
 
-    chai.expect(pow1Balance).to.equal(INITIAL_POW1_SUPPLY - LPPOW1_POW1_DUST);
-    chai.expect(wethBalance).to.equal(INITIAL_WETH_AMOUNT - LPPOW1_WETH_DUST);
+    chai.expect(pow1Balance).to.equal(INITIAL_POW1_SUPPLY - LPYIELD_POW1_DUST);
+    chai.expect(wethBalance).to.equal(INITIAL_WETH_AMOUNT - LPYIELD_WETH_DUST);
   });
 
-  it("should check initial LP-SFT LPPOW1 balance", async function (): Promise<void> {
+  it("should check initial LP-SFT LPYIELD balance", async function (): Promise<void> {
     const { defiManagerContract } = beneficiaryContracts;
 
-    // Check LP-SFT LPPOW1 balance
-    const lpPow1Balance: bigint =
-      await defiManagerContract.lpPow1Balance(POW1_LPNFT_TOKEN_ID);
+    // Check LP-SFT LPYIELD balance
+    const lpYieldBalance: bigint =
+      await defiManagerContract.lpYieldBalance(POW1_LPNFT_TOKEN_ID);
 
     // Calculate DeFi properties
-    // TODO: Calculate LPPOW1 price instead of using POW5 price
-    const lpPow1Price: number = INITIAL_POW5_PRICE;
-    const lpPow1Value: string = ethers.formatUnits(
-      lpPow1Balance / BigInt(1 / lpPow1Price),
-      LPPOW1_DECIMALS,
+    // TODO: Calculate LPYIELD price instead of using POW5 price
+    const lpYieldPrice: number = INITIAL_POW5_PRICE;
+    const lpYieldValue: string = ethers.formatUnits(
+      lpYieldBalance / BigInt(1 / lpYieldPrice),
+      LPYIELD_DECIMALS,
     );
 
-    // Log LP-SFT LPPOW1 balance
+    // Log LP-SFT LPYIELD balance
     console.log(
-      `    Initial LP-SFT LPPOW1 balance: ${ethers
-        .formatUnits(lpPow1Balance, LPPOW1_DECIMALS)
-        .toLocaleString()} LPPOW1 ($${lpPow1Value.toLocaleString()})`,
+      `    Initial LP-SFT LPYIELD balance: ${ethers
+        .formatUnits(lpYieldBalance, LPYIELD_DECIMALS)
+        .toLocaleString()} LPYIELD ($${lpYieldValue.toLocaleString()})`,
     );
 
-    chai.expect(lpPow1Balance).to.equal(INITIAL_LPPOW1_AMOUNT);
+    chai.expect(lpYieldBalance).to.equal(INITIAL_LPYIELD_AMOUNT);
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Check LPPOW1 total supply
+  // Spec: Check LPYIELD total supply
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should check LPPOW1 total supply", async function (): Promise<void> {
-    const { lpPow1Contract } = beneficiaryContracts;
+  it("should check LPYIELD total supply", async function (): Promise<void> {
+    const { lpYieldContract } = beneficiaryContracts;
 
     // Check total supply
-    const totalSupply: bigint = await lpPow1Contract.totalSupply();
-    chai.expect(totalSupply).to.equal(INITIAL_LPPOW1_AMOUNT);
+    const totalSupply: bigint = await lpYieldContract.totalSupply();
+    chai.expect(totalSupply).to.equal(INITIAL_LPYIELD_AMOUNT);
   });
 
   //////////////////////////////////////////////////////////////////////////////
@@ -736,10 +736,10 @@ describe("Bureau 1: Dutch Auction", () => {
         .toLocaleString()})`,
     );
 
-    chai.expect(pow1Balance).to.equal(INITIAL_POW1_SUPPLY - LPPOW1_POW1_DUST);
+    chai.expect(pow1Balance).to.equal(INITIAL_POW1_SUPPLY - LPYIELD_POW1_DUST);
     chai
       .expect(wethBalance)
-      .to.equal(INITIAL_WETH_AMOUNT - LPPOW1_WETH_DUST + INITIAL_WETH_LOSS);
+      .to.equal(INITIAL_WETH_AMOUNT - LPYIELD_WETH_DUST + INITIAL_WETH_LOSS);
   });
 
   //////////////////////////////////////////////////////////////////////////////
@@ -824,12 +824,12 @@ describe("Bureau 1: Dutch Auction", () => {
         .toLocaleString()})`,
     );
 
-    chai.expect(pow1Balance).to.equal(INITIAL_POW1_SUPPLY - LPPOW1_POW1_DUST);
+    chai.expect(pow1Balance).to.equal(INITIAL_POW1_SUPPLY - LPYIELD_POW1_DUST);
     chai
       .expect(wethBalance)
       .to.equal(
         INITIAL_WETH_AMOUNT -
-          LPPOW1_WETH_DUST +
+          LPYIELD_WETH_DUST +
           INITIAL_WETH_LOSS +
           NEXT_WETH_LOSS,
       );
@@ -1017,12 +1017,12 @@ describe("Bureau 1: Dutch Auction", () => {
 
     chai
       .expect(pow1Balance)
-      .to.equal(INITIAL_POW1_SUPPLY - LPPOW1_POW1_DUST - 363n);
+      .to.equal(INITIAL_POW1_SUPPLY - LPYIELD_POW1_DUST - 363n);
     chai
       .expect(wethBalance)
       .to.equal(
         INITIAL_WETH_AMOUNT -
-          LPPOW1_WETH_DUST +
+          LPYIELD_WETH_DUST +
           INITIAL_WETH_LOSS +
           POW1_LPNFT_FIRST_WETH_AMOUNT -
           1_758_085_942_872n,
@@ -1035,7 +1035,7 @@ describe("Bureau 1: Dutch Auction", () => {
     // Check LP-SFT POW1 balance
     const pow1Balance: bigint =
       await defiManagerContract.pow1Balance(POW1_LPNFT_TOKEN_ID);
-    chai.expect(pow1Balance).to.equal(LPPOW1_POW1_DUST);
+    chai.expect(pow1Balance).to.equal(LPYIELD_POW1_DUST);
 
     // Check beneficiary WETH balance
     const wethBalance: bigint =

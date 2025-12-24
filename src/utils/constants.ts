@@ -33,9 +33,9 @@ const POW1_DECIMALS: number = 18;
 const POW5_DECIMALS: number = 16;
 
 /**
- * @description The decimal count for LPPOW1
+ * @description The decimal count for LPYIELD
  */
-const LPPOW1_DECIMALS: number = 16;
+const LPYIELD_DECIMALS: number = 16;
 
 /**
  * @description The decimal count for LPPOW5
@@ -82,9 +82,9 @@ const INITIAL_POW1_PRICE: number = 0.01; // $0.01
 const INITIAL_POW5_PRICE: number = 0.05; // $0.05
 
 /**
- * @description The initial value of WETH paired in the LPPOW1 pool
+ * @description The initial value of WETH paired in the LPYIELD pool
  */
-const INITIAL_LPPOW1_WETH_VALUE: number = 100; // $100
+const INITIAL_LPYIELD_WETH_VALUE: number = 100; // $100
 
 /**
  * @description The initial value of USDC paired in the LPPOW5 pool
@@ -92,9 +92,9 @@ const INITIAL_LPPOW1_WETH_VALUE: number = 100; // $100
 const INITIAL_LPPOW5_USDC_VALUE: number = 100; // $100
 
 /**
- * @description The initial LPPOW1 amount, sqrt(POW1 * WETH)
+ * @description The initial LPYIELD amount, sqrt(POW1 * WETH)
  */
-const INITIAL_LPPOW1_AMOUNT: bigint = 20_036_097_492_521_525_709n; // 2,004 LPPOW1
+const INITIAL_LPYIELD_AMOUNT: bigint = 20_036_097_492_521_525_709n; // 2,004 LPYIELD
 
 /**
  * @description The initial POW5 amount
@@ -160,9 +160,9 @@ const TICK_SPACINGS: { [amount in UNI_V3_FEE_AMOUNT]: number } = {
 };
 
 /**
- * @description The fee for the LPPOW1 pool
+ * @description The fee for the LPYIELD pool
  */
-const LPPOW1_POOL_FEE: UNI_V3_FEE_AMOUNT = UNI_V3_FEE_AMOUNT.HIGH;
+const LPYIELD_POOL_FEE: UNI_V3_FEE_AMOUNT = UNI_V3_FEE_AMOUNT.HIGH;
 
 /**
  * @description The fee for the LPPOW5 pool
@@ -184,8 +184,8 @@ const ZERO_ADDRESS: `0x${string}` =
 ////////////////////////////////////////////////////////////////////////////////
 
 export {
-  INITIAL_LPPOW1_AMOUNT,
-  INITIAL_LPPOW1_WETH_VALUE,
+  INITIAL_LPYIELD_AMOUNT,
+  INITIAL_LPYIELD_WETH_VALUE,
   INITIAL_LPPOW5_AMOUNT,
   INITIAL_LPPOW5_USDC_VALUE,
   INITIAL_POW1_PRICE,
@@ -193,8 +193,8 @@ export {
   INITIAL_POW5_AMOUNT,
   INITIAL_POW5_DEPOSIT,
   INITIAL_POW5_PRICE,
-  LPPOW1_DECIMALS,
-  LPPOW1_POOL_FEE,
+  LPYIELD_DECIMALS,
+  LPYIELD_POOL_FEE,
   LPPOW5_DECIMALS,
   LPPOW5_POOL_FEE,
   MAX_SQRT_RATIO,

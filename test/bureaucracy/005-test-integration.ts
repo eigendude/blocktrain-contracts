@@ -22,8 +22,8 @@ import { ERC20Contract } from "../../src/interfaces/zeppelin/token/erc20/erc20Co
 import { ETH_PRICE, USDC_PRICE } from "../../src/testing/defiMetrics";
 import { setupFixture } from "../../src/testing/setupFixture";
 import {
-  INITIAL_LPPOW1_WETH_VALUE,
   INITIAL_LPPOW5_USDC_VALUE,
+  INITIAL_LPYIELD_WETH_VALUE,
   INITIAL_POW1_SUPPLY,
   INITIAL_POW5_AMOUNT,
   INITIAL_POW5_DEPOSIT,
@@ -44,21 +44,21 @@ const INITIAL_ETH: string = "1"; // 1 ETH
 
 // Initial amount of WETH to deposit into the Dutch Auction
 const INITIAL_WETH_AMOUNT: bigint =
-  ethers.parseEther(INITIAL_LPPOW1_WETH_VALUE.toString()) / BigInt(ETH_PRICE); // $100 in ETH
+  ethers.parseEther(INITIAL_LPYIELD_WETH_VALUE.toString()) / BigInt(ETH_PRICE); // $100 in ETH
 
 // Initial amount of USDC to deposit into the Reverse Repo
 const INITIAL_USDC_AMOUNT: bigint =
   ethers.parseUnits(INITIAL_LPPOW5_USDC_VALUE.toString(), USDC_DECIMALS) /
   BigInt(USDC_PRICE); // 100 USDC ($100)
 
-// POW1 test reward for LPPOW1 staking incentive
-const LPPOW1_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1 ($10)
+// POW1 test reward for LPYIELD staking incentive
+const LPYIELD_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1 ($10)
 
 // POW1 test reward for LPPOW5 staking incentive
 const LPPOW5_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1 ($10)
 
 // Token IDs of minted LP-NFTs
-const LPPOW1_LPNFT_TOKEN_ID: bigint = 1n;
+const LPYIELD_LPNFT_TOKEN_ID: bigint = 1n;
 
 //
 // Test cases
@@ -159,7 +159,7 @@ describe("Bureau integration test", () => {
       {
         pow1Token: addressBook.pow1Token!,
         pow5Token: addressBook.pow5Token!,
-        lpPow1Token: addressBook.lpPow1Token!,
+        lpYieldToken: addressBook.lpYieldToken!,
         lpPow5Token: addressBook.lpPow5Token!,
         debtToken: addressBook.debtToken!,
         lpSft: addressBook.lpSft!,
@@ -209,7 +209,7 @@ describe("Bureau integration test", () => {
     // Mint POW1
     await pow1Contract.mint(
       pow1LpSftLendFarmContract.address,
-      LPPOW1_REWARD_AMOUNT,
+      LPYIELD_REWARD_AMOUNT,
     );
     await pow1Contract.mint(deployerAddress, LPPOW5_REWARD_AMOUNT);
 
@@ -307,7 +307,7 @@ describe("Bureau integration test", () => {
     await lpSftContract.safeTransferFrom(
       beneficiaryAddress,
       yieldHarvestContract.address,
-      LPPOW1_LPNFT_TOKEN_ID,
+      LPYIELD_LPNFT_TOKEN_ID,
       1n,
     );
   });
@@ -324,7 +324,7 @@ describe("Bureau integration test", () => {
 
     // Borrow POW5 from LiquidityForge
     await liquidityForgeContract.borrowPow5(
-      LPPOW1_LPNFT_TOKEN_ID, // tokenId
+      LPYIELD_LPNFT_TOKEN_ID, // tokenId
       INITIAL_POW5_AMOUNT, // amount
       beneficiaryAddress, // receiver
     );

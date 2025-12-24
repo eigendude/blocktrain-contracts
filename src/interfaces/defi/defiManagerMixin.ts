@@ -48,12 +48,12 @@ function DeFiManagerMixin<T extends new (...args: any[]) => {}>(Base: T) {
       return this.defiManager.pow5BalanceBatch(tokenIds);
     }
 
-    async lpPow1Balance(tokenId: bigint): Promise<bigint> {
-      return this.defiManager.lpPow1Balance(tokenId);
+    async lpYieldBalance(tokenId: bigint): Promise<bigint> {
+      return this.defiManager.lpYieldBalance(tokenId);
     }
 
-    async lpPow1BalanceBatch(tokenIds: bigint[]): Promise<bigint[]> {
-      return this.defiManager.lpPow1BalanceBatch(tokenIds);
+    async lpYieldBalanceBatch(tokenIds: bigint[]): Promise<bigint[]> {
+      return this.defiManager.lpYieldBalanceBatch(tokenIds);
     }
 
     async lpPow5Balance(tokenId: bigint): Promise<bigint> {

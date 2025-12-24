@@ -18,7 +18,7 @@ interface ContractLibraryEthers {
   defiManagerContract: ethers.Contract;
   dutchAuctionContract: ethers.Contract;
   liquidityForgeContract: ethers.Contract;
-  lpPow1TokenContract: ethers.Contract;
+  lpYieldTokenContract: ethers.Contract;
   lpPow5TokenContract: ethers.Contract;
   lpSftContract: ethers.Contract;
   noLpSftContract: ethers.Contract;

@@ -22,9 +22,9 @@ import {
   DUTCH_AUCTION_CONTRACT,
   LIQUIDITY_FORGE_CONTRACT,
   LPNFT_CONTRACT,
-  LPPOW1_TOKEN_CONTRACT,
   LPPOW5_TOKEN_CONTRACT,
   LPSFT_CONTRACT,
+  LPYIELD_TOKEN_CONTRACT,
   MARKET_STABLE_SWAPPER_CONTRACT,
   NOLPSFT_CONTRACT,
   POW1_LPNFT_STAKE_FARM_CONTRACT,
@@ -53,8 +53,8 @@ import { USDC_CONTRACT } from "../names/testing";
 import { ETH_PRICE } from "../testing/defiMetrics";
 import {
   INITIAL_POW5_AMOUNT,
-  LPPOW1_POOL_FEE,
   LPPOW5_POOL_FEE,
+  LPYIELD_POOL_FEE,
   UNI_V3_FEE_AMOUNT,
 } from "../utils/constants";
 import { DutchAuctionManager } from "./admin/dutchAuctionManager";
@@ -224,7 +224,7 @@ async function initializeGame(
       dutchAuction: contracts[DUTCH_AUCTION_CONTRACT]["address"],
       liquidityForge: contracts[LIQUIDITY_FORGE_CONTRACT]["address"],
       lpNft: contracts[LPNFT_CONTRACT]["address"],
-      lpPow1Token: contracts[LPPOW1_TOKEN_CONTRACT]["address"],
+      lpYieldToken: contracts[LPYIELD_TOKEN_CONTRACT]["address"],
       lpPow5Token: contracts[LPPOW5_TOKEN_CONTRACT]["address"],
       lpSft: contracts[LPSFT_CONTRACT]["address"],
       noLpSft: contracts[NOLPSFT_CONTRACT]["address"],
@@ -278,7 +278,7 @@ async function initializeGame(
     addressBook.pow1MarketPool = await uniswapV3FactoryContract.getPool(
       addressBook.pow1Token!,
       addressBook.wrappedNativeToken!,
-      LPPOW1_POOL_FEE,
+      LPYIELD_POOL_FEE,
     );
     addressBook.pow5StablePool = await uniswapV3FactoryContract.getPool(
       addressBook.pow5Token!,
@@ -318,7 +318,7 @@ async function initializeGame(
   const permissionManager: PermissionManager = new PermissionManager(deployer, {
     pow1Token: addressBook.pow1Token!,
     pow5Token: addressBook.pow5Token!,
-    lpPow1Token: addressBook.lpPow1Token!,
+    lpYieldToken: addressBook.lpYieldToken!,
     lpPow5Token: addressBook.lpPow5Token!,
     debtToken: addressBook.debtToken!,
     lpSft: addressBook.lpSft!,

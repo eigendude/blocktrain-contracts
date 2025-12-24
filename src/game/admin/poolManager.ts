@@ -11,8 +11,8 @@ import { ethers } from "ethers";
 import { UniswapV3PoolContract } from "../../interfaces/uniswap/pool/uniswapV3PoolContract";
 import { ETH_PRICE, USDC_PRICE } from "../../testing/defiMetrics";
 import {
-  INITIAL_LPPOW1_WETH_VALUE,
   INITIAL_LPPOW5_USDC_VALUE,
+  INITIAL_LPYIELD_WETH_VALUE,
   INITIAL_POW1_SUPPLY,
   INITIAL_POW5_AMOUNT,
   USDC_DECIMALS,
@@ -27,7 +27,7 @@ import { encodePriceSqrt } from "../../utils/fixedMath";
  * @description Initial amount of WETH to deposit into the POW1 pool
  */
 const INITIAL_MARKET_SUPPLY: bigint =
-  ethers.parseEther(INITIAL_LPPOW1_WETH_VALUE.toString()) / BigInt(ETH_PRICE); // $100 in ETH
+  ethers.parseEther(INITIAL_LPYIELD_WETH_VALUE.toString()) / BigInt(ETH_PRICE); // $100 in ETH
 
 /**
  * @description Initial amount of USDC to deposit into the POW5 pool

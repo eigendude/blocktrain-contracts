@@ -65,7 +65,7 @@ describe("The Reserve Smart Contract", () => {
     this.timeout(60 * 1000);
 
     const {
-      lpPow1Contract,
+      lpYieldContract,
       lpPow5Contract,
       lpSftContract,
       noLpSftContract,
@@ -98,8 +98,8 @@ describe("The Reserve Smart Contract", () => {
       .expect(await theReserveContract.pow5Token())
       .to.equal(pow5Contract.address);
     chai
-      .expect(await theReserveContract.lpPow1Token())
-      .to.equal(lpPow1Contract.address);
+      .expect(await theReserveContract.lpYieldToken())
+      .to.equal(lpYieldContract.address);
     chai
       .expect(await theReserveContract.lpPow5Token())
       .to.equal(lpPow5Contract.address);
