@@ -20,10 +20,10 @@ import { AddressBook } from "../../src/interfaces/addressBook";
 import { ContractLibrary } from "../../src/interfaces/contractLibrary";
 import { setupFixture } from "../../src/testing/setupFixture";
 import {
+  DEBT_DECIMALS,
   INITIAL_POW1_SUPPLY,
   LPPOW1_DECIMALS,
   LPPOW5_DECIMALS,
-  NOPOW5_DECIMALS,
   POW1_DECIMALS,
   POW5_DECIMALS,
 } from "../../src/utils/constants";
@@ -95,11 +95,11 @@ describe("Token Constants", () => {
     chai.expect(lpPow5Decimals).to.equal(LPPOW5_DECIMALS);
   });
 
-  it("should test NOPOW5 decimals", async function () {
-    const { noPow5Contract } = contracts;
+  it("should test DEBT decimals", async function () {
+    const { debtContract } = contracts;
 
-    const noPow5Decimals: number = await noPow5Contract.decimals();
-    chai.expect(noPow5Decimals).to.equal(NOPOW5_DECIMALS);
+    const debtDecimals: number = await debtContract.decimals();
+    chai.expect(debtDecimals).to.equal(DEBT_DECIMALS);
   });
 
   //////////////////////////////////////////////////////////////////////////////
@@ -134,10 +134,10 @@ describe("Token Constants", () => {
     chai.expect(lpPow5Supply).to.equal(0n);
   });
 
-  it("should test NOPOW5 initial supply", async function () {
-    const { noPow5Contract } = contracts;
+  it("should test DEBT initial supply", async function () {
+    const { debtContract } = contracts;
 
-    const noPow5Supply: bigint = await noPow5Contract.totalSupply();
-    chai.expect(noPow5Supply).to.equal(0n);
+    const debtSupply: bigint = await debtContract.totalSupply();
+    chai.expect(debtSupply).to.equal(0n);
   });
 });

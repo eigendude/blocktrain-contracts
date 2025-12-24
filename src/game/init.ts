@@ -17,6 +17,7 @@ import { LPSFTContract } from "../interfaces/token/erc1155/lpSftContract";
 import { UniswapV3FactoryContract } from "../interfaces/uniswap/uniswapV3FactoryContract";
 import { ERC20Contract } from "../interfaces/zeppelin/token/erc20/erc20Contract";
 import {
+  DEBT_TOKEN_CONTRACT,
   DEFI_MANAGER_CONTRACT,
   DUTCH_AUCTION_CONTRACT,
   LIQUIDITY_FORGE_CONTRACT,
@@ -26,7 +27,6 @@ import {
   LPSFT_CONTRACT,
   MARKET_STABLE_SWAPPER_CONTRACT,
   NOLPSFT_CONTRACT,
-  NOPOW5_TOKEN_CONTRACT,
   POW1_LPNFT_STAKE_FARM_CONTRACT,
   POW1_LPSFT_LEND_FARM_CONTRACT,
   POW1_MARKET_POOL_FACTORY_CONTRACT,
@@ -228,7 +228,7 @@ async function initializeGame(
       lpPow5Token: contracts[LPPOW5_TOKEN_CONTRACT]["address"],
       lpSft: contracts[LPSFT_CONTRACT]["address"],
       noLpSft: contracts[NOLPSFT_CONTRACT]["address"],
-      noPow5Token: contracts[NOPOW5_TOKEN_CONTRACT]["address"],
+      debtToken: contracts[DEBT_TOKEN_CONTRACT]["address"],
       pow1LpNftStakeFarm: contracts[POW1_LPNFT_STAKE_FARM_CONTRACT]["address"],
       pow1LpSftLendFarm: contracts[POW1_LPSFT_LEND_FARM_CONTRACT]["address"],
       pow1MarketPooler: contracts[POW1_MARKET_POOLER_CONTRACT]["address"],
@@ -320,7 +320,7 @@ async function initializeGame(
     pow5Token: addressBook.pow5Token!,
     lpPow1Token: addressBook.lpPow1Token!,
     lpPow5Token: addressBook.lpPow5Token!,
-    noPow5Token: addressBook.noPow5Token!,
+    debtToken: addressBook.debtToken!,
     lpSft: addressBook.lpSft!,
     noLpSft: addressBook.noLpSft!,
     dutchAuction: addressBook.dutchAuction!,
@@ -403,9 +403,9 @@ async function initializeGame(
   // Create contracts
   const liquidityForgeContract: LiquidityForgeContract =
     new LiquidityForgeContract(beneficiary, addressBook.liquidityForge!);
-  const noPow5Contract: ERC20Contract = new ERC20Contract(
+  const debtContract: ERC20Contract = new ERC20Contract(
     beneficiary,
-    addressBook.noPow5Token!,
+    addressBook.debtToken!,
   );
 
   // Get LP-SFT address
@@ -413,17 +413,17 @@ async function initializeGame(
     INITIAL_POW1_LPNFT_TOKEN_ID,
   );
 
-  // Get NOPOW5 balance of LP-SFT
-  const noPow5Balance: bigint = await noPow5Contract.balanceOf(lpSftAddress);
+  // Get DEBT balance of LP-SFT
+  const debtBalance: bigint = await debtContract.balanceOf(lpSftAddress);
 
   // Borrow more POW5, if needed
-  if (noPow5Balance < INITIAL_POW5_AMOUNT) {
+  if (debtBalance < INITIAL_POW5_AMOUNT) {
     console.log("Initializing Liquidity Forge...");
 
     // Borrow POW5 from LiquidityForge
     await liquidityForgeContract.borrowPow5(
       INITIAL_POW1_LPNFT_TOKEN_ID, // tokenId
-      INITIAL_POW5_AMOUNT - noPow5Balance, // amount
+      INITIAL_POW5_AMOUNT - debtBalance, // amount
       beneficiaryAddress, // receiver
     );
   } else {

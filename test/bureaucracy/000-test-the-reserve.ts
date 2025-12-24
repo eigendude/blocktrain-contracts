@@ -69,7 +69,7 @@ describe("The Reserve Smart Contract", () => {
       lpPow5Contract,
       lpSftContract,
       noLpSftContract,
-      noPow5Contract,
+      debtContract,
       pow1Contract,
       pow1LpNftStakeFarmContract,
       pow1LpSftLendFarmContract,
@@ -104,8 +104,8 @@ describe("The Reserve Smart Contract", () => {
       .expect(await theReserveContract.lpPow5Token())
       .to.equal(lpPow5Contract.address);
     chai
-      .expect(await theReserveContract.noPow5Token())
-      .to.equal(noPow5Contract.address);
+      .expect(await theReserveContract.debtToken())
+      .to.equal(debtContract.address);
     chai
       .expect(await theReserveContract.marketToken())
       .to.equal(wrappedNativeContract.address);

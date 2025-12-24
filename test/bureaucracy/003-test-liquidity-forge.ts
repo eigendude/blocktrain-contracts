@@ -155,7 +155,7 @@ describe("Bureau 3: Liquidity Forge", () => {
         pow5Token: addressBook.pow5Token!,
         lpPow1Token: addressBook.lpPow1Token!,
         lpPow5Token: addressBook.lpPow5Token!,
-        noPow5Token: addressBook.noPow5Token!,
+        debtToken: addressBook.debtToken!,
         lpSft: addressBook.lpSft!,
         noLpSft: addressBook.noLpSft!,
         dutchAuction: addressBook.dutchAuction!,
@@ -308,10 +308,10 @@ describe("Bureau 3: Liquidity Forge", () => {
     const pow5Amount: bigint = await pow5Contract.balanceOf(beneficiaryAddress);
     chai.expect(pow5Amount).to.equal(INITIAL_POW5_AMOUNT);
 
-    const noPow5Amount: bigint = await defiManagerContract.noPow5Balance(
+    const debtAmount: bigint = await defiManagerContract.debtBalance(
       LPPOW1_LPNFT_TOKEN_ID,
     );
-    chai.expect(noPow5Amount).to.equal(INITIAL_POW5_AMOUNT);
+    chai.expect(debtAmount).to.equal(INITIAL_POW5_AMOUNT);
   });
 
   //////////////////////////////////////////////////////////////////////////////
@@ -378,10 +378,10 @@ describe("Bureau 3: Liquidity Forge", () => {
     const pow5Amount: bigint = await pow5Contract.balanceOf(deployerAddress);
     chai.expect(pow5Amount).to.equal(0n);
 
-    const noPow5Amount: bigint = await defiManagerContract.noPow5Balance(
+    const debtAmount: bigint = await defiManagerContract.debtBalance(
       LPPOW1_LPNFT_TOKEN_ID,
     );
-    chai.expect(noPow5Amount).to.equal(0n);
+    chai.expect(debtAmount).to.equal(0n);
   });
 
   //////////////////////////////////////////////////////////////////////////////
@@ -419,9 +419,9 @@ describe("Bureau 3: Liquidity Forge", () => {
     );
     chai.expect(lpPow1Amount).to.equal(INITIAL_LPPOW1_AMOUNT);
 
-    const noPow5Amount: bigint = await defiManagerContract.noPow5Balance(
+    const debtAmount: bigint = await defiManagerContract.debtBalance(
       LPPOW1_LPNFT_TOKEN_ID,
     );
-    chai.expect(noPow5Amount).to.equal(0n);
+    chai.expect(debtAmount).to.equal(0n);
   });
 });

@@ -101,10 +101,10 @@ contract TheReserveRoutes is ITheReserveRoutes {
   }
 
   /**
-   * @dev See {ITheReserveRoutes-noPow5Token}
+   * @dev See {ITheReserveRoutes-debtToken}
    */
-  function noPow5Token() external view override returns (IERC20) {
-    return _routes.noPow5Token;
+  function debtToken() external view override returns (IERC20) {
+    return _routes.debtToken;
   }
 
   /**

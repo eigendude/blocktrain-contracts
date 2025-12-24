@@ -15,6 +15,7 @@ import { HardhatRuntimeEnvironment } from "hardhat/types";
 import { DeploymentsExtension } from "hardhat-deploy/types";
 
 import {
+  debtTokenAbi,
   defiManagerAbi,
   dutchAuctionAbi,
   erc20InterestFarmAbi,
@@ -28,7 +29,6 @@ import {
   lpSftLendFarmAbi,
   marketStableSwapperAbi,
   noLpSftAbi,
-  noPow5TokenAbi,
   pow1TokenAbi,
   pow5TokenAbi,
   reverseRepoAbi,
@@ -113,9 +113,9 @@ async function setupFixture(
     noLpSftAbi,
     beneficiary,
   );
-  const noPow5TokenContract = new ethers.Contract(
-    addressBook.noPow5Token!,
-    noPow5TokenAbi,
+  const debtTokenContract = new ethers.Contract(
+    addressBook.debtToken!,
+    debtTokenAbi,
     beneficiary,
   );
   const pow1LpNftStakeFarmContract = new ethers.Contract(
@@ -272,7 +272,7 @@ async function setupFixture(
     lpPow5TokenContract,
     lpSftContract,
     noLpSftContract,
-    noPow5TokenContract,
+    debtTokenContract,
     pow1LpNftStakeFarmContract,
     pow1LpSftLendFarmContract,
     pow1MarketPoolContract,

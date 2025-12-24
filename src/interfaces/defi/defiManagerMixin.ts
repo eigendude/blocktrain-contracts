@@ -64,12 +64,12 @@ function DeFiManagerMixin<T extends new (...args: any[]) => {}>(Base: T) {
       return this.defiManager.lpPow5BalanceBatch(tokenIds);
     }
 
-    async noPow5Balance(tokenId: bigint): Promise<bigint> {
-      return this.defiManager.noPow5Balance(tokenId);
+    async debtBalance(tokenId: bigint): Promise<bigint> {
+      return this.defiManager.debtBalance(tokenId);
     }
 
-    async noPow5BalanceBatch(tokenIds: bigint[]): Promise<bigint[]> {
-      return this.defiManager.noPow5BalanceBatch(tokenIds);
+    async debtBalanceBatch(tokenIds: bigint[]): Promise<bigint[]> {
+      return this.defiManager.debtBalanceBatch(tokenIds);
     }
 
     async issuePow5(

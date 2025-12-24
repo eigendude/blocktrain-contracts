@@ -22,7 +22,7 @@ interface ContractLibraryEthers {
   lpPow5TokenContract: ethers.Contract;
   lpSftContract: ethers.Contract;
   noLpSftContract: ethers.Contract;
-  noPow5TokenContract: ethers.Contract;
+  debtTokenContract: ethers.Contract;
   pow1LpNftStakeFarmContract: ethers.Contract;
   pow1LpSftLendFarmContract: ethers.Contract;
   pow1MarketPoolContract: ethers.Contract;

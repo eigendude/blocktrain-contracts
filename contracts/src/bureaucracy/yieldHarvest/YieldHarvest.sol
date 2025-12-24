@@ -120,7 +120,7 @@ contract YieldHarvest is Context, ReentrancyGuard, IYieldHarvest {
       noLpSft.mint(from, id, data);
     } else {
       // Verify no POW5 debt
-      require(defiManager.noPow5Balance(id) == 0, "NOPOW5 must be 0");
+      require(defiManager.debtBalance(id) == 0, "DEBT must be 0");
 
       // Call external contracts
       noLpSft.burn(address(this), id);

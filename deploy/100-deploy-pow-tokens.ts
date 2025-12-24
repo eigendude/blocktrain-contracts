@@ -16,12 +16,12 @@ import { getAddressBook } from "../src/hardhat/getAddressBook";
 import { getNetworkName } from "../src/hardhat/hardhatUtils";
 import { AddressBook } from "../src/interfaces/addressBook";
 import {
+  DEBT_TOKEN_CONTRACT,
   LPNFT_CONTRACT,
   LPPOW1_TOKEN_CONTRACT,
   LPPOW5_TOKEN_CONTRACT,
   LPSFT_CONTRACT,
   NOLPSFT_CONTRACT,
-  NOPOW5_TOKEN_CONTRACT,
   POW1_TOKEN_CONTRACT,
   POW5_TOKEN_CONTRACT,
 } from "../src/names/dapp";
@@ -118,20 +118,20 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
   }
 
   //
-  // Deploy NOPOW5 token
+  // Deploy DEBT token
   //
 
-  if (addressBook.noPow5Token && networkName !== "localhost") {
-    console.log(`Using ${NOPOW5_TOKEN_CONTRACT} at ${addressBook.noPow5Token}`);
+  if (addressBook.debtToken && networkName !== "localhost") {
+    console.log(`Using ${DEBT_TOKEN_CONTRACT} at ${addressBook.debtToken}`);
   } else {
-    console.log(`Deploying ${NOPOW5_TOKEN_CONTRACT}`);
-    const tx = await deployments.deploy(NOPOW5_TOKEN_CONTRACT, {
+    console.log(`Deploying ${DEBT_TOKEN_CONTRACT}`);
+    const tx = await deployments.deploy(DEBT_TOKEN_CONTRACT, {
       ...opts,
       args: [
         deployer, // owner
       ],
     });
-    addressBook.noPow5Token = tx.address as `0x${string}`;
+    addressBook.debtToken = tx.address as `0x${string}`;
   }
 
   //
@@ -149,7 +149,7 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
         addressBook.pow5Token!, // pow5Token
         addressBook.lpPow1Token!, // lpPow1Token
         addressBook.lpPow5Token!, // lpPow5Token
-        addressBook.noPow5Token!, // noPow5Token
+        addressBook.debtToken!, // debtToken
         addressBook.uniswapV3NftManager!, // uniswapV3NftManager
       ],
     });

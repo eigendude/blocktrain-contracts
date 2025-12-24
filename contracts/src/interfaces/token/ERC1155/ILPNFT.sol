@@ -126,7 +126,7 @@ interface ILPNFT is IERC165 {
   /**
    * @dev Get the mount of POW5 debt held by the LP-NFT
    *
-   * @return The NOPOW5 balance
+   * @return The DEBT balance
    */
-  function noPow5Balance() external view returns (uint256);
+  function debtBalance() external view returns (uint256);
 }

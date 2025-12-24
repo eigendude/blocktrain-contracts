@@ -49,9 +49,9 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
   IERC20 public immutable lpPow5Token;
 
   /**
-   * @dev The NOPOW5 token contract
+   * @dev The DEBT token contract
    */
-  IERC20 public immutable noPow5Token;
+  IERC20 public immutable debtToken;
 
   /**
    * @dev The Uniswap V3 NFT manager
@@ -83,7 +83,7 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
    * @param pow5Token_ The POW5 token
    * @param lpPow1Token_ The LPPOW1 token
    * @param lpPow5Token_ The LPPOW5 token
-   * @param noPow5Token_ The NOPOW5 token
+   * @param debtToken_ The DEBT token
    * @param uniswapV3NftManager_ The Uniswap V3 NFT manager
    */
   constructor(
@@ -91,7 +91,7 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
     address pow5Token_,
     address lpPow1Token_,
     address lpPow5Token_,
-    address noPow5Token_,
+    address debtToken_,
     address uniswapV3NftManager_
   ) {
     // Validate parameters
@@ -99,7 +99,7 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
     require(pow5Token_ != address(0), "Invalid POW5");
     require(lpPow1Token_ != address(0), "Invalid LPPOW1");
     require(lpPow5Token_ != address(0), "Invalid LPPOW5");
-    require(noPow5Token_ != address(0), "Invalid NOPOW5");
+    require(debtToken_ != address(0), "Invalid DEBT");
     require(uniswapV3NftManager_ != address(0), "Invalid NFT mgr");
 
     // Initialize {Initializable}
@@ -110,7 +110,7 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
     pow5Token = IERC20(pow5Token_);
     lpPow1Token = IERC20(lpPow1Token_);
     lpPow5Token = IERC20(lpPow5Token_);
-    noPow5Token = IERC20(noPow5Token_);
+    debtToken = IERC20(debtToken_);
     uniswapV3NftManager = INonfungiblePositionManager(uniswapV3NftManager_);
   }
 
@@ -273,10 +273,10 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
   }
 
   /**
-   * @dev See {ILPNFT-noPow5Balance}
+   * @dev See {ILPNFT-debtBalance}
    */
-  function noPow5Balance() public view override returns (uint256) {
+  function debtBalance() public view override returns (uint256) {
     // Read external state
-    return noPow5Token.balanceOf(address(this));
+    return debtToken.balanceOf(address(this));
   }
 }

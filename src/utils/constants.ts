@@ -43,9 +43,9 @@ const LPPOW1_DECIMALS: number = 16;
 const LPPOW5_DECIMALS: number = 9;
 
 /**
- * @description The decimal count for NOPOW5
+ * @description The decimal count for DEBT
  */
-const NOPOW5_DECIMALS: number = 16;
+const DEBT_DECIMALS: number = 16;
 
 /**
  * @description The decimal count for USDC
@@ -201,7 +201,7 @@ export {
   MAX_TICK,
   MIN_SQRT_RATIO,
   MIN_TICK,
-  NOPOW5_DECIMALS,
+  DEBT_DECIMALS,
   POW1_DECIMALS,
   POW5_DECIMALS,
   TICK_SPACINGS,

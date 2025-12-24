@@ -19,7 +19,7 @@ const ERC20MetadataContract = ERC20MetadataMixin(ERC20Contract);
 const AccessControlContract = AccessControlMixin(ERC20MetadataContract);
 const ERC20IssuableContract = ERC20IssuableMixin(AccessControlContract);
 
-class NOPOW5Contract extends ERC20IssuableContract {
+class DEBTContract extends ERC20IssuableContract {
   constructor(
     contractRunner: ethers.Provider | ethers.Signer,
     contractAddress: `0x${string}`,
@@ -28,4 +28,4 @@ class NOPOW5Contract extends ERC20IssuableContract {
   }
 }
 
-export { NOPOW5Contract };
+export { DEBTContract };

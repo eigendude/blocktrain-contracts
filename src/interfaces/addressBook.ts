@@ -21,7 +21,7 @@ interface AddressBook {
   lpPow5Token?: `0x${string}`;
   lpSft?: `0x${string}`;
   noLpSft?: `0x${string}`;
-  noPow5Token?: `0x${string}`;
+  debtToken?: `0x${string}`;
   pow1LpNftStakeFarm?: `0x${string}`;
   pow1LpSftLendFarm?: `0x${string}`;
   pow1MarketPool?: `0x${string}`;

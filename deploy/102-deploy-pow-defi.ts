@@ -82,7 +82,7 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
       addressBook.pow5Token!, // pow5Token
       addressBook.lpPow1Token!, // lpPow1Token
       addressBook.lpPow5Token!, // lpPow5Token
-      addressBook.noPow5Token!, // noPow5Token
+      addressBook.debtToken!, // debtToken
       addressBook.lpSft!, // lpSft
     ],
   });

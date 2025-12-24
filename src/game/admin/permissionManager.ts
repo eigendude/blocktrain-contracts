@@ -12,9 +12,9 @@ import { DeFiManagerContract } from "../../interfaces/defi/defiManagerContract";
 import { POW1LpSftLendFarmContract } from "../../interfaces/defi/pow1LpSftLendFarmContract";
 import { POW5InterestFarmContract } from "../../interfaces/defi/pow5InterestFarmContract";
 import { POW5LpSftLendFarmContract } from "../../interfaces/defi/pow5LpSftLendFarmContract";
+import { DEBTContract } from "../../interfaces/token/erc20/debtContract";
 import { LPPOW1Contract } from "../../interfaces/token/erc20/lpPow1Contract";
 import { LPPOW5Contract } from "../../interfaces/token/erc20/lpPow5Contract";
-import { NOPOW5Contract } from "../../interfaces/token/erc20/noPow5Contract";
 import { POW5Contract } from "../../interfaces/token/erc20/pow5Contract";
 import { LPSFTContract } from "../../interfaces/token/erc1155/lpSftContract";
 import { NOLPSFTContract } from "../../interfaces/token/erc1155/noLpSftContract";
@@ -47,7 +47,7 @@ type Addresses = {
   pow5Token: `0x${string}`;
   lpPow1Token: `0x${string}`;
   lpPow5Token: `0x${string}`;
-  noPow5Token: `0x${string}`;
+  debtToken: `0x${string}`;
   lpSft: `0x${string}`;
   noLpSft: `0x${string}`;
   dutchAuction: `0x${string}`;
@@ -109,9 +109,9 @@ class PermissionManager {
       this.admin,
       this.addresses.lpPow5Token,
     );
-    const noPow5Contract: NOPOW5Contract = new NOPOW5Contract(
+    const debtContract: DEBTContract = new DEBTContract(
       this.admin,
-      this.addresses.noPow5Token,
+      this.addresses.debtToken,
     );
     const lpSftContract: LPSFTContract = new LPSFTContract(
       this.admin,
@@ -191,7 +191,7 @@ class PermissionManager {
           },
           {
             role: ERC20_ISSUER_ROLE,
-            contract: noPow5Contract,
+            contract: debtContract,
           },
         ],
       },

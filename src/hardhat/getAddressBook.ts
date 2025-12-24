@@ -19,6 +19,7 @@ import baseAddresses from "../addresses/base.json";
 import mainnetAddresses from "../addresses/mainnet.json";
 import { AddressBook } from "../interfaces/addressBook";
 import {
+  DEBT_TOKEN_CONTRACT,
   DEFI_MANAGER_CONTRACT,
   DUTCH_AUCTION_CONTRACT,
   LIQUIDITY_FORGE_CONTRACT,
@@ -27,7 +28,6 @@ import {
   LPSFT_CONTRACT,
   MARKET_STABLE_SWAPPER_CONTRACT,
   NOLPSFT_CONTRACT,
-  NOPOW5_TOKEN_CONTRACT,
   POW1_LPNFT_STAKE_FARM_CONTRACT,
   POW1_LPSFT_LEND_FARM_CONTRACT,
   POW1_MARKET_POOL_CONTRACT,
@@ -108,9 +108,9 @@ async function getAddressBook(networkName: string): Promise<AddressBook> {
     ),
     lpSft: await getContractAddress("lpSft", LPSFT_CONTRACT, networkName),
     noLpSft: await getContractAddress("noLpSft", NOLPSFT_CONTRACT, networkName),
-    noPow5Token: await getContractAddress(
-      "noPow5Token",
-      NOPOW5_TOKEN_CONTRACT,
+    debtToken: await getContractAddress(
+      "debtToken",
+      DEBT_TOKEN_CONTRACT,
       networkName,
     ),
     pow1LpNftStakeFarm: await getContractAddress(

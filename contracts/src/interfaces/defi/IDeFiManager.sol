@@ -102,22 +102,22 @@ interface IDeFiManager is IERC165 {
   ) external view returns (uint256[] memory);
 
   /**
-   * @dev The NOPOW5 balance of the LP-SFT
+   * @dev The DEBT balance of the LP-SFT
    *
    * @param tokenId The token ID of the LP-SFT
    *
-   * @return The NOPOW5 balance
+   * @return The DEBT balance
    */
-  function noPow5Balance(uint256 tokenId) external view returns (uint256);
+  function debtBalance(uint256 tokenId) external view returns (uint256);
 
   /**
-   * @dev The NOPOW5 balances of multiple LP-SFTs
+   * @dev The DEBT balances of multiple LP-SFTs
    *
    * @param tokenIds The token IDs of the LP-SFTs
    *
-   * @return The NOPOW5 balances for all LP-SFTs
+   * @return The DEBT balances for all LP-SFTs
    */
-  function noPow5BalanceBatch(
+  function debtBalanceBatch(
     uint256[] memory tokenIds
   ) external view returns (uint256[] memory);
 

@@ -48,8 +48,8 @@ function TheReserveRoutesMixin<T extends new (...args: any[]) => {}>(Base: T) {
       return (await this.theReserveRoutes.lpPow5Token()) as `0x${string}`;
     }
 
-    async noPow5Token(): Promise<`0x${string}`> {
-      return (await this.theReserveRoutes.noPow5Token()) as `0x${string}`;
+    async debtToken(): Promise<`0x${string}`> {
+      return (await this.theReserveRoutes.debtToken()) as `0x${string}`;
     }
 
     async marketToken(): Promise<`0x${string}`> {

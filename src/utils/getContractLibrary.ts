@@ -24,9 +24,9 @@ import { POW1LpSftLendFarmContract } from "../interfaces/defi/pow1LpSftLendFarmC
 import { POW5InterestFarmContract } from "../interfaces/defi/pow5InterestFarmContract";
 import { POW5LpNftStakeFarmContract } from "../interfaces/defi/pow5LpNftStakeFarmContract";
 import { POW5LpSftLendFarmContract } from "../interfaces/defi/pow5LpSftLendFarmContract";
+import { DEBTContract } from "../interfaces/token/erc20/debtContract";
 import { LPPOW1Contract } from "../interfaces/token/erc20/lpPow1Contract";
 import { LPPOW5Contract } from "../interfaces/token/erc20/lpPow5Contract";
-import { NOPOW5Contract } from "../interfaces/token/erc20/noPow5Contract";
 import { POW1Contract } from "../interfaces/token/erc20/pow1Contract";
 import { POW5Contract } from "../interfaces/token/erc20/pow5Contract";
 import { WrappedNativeContract } from "../interfaces/token/erc20/wrappedNativeContract";
@@ -67,7 +67,7 @@ function getContractLibrary(
     lpPow5Contract: new LPPOW5Contract(signer, addressBook.lpPow5Token!),
     lpSftContract: new LPSFTContract(signer, addressBook.lpSft!),
     noLpSftContract: new NOLPSFTContract(signer, addressBook.noLpSft!),
-    noPow5Contract: new NOPOW5Contract(signer, addressBook.noPow5Token!),
+    debtContract: new DEBTContract(signer, addressBook.debtToken!),
     pow1Contract: new POW1Contract(signer, addressBook.pow1Token!),
     pow1LpNftStakeFarmContract: new POW1LpNftStakeFarmContract(
       signer,

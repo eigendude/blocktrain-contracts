@@ -67,7 +67,7 @@ describe("PermissionManager", () => {
         pow5Token: addressBook.pow5Token!,
         lpPow1Token: addressBook.lpPow1Token!,
         lpPow5Token: addressBook.lpPow5Token!,
-        noPow5Token: addressBook.noPow5Token!,
+        debtToken: addressBook.debtToken!,
         lpSft: addressBook.lpSft!,
         noLpSft: addressBook.noLpSft!,
         dutchAuction: addressBook.dutchAuction!,
