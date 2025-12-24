@@ -19,7 +19,7 @@ interface ContractLibraryEthers {
   dutchAuctionContract: ethers.Contract;
   liquidityForgeContract: ethers.Contract;
   lpYieldTokenContract: ethers.Contract;
-  lpPow5TokenContract: ethers.Contract;
+  lpBorrowTokenContract: ethers.Contract;
   lpSftContract: ethers.Contract;
   noLpSftContract: ethers.Contract;
   debtTokenContract: ethers.Contract;

@@ -22,8 +22,8 @@ import { ERC20Contract } from "../../src/interfaces/zeppelin/token/erc20/erc20Co
 import { ETH_PRICE, USDC_PRICE } from "../../src/testing/defiMetrics";
 import { setupFixture } from "../../src/testing/setupFixture";
 import {
-  INITIAL_LPPOW5_AMOUNT,
-  INITIAL_LPPOW5_USDC_VALUE,
+  INITIAL_LPBORROW_AMOUNT,
+  INITIAL_LPBORROW_USDC_VALUE,
   INITIAL_LPYIELD_AMOUNT,
   INITIAL_LPYIELD_WETH_VALUE,
   INITIAL_POW1_PRICE,
@@ -57,30 +57,30 @@ const INITIAL_WETH_AMOUNT: bigint =
 
 // Initial amount of USDC to deposit into the Reverse Repo
 const INITIAL_USDC_AMOUNT: bigint =
-  ethers.parseUnits(INITIAL_LPPOW5_USDC_VALUE.toString(), USDC_DECIMALS) /
+  ethers.parseUnits(INITIAL_LPBORROW_USDC_VALUE.toString(), USDC_DECIMALS) /
   BigInt(USDC_PRICE); // 100 USDC ($100)
 
 // POW1 test reward for LPYIELD staking incentive
 const LPYIELD_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1 ($10)
 
-// POW1 test reward for LPPOW5 staking incentive
-const LPPOW5_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1 ($10)
+// POW1 test reward for LPBORROW staking incentive
+const LPBORROW_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1 ($10)
 
 // Remaining dust balances after depositing into LP pool
-const LPPOW5_POW5_DUST: bigint = 355_055n;
-const LPPOW5_USDC_DUST: bigint = 0n;
+const LPBORROW_POW5_DUST: bigint = 355_055n;
+const LPBORROW_USDC_DUST: bigint = 0n;
 
 // Token IDs of minted LP-NFTs
 const LPYIELD_LPNFT_TOKEN_ID: bigint = 1n;
-const LPPOW5_LPNFT_TOKEN_ID: bigint = 2n;
+const LPBORROW_LPNFT_TOKEN_ID: bigint = 2n;
 const PURCHASED_LPNFT_TOKEN_ID: bigint = 3n;
 
 // Amount of USDC to deposit in the Reverse Repo
 const PURCHASE_USDC_AMOUNT: bigint =
   ethers.parseUnits("1000", USDC_DECIMALS) / BigInt(USDC_PRICE); // 1,000 USDC ($1,000)
 
-// Amount of LPPOW5 minted in the first sale
-//const PURCHASE_LPPOW5_AMOUNT: bigint = 103_082_902_006_930n; // 103 LPPOW5
+// Amount of LPBORROW minted in the first sale
+//const PURCHASE_LPBORROW_AMOUNT: bigint = 103_082_902_006_930n; // 103 LPBORROW
 
 // Returned USDC after buying
 //const PURCHASE_POW5_RETURNED: bigint = 32_875n; // TODO
@@ -177,7 +177,7 @@ describe("Bureau 4: Reverse Repo", () => {
         pow1Token: addressBook.pow1Token!,
         pow5Token: addressBook.pow5Token!,
         lpYieldToken: addressBook.lpYieldToken!,
-        lpPow5Token: addressBook.lpPow5Token!,
+        lpBorrowToken: addressBook.lpBorrowToken!,
         debtToken: addressBook.debtToken!,
         lpSft: addressBook.lpSft!,
         noLpSft: addressBook.noLpSft!,
@@ -312,7 +312,7 @@ describe("Bureau 4: Reverse Repo", () => {
   // Test setup: Get pool token order
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should get pool token order for LPPOW5", async function (): Promise<void> {
+  it("should get pool token order for LPBORROW", async function (): Promise<void> {
     const { pow5Contract, pow5StablePoolContract, usdcContract } =
       deployerContracts;
 
@@ -367,10 +367,10 @@ describe("Bureau 4: Reverse Repo", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Initialize the LPPOW5 pool
+  // Spec: Initialize the LPBORROW pool
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should initialize the LPPOW5 pool", async function (): Promise<void> {
+  it("should initialize the LPBORROW pool", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     const { pow5StablePoolContract } = deployerContracts;
@@ -386,16 +386,16 @@ describe("Bureau 4: Reverse Repo", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Create incentive for LPPOW5 pool
+  // Spec: Create incentive for LPBORROW pool
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should mint POW1 for LPPOW5 incentive reward", async function (): Promise<void> {
+  it("should mint POW1 for LPBORROW incentive reward", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     const { pow1Contract } = deployerContracts;
 
-    // Mint POW1 for LPPOW5 incentive reward
-    await pow1Contract.mint(deployerAddress, LPPOW5_REWARD_AMOUNT);
+    // Mint POW1 for LPBORROW incentive reward
+    await pow1Contract.mint(deployerAddress, LPBORROW_REWARD_AMOUNT);
   });
 
   it("should approve POW5LpNftStakeFarm spending POW1", async function (): Promise<void> {
@@ -406,29 +406,29 @@ describe("Bureau 4: Reverse Repo", () => {
     // Approve POW5LpNftStakeFarm spending POW1
     await pow1Contract.approve(
       pow5LpNftStakeFarmContract.address,
-      LPPOW5_REWARD_AMOUNT,
+      LPBORROW_REWARD_AMOUNT,
     );
   });
 
-  it("should create incentive for LPPOW5", async function (): Promise<void> {
+  it("should create incentive for LPBORROW", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     const { pow5LpNftStakeFarmContract } = deployerContracts;
 
     // Calculate DeFi properties
     const pow1Value: string = ethers.formatUnits(
-      LPPOW5_REWARD_AMOUNT / BigInt(1 / INITIAL_POW1_PRICE),
+      LPBORROW_REWARD_AMOUNT / BigInt(1 / INITIAL_POW1_PRICE),
       POW1_DECIMALS,
     );
     console.log(
-      `    Creating LPPOW5 incentive with ${ethers.formatUnits(
-        LPPOW5_REWARD_AMOUNT,
+      `    Creating LPBORROW incentive with ${ethers.formatUnits(
+        LPBORROW_REWARD_AMOUNT,
         POW1_DECIMALS,
       )} POW1 ($${pow1Value})`,
     );
 
     // Create incentive
-    await pow5LpNftStakeFarmContract.createIncentive(LPPOW5_REWARD_AMOUNT);
+    await pow5LpNftStakeFarmContract.createIncentive(LPBORROW_REWARD_AMOUNT);
   });
 
   //////////////////////////////////////////////////////////////////////////////
@@ -543,9 +543,9 @@ describe("Bureau 4: Reverse Repo", () => {
     chai
       .expect(pow5Balance)
       .to.equal(
-        INITIAL_POW5_AMOUNT - INITIAL_POW5_DEPOSIT /*+ LPPOW5_POW5_DUST*/,
+        INITIAL_POW5_AMOUNT - INITIAL_POW5_DEPOSIT /*+ LPBORROW_POW5_DUST*/,
       );
-    chai.expect(pow5Dust).to.equal(0n /*LPPOW5_POW5_DUST*/);
+    chai.expect(pow5Dust).to.equal(0n /*LPBORROW_POW5_DUST*/);
   });
 
   it("should check beneficiary USDC balance after initialization", async function (): Promise<void> {
@@ -565,7 +565,7 @@ describe("Bureau 4: Reverse Repo", () => {
     );
 
     // Log USDC balance
-    if (LPPOW5_USDC_DUST > 0n) {
+    if (LPBORROW_USDC_DUST > 0n) {
       console.log(
         `    Beneficiary USDC balance: ${ethers.formatUnits(
           usdcBalance,
@@ -574,7 +574,7 @@ describe("Bureau 4: Reverse Repo", () => {
       );
     }
 
-    chai.expect(usdcBalance).to.equal(LPPOW5_USDC_DUST);
+    chai.expect(usdcBalance).to.equal(LPBORROW_USDC_DUST);
   });
 
   it("should log Uniswap pool reserves", async function (): Promise<void> {
@@ -616,20 +616,22 @@ describe("Bureau 4: Reverse Repo", () => {
       )} USDC ($${usdcValue})`,
     );
 
-    chai.expect(pow5Balance).to.equal(INITIAL_POW5_DEPOSIT - LPPOW5_POW5_DUST);
-    //chai.expect(usdcBalance).to.equal(INITIAL_USDC_AMOUNT - LPPOW5_USDC_DUST);
+    chai
+      .expect(pow5Balance)
+      .to.equal(INITIAL_POW5_DEPOSIT - LPBORROW_POW5_DUST);
+    //chai.expect(usdcBalance).to.equal(INITIAL_USDC_AMOUNT - LPBORROW_USDC_DUST);
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Check LPPOW5 total supply
+  // Spec: Check LPBORROW total supply
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should check LPPOW5 total supply", async function (): Promise<void> {
-    const { lpPow5Contract } = beneficiaryContracts;
+  it("should check LPBORROW total supply", async function (): Promise<void> {
+    const { lpBorrowContract } = beneficiaryContracts;
 
     // Check total supply
-    const totalSupply: bigint = await lpPow5Contract.totalSupply();
-    chai.expect(totalSupply).to.equal(INITIAL_LPPOW5_AMOUNT);
+    const totalSupply: bigint = await lpBorrowContract.totalSupply();
+    chai.expect(totalSupply).to.equal(INITIAL_LPBORROW_AMOUNT);
   });
 
   //////////////////////////////////////////////////////////////////////////////
@@ -641,7 +643,7 @@ describe("Bureau 4: Reverse Repo", () => {
 
     // Get owner
     const owner: `0x${string}` = await lpSftContract.ownerOf(
-      LPPOW5_LPNFT_TOKEN_ID,
+      LPBORROW_LPNFT_TOKEN_ID,
     );
     chai.expect(owner).to.equal(beneficiaryAddress);
   });
@@ -657,7 +659,7 @@ describe("Bureau 4: Reverse Repo", () => {
 
     // Test ownerOf()
     const owner: `0x${string}` = await lpSftContract.ownerOf(
-      LPPOW5_LPNFT_TOKEN_ID,
+      LPBORROW_LPNFT_TOKEN_ID,
     );
     chai.expect(owner).to.equal(beneficiaryAddress);
 
@@ -665,10 +667,12 @@ describe("Bureau 4: Reverse Repo", () => {
     const beneficiaryTokenIds: bigint[] =
       await lpSftContract.getTokenIds(beneficiaryAddress);
     chai.expect(beneficiaryTokenIds.length).to.equal(1);
-    chai.expect(beneficiaryTokenIds[0]).to.equal(LPPOW5_LPNFT_TOKEN_ID);
+    chai.expect(beneficiaryTokenIds[0]).to.equal(LPBORROW_LPNFT_TOKEN_ID);
 
     // Check token URI
-    const nftTokenUri: string = await lpSftContract.uri(LPPOW5_LPNFT_TOKEN_ID);
+    const nftTokenUri: string = await lpSftContract.uri(
+      LPBORROW_LPNFT_TOKEN_ID,
+    );
 
     // Check that data URI has correct mime type
     chai.expect(nftTokenUri).to.match(/data:application\/json;base64,.+/);
@@ -783,7 +787,7 @@ describe("Bureau 4: Reverse Repo", () => {
       .to.equal(
         INITIAL_POW5_AMOUNT -
           INITIAL_POW5_DEPOSIT +
-          LPPOW5_POW5_DUST +
+          LPBORROW_POW5_DUST +
           PURCHASE_POW5_RETURNED,
       );
   });
@@ -848,39 +852,39 @@ describe("Bureau 4: Reverse Repo", () => {
   });
 
   /*
-  it("should check purchase LP-SFT LPPOW5 balance", async function (): Promise<void> {
+  it("should check purchase LP-SFT LPBORROW balance", async function (): Promise<void> {
     const { defiManagerContract } = beneficiaryContracts;
 
-    // Check LP-SFT LPPOW5 balance
-    const lpPow5Balance: bigint = await defiManagerContract.lpPow5Balance(
+    // Check LP-SFT LPBORROW balance
+    const lpBorrowBalance: bigint = await defiManagerContract.lpBorrowBalance(
       PURCHASED_LPNFT_TOKEN_ID,
     );
 
-    // Log LP-SFT LPPOW5 balance
+    // Log LP-SFT LPBORROW balance
     console.log(
-      `    Purchased LPPOW5: ${ethers.formatUnits(
-        lpPow5Balance,
-        LPPOW5_DECIMALS,
-      )} LPPOW5`,
+      `    Purchased LPBORROW: ${ethers.formatUnits(
+        lpBorrowBalance,
+        LPBORROW_DECIMALS,
+      )} LPBORROW`,
     );
 
-    chai.expect(lpPow5Balance).to.equal(PURCHASE_LPPOW5_AMOUNT);
+    chai.expect(lpBorrowBalance).to.equal(PURCHASE_LPBORROW_AMOUNT);
   });
   */
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Check LPPOW5 total supply
+  // Spec: Check LPBORROW total supply
   //////////////////////////////////////////////////////////////////////////////
 
   /*
-  it("should check LPPOW5 total supply", async function (): Promise<void> {
-    const { lpPow5Contract } = beneficiaryContracts;
+  it("should check LPBORROW total supply", async function (): Promise<void> {
+    const { lpBorrowContract } = beneficiaryContracts;
 
     // Check total supply
-    const totalSupply: bigint = await lpPow5Contract.totalSupply();
+    const totalSupply: bigint = await lpBorrowContract.totalSupply();
     chai
       .expect(totalSupply)
-      .to.equal(INITIAL_LPPOW5_AMOUNT + PURCHASE_LPPOW5_AMOUNT);
+      .to.equal(INITIAL_LPBORROW_AMOUNT + PURCHASE_LPBORROW_AMOUNT);
   });
   */
 
@@ -941,7 +945,7 @@ describe("Bureau 4: Reverse Repo", () => {
       pow5Balance -
       INITIAL_POW5_AMOUNT +
       INITIAL_POW5_DEPOSIT -
-      LPPOW5_POW5_DUST;
+      LPBORROW_POW5_DUST;
     const usdcLost: bigint = -(usdcBalance - PURCHASE_USDC_AMOUNT);
 
     // Calculate DeFi metrics
@@ -1050,7 +1054,7 @@ describe("Bureau 4: Reverse Repo", () => {
       .to.equal(
         INITIAL_POW5_AMOUNT -
           INITIAL_POW5_DEPOSIT +
-          LPPOW5_POW5_DUST +
+          LPBORROW_POW5_DUST +
           PURCHASE_POW5_RETURNED,
       );
     chai.expect(parseInt(usdcBalance.toString())).to.be.greaterThan(0);

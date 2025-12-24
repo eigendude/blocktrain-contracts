@@ -39,7 +39,7 @@ interface ITheReserveRoutes is IERC165 {
     IERC20 pow1Token;
     IERC20 pow5Token;
     IERC20 lpYieldToken;
-    IERC20 lpPow5Token;
+    IERC20 lpBorrowToken;
     IERC20 debtToken;
     IERC20 marketToken;
     IERC20 stableToken;
@@ -87,9 +87,9 @@ interface ITheReserveRoutes is IERC165 {
   function lpYieldToken() external view returns (IERC20);
 
   /**
-   * @dev The LPPOW5 liquidity token
+   * @dev The LPBORROW liquidity token
    */
-  function lpPow5Token() external view returns (IERC20);
+  function lpBorrowToken() external view returns (IERC20);
 
   /**
    * @dev The DEBT debt token

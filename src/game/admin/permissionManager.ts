@@ -13,7 +13,7 @@ import { POW1LpSftLendFarmContract } from "../../interfaces/defi/pow1LpSftLendFa
 import { POW5InterestFarmContract } from "../../interfaces/defi/pow5InterestFarmContract";
 import { POW5LpSftLendFarmContract } from "../../interfaces/defi/pow5LpSftLendFarmContract";
 import { DEBTContract } from "../../interfaces/token/erc20/debtContract";
-import { LPPOW5Contract } from "../../interfaces/token/erc20/lpPow5Contract";
+import { LPBORROWContract } from "../../interfaces/token/erc20/lpBorrowContract";
 import { LPYIELDContract } from "../../interfaces/token/erc20/lpYieldContract";
 import { POW5Contract } from "../../interfaces/token/erc20/pow5Contract";
 import { LPSFTContract } from "../../interfaces/token/erc1155/lpSftContract";
@@ -46,7 +46,7 @@ type Addresses = {
   pow1Token: `0x${string}`;
   pow5Token: `0x${string}`;
   lpYieldToken: `0x${string}`;
-  lpPow5Token: `0x${string}`;
+  lpBorrowToken: `0x${string}`;
   debtToken: `0x${string}`;
   lpSft: `0x${string}`;
   noLpSft: `0x${string}`;
@@ -105,9 +105,9 @@ class PermissionManager {
       this.admin,
       this.addresses.lpYieldToken,
     );
-    const lpPow5Contract: LPPOW5Contract = new LPPOW5Contract(
+    const lpBorrowContract: LPBORROWContract = new LPBORROWContract(
       this.admin,
-      this.addresses.lpPow5Token,
+      this.addresses.lpBorrowToken,
     );
     const debtContract: DEBTContract = new DEBTContract(
       this.admin,
@@ -206,7 +206,7 @@ class PermissionManager {
         [this.addresses.lpSft]: [
           {
             role: ERC20_ISSUER_ROLE,
-            contract: lpPow5Contract,
+            contract: lpBorrowContract,
           },
         ],
       },

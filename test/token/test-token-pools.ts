@@ -25,16 +25,16 @@ import { ETH_PRICE, USDC_PRICE } from "../../src/testing/defiMetrics";
 import { setupFixture } from "../../src/testing/setupFixture";
 import { TokenTracker } from "../../src/testing/tokenTracker";
 import {
-  INITIAL_LPPOW5_AMOUNT,
-  INITIAL_LPPOW5_USDC_VALUE,
+  INITIAL_LPBORROW_AMOUNT,
+  INITIAL_LPBORROW_USDC_VALUE,
   INITIAL_LPYIELD_AMOUNT,
   INITIAL_LPYIELD_WETH_VALUE,
   INITIAL_POW1_PRICE,
   INITIAL_POW1_SUPPLY,
   INITIAL_POW5_DEPOSIT,
   INITIAL_POW5_PRICE,
-  LPPOW5_DECIMALS,
-  LPPOW5_POOL_FEE,
+  LPBORROW_DECIMALS,
+  LPBORROW_POOL_FEE,
   LPYIELD_DECIMALS,
   LPYIELD_POOL_FEE,
   POW1_DECIMALS,
@@ -54,26 +54,26 @@ const setupTest = hardhat.deployments.createFixture(setupFixture);
 // Test parameters
 //
 
-// POW1 test reward for LPYIELD and LPPOW5 staking incentives, in wei of POW1
+// POW1 test reward for LPYIELD and LPBORROW staking incentives, in wei of POW1
 const LPYIELD_REWARD_AMOUNT: bigint = 1_000_000n;
-const LPPOW5_REWARD_AMOUNT: bigint = 1_000n;
+const LPBORROW_REWARD_AMOUNT: bigint = 1_000n;
 
 // Initial amount of WETH to deposit into the Dutch Auction
 const WETH_TOKEN_AMOUNT: bigint =
   ethers.parseEther(INITIAL_LPYIELD_WETH_VALUE.toString()) / BigInt(ETH_PRICE); // $100 in WETH
 const USDC_TOKEN_AMOUNT: bigint =
-  ethers.parseUnits(INITIAL_LPPOW5_USDC_VALUE.toString(), USDC_DECIMALS) /
+  ethers.parseUnits(INITIAL_LPBORROW_USDC_VALUE.toString(), USDC_DECIMALS) /
   BigInt(USDC_PRICE); // 100 USDC ($100)
 
-// The LPYIELD and LPPOW5 LP-NFT token IDs
+// The LPYIELD and LPBORROW LP-NFT token IDs
 const POW1_LPNFT_TOKEN_ID: bigint = 1n;
 const POW5_LPNFT_TOKEN_ID: bigint = 2n;
 
 // Remaining dust balances after depositing into LP pools
 const LPYIELD_POW1_DUST: bigint = 443n;
 const LPYIELD_WETH_DUST: bigint = 0n;
-const LPPOW5_POW5_DUST: bigint = 355_055n;
-const LPPOW5_USDC_DUST: bigint = 0n;
+const LPBORROW_POW5_DUST: bigint = 355_055n;
+const LPBORROW_USDC_DUST: bigint = 0n;
 
 //
 // Debug parameters
@@ -159,10 +159,10 @@ describe("Token Pools", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Test setup: Mint USDC for the LPPOW5 pool
+  // Test setup: Mint USDC for the LPBORROW pool
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should mint USDC for LPPOW5 pool", async function (): Promise<void> {
+  it("should mint USDC for LPBORROW pool", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     const usdcContract: TestERC20MintableContract =
@@ -192,7 +192,7 @@ describe("Token Pools", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Test setup: Mint LPYIELD and LPPOW5 staking rewards
+  // Test setup: Mint LPYIELD and LPBORROW staking rewards
   //////////////////////////////////////////////////////////////////////////////
 
   it("should grant POW1 issuer role to deployer", async function (): Promise<void> {
@@ -232,7 +232,7 @@ describe("Token Pools", () => {
     });
   });
 
-  it("should mint LPPOW5 reward to deployer", async function (): Promise<void> {
+  it("should mint LPBORROW reward to deployer", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     const { pow1Contract } = deployerContracts;
@@ -240,7 +240,7 @@ describe("Token Pools", () => {
     // Mint POW1
     const receipt: ethers.ContractTransactionReceipt = await pow1Contract.mint(
       deployerAddress,
-      LPPOW5_REWARD_AMOUNT,
+      LPBORROW_REWARD_AMOUNT,
     );
 
     // Check token transfers
@@ -256,7 +256,7 @@ describe("Token Pools", () => {
       token: pow1Contract.address,
       from: ZERO_ADDRESS,
       to: deployerAddress,
-      value: LPPOW5_REWARD_AMOUNT,
+      value: LPBORROW_REWARD_AMOUNT,
     });
   });
 
@@ -473,13 +473,13 @@ describe("Token Pools", () => {
     await lpYieldContract.grantRole(ERC20_ISSUER_ROLE, lpSftContract.address);
   });
 
-  it("should grant LPPOW5 issuer role to LPSFT", async function (): Promise<void> {
+  it("should grant LPBORROW issuer role to LPSFT", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { lpPow5Contract, lpSftContract } = deployerContracts;
+    const { lpBorrowContract, lpSftContract } = deployerContracts;
 
     // Grant issuer role
-    await lpPow5Contract.grantRole(ERC20_ISSUER_ROLE, lpSftContract.address);
+    await lpBorrowContract.grantRole(ERC20_ISSUER_ROLE, lpSftContract.address);
   });
 
   //////////////////////////////////////////////////////////////////////////////
@@ -522,10 +522,10 @@ describe("Token Pools", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Approve spending POW1 reward for LPPOW5 staking incentive
+  // Spec: Approve spending POW1 reward for LPBORROW staking incentive
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should approve spending POW5 for LPPOW5", async function (): Promise<void> {
+  it("should approve spending POW5 for LPBORROW", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     const { pow1Contract } = deployerContracts;
@@ -534,7 +534,7 @@ describe("Token Pools", () => {
     const receipt: ethers.ContractTransactionReceipt =
       await pow1Contract.approve(
         testPow5StableStakerContract.address,
-        LPPOW5_REWARD_AMOUNT,
+        LPBORROW_REWARD_AMOUNT,
       );
 
     const logs: (ethers.EventLog | ethers.Log)[] = receipt.logs;
@@ -546,10 +546,10 @@ describe("Token Pools", () => {
     chai.expect(log.args.length).to.equal(3);
     chai.expect(log.args[0]).to.equal(deployerAddress);
     chai.expect(log.args[1]).to.equal(testPow5StableStakerContract.address);
-    chai.expect(log.args[2]).to.equal(LPPOW5_REWARD_AMOUNT);
+    chai.expect(log.args[2]).to.equal(LPBORROW_REWARD_AMOUNT);
   });
 
-  it("should check POW1 allowance for LPPOW5", async function (): Promise<void> {
+  it("should check POW1 allowance for LPBORROW", async function (): Promise<void> {
     const { pow1Contract } = deployerContracts;
 
     // Check allowance
@@ -557,7 +557,7 @@ describe("Token Pools", () => {
       deployerAddress,
       testPow5StableStakerContract.address,
     );
-    chai.expect(allowance).to.equal(LPPOW5_REWARD_AMOUNT);
+    chai.expect(allowance).to.equal(LPBORROW_REWARD_AMOUNT);
   });
 
   //////////////////////////////////////////////////////////////////////////////
@@ -605,15 +605,17 @@ describe("Token Pools", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Create incentive for LPPOW5 pool
+  // Spec: Create incentive for LPBORROW pool
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should create incentive for LPPOW5", async function (): Promise<void> {
+  it("should create incentive for LPBORROW", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     // Create incentive
     const receipt: ethers.ContractTransactionReceipt =
-      await testPow5StableStakerContract.createIncentive(LPPOW5_REWARD_AMOUNT);
+      await testPow5StableStakerContract.createIncentive(
+        LPBORROW_REWARD_AMOUNT,
+      );
 
     const logs: (ethers.EventLog | ethers.Log)[] = receipt.logs;
     chai.expect(logs.length).to.equal(4);
@@ -631,21 +633,23 @@ describe("Token Pools", () => {
       token: addressBook.pow1Token,
       from: deployerAddress,
       to: testPow5StableStakerContract.address,
-      value: LPPOW5_REWARD_AMOUNT,
+      value: LPBORROW_REWARD_AMOUNT,
     });
 
     chai.expect(tokenRoutes[1]).to.deep.equal({
       token: addressBook.pow1Token,
       from: testPow5StableStakerContract.address,
       to: addressBook.uniswapV3Staker,
-      value: LPPOW5_REWARD_AMOUNT,
+      value: LPBORROW_REWARD_AMOUNT,
     });
   });
 
-  it("should check incentive for LPPOW5", async function (): Promise<void> {
+  it("should check incentive for LPBORROW", async function (): Promise<void> {
     // Check incentive
     const incentive = await testPow5StableStakerContract.getIncentive();
-    chai.expect(incentive.totalRewardUnclaimed).to.equal(LPPOW5_REWARD_AMOUNT); // totalRewardUnclaimed
+    chai
+      .expect(incentive.totalRewardUnclaimed)
+      .to.equal(LPBORROW_REWARD_AMOUNT); // totalRewardUnclaimed
     chai.expect(incentive.totalSecondsClaimedX128).to.equal(0n); // totalSecondsClaimedX128
     chai.expect(incentive.numberOfStakes).to.equal(0n); // numberOfStakes
   });
@@ -687,10 +691,10 @@ describe("Token Pools", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Initialize the LPPOW5 pool
+  // Spec: Initialize the LPBORROW pool
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should get pool token order for LPPOW5", async function (): Promise<void> {
+  it("should get pool token order for LPBORROW", async function (): Promise<void> {
     const { pow5StablePoolerContract } = deployerContracts;
 
     // Get pool token order
@@ -700,7 +704,7 @@ describe("Token Pools", () => {
     console.log(`    POW5 is ${pow5IsToken0 ? "token0" : "token1"}`);
   });
 
-  it("should initialize the LPPOW5 pool", async function (): Promise<void> {
+  it("should initialize the LPBORROW pool", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     const { pow5StablePoolContract } = deployerContracts;
@@ -1091,7 +1095,7 @@ describe("Token Pools", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Approve the LPPOW5 pool spending POW5 and USDC tokens
+  // Spec: Approve the LPBORROW pool spending POW5 and USDC tokens
   //////////////////////////////////////////////////////////////////////////////
 
   it("should check POW5 and USDC balances", async function (): Promise<void> {
@@ -1155,7 +1159,7 @@ describe("Token Pools", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Deposit POW5 and USDC tokens and mint LPPOW5 LP-NFT
+  // Spec: Deposit POW5 and USDC tokens and mint LPBORROW LP-NFT
   //////////////////////////////////////////////////////////////////////////////
 
   it("should mint POW5/USDC LP-NFT", async function (): Promise<void> {
@@ -1262,7 +1266,7 @@ describe("Token Pools", () => {
       token: addressBook.pow5Token,
       from: addressBook.pow5StablePooler,
       to: addressBook.pow5StablePool,
-      value: INITIAL_POW5_DEPOSIT - LPPOW5_POW5_DUST,
+      value: INITIAL_POW5_DEPOSIT - LPBORROW_POW5_DUST,
     });
 
     chai.expect(tokenRoutes[5]).to.deep.equal({
@@ -1276,26 +1280,26 @@ describe("Token Pools", () => {
       token: addressBook.pow5Token,
       from: addressBook.pow5StablePooler,
       to: testPow5StableStakerContract.address,
-      value: LPPOW5_POW5_DUST,
+      value: LPBORROW_POW5_DUST,
     });
 
     chai.expect(tokenRoutes[7]).to.deep.equal({
-      token: addressBook.lpPow5Token,
+      token: addressBook.lpBorrowToken,
       from: ZERO_ADDRESS,
       to: await lpSftContract.tokenIdToAddress(POW5_LPNFT_TOKEN_ID),
-      value: INITIAL_LPPOW5_AMOUNT,
+      value: INITIAL_LPBORROW_AMOUNT,
     });
 
     chai.expect(tokenRoutes[8]).to.deep.equal({
       token: addressBook.pow5Token,
       from: testPow5StableStakerContract.address,
       to: deployerAddress,
-      value: LPPOW5_POW5_DUST,
+      value: LPBORROW_POW5_DUST,
     });
     */
   });
 
-  it("should check LPPOW5 LP-NFT position", async function (): Promise<void> {
+  it("should check LPBORROW LP-NFT position", async function (): Promise<void> {
     const { pow5Contract, uniswapV3NftManagerContract, usdcContract } =
       deployerContracts;
 
@@ -1313,8 +1317,8 @@ describe("Token Pools", () => {
     // Log DeFi metrics
     console.log(
       `    Minted: ${ethers
-        .formatUnits(INITIAL_LPPOW5_AMOUNT, LPPOW5_DECIMALS)
-        .toLocaleString()} LPPOW5`,
+        .formatUnits(INITIAL_LPBORROW_AMOUNT, LPBORROW_DECIMALS)
+        .toLocaleString()} LPBORROW`,
     );
 
     const position: {
@@ -1337,10 +1341,10 @@ describe("Token Pools", () => {
       operator: ZERO_ADDRESS,
       token0: pow5IsToken0 ? pow5Contract.address : usdcContract.address,
       token1: pow5IsToken0 ? usdcContract.address : pow5Contract.address,
-      fee: LPPOW5_POOL_FEE,
-      tickLower: getMinTick(LPPOW5_POOL_FEE),
-      tickUpper: getMaxTick(LPPOW5_POOL_FEE),
-      liquidity: INITIAL_LPPOW5_AMOUNT,
+      fee: LPBORROW_POOL_FEE,
+      tickLower: getMinTick(LPBORROW_POOL_FEE),
+      tickUpper: getMaxTick(LPBORROW_POOL_FEE),
+      liquidity: INITIAL_LPBORROW_AMOUNT,
       feeGrowthInside0LastX128: 0n,
       feeGrowthInside1LastX128: 0n,
       tokensOwed0: 0n,
@@ -1353,11 +1357,11 @@ describe("Token Pools", () => {
 
     const deployerBalance: bigint =
       await pow5Contract.balanceOf(deployerAddress);
-    chai.expect(deployerBalance).to.equal(LPPOW5_POW5_DUST);
+    chai.expect(deployerBalance).to.equal(LPBORROW_POW5_DUST);
 
     // Log DeFi metrics
     console.log(
-      `    Beneficiary POW5 dust: ${LPPOW5_POW5_DUST.toLocaleString()}`,
+      `    Beneficiary POW5 dust: ${LPBORROW_POW5_DUST.toLocaleString()}`,
     );
 
     const pow5StablePoolBalance: bigint = await pow5Contract.balanceOf(
@@ -1365,7 +1369,7 @@ describe("Token Pools", () => {
     );
     chai
       .expect(pow5StablePoolBalance)
-      .to.equal(INITIAL_POW5_DEPOSIT - LPPOW5_POW5_DUST);
+      .to.equal(INITIAL_POW5_DEPOSIT - LPBORROW_POW5_DUST);
   });
 
   it("should check USDC balances", async function (): Promise<void> {
@@ -1373,14 +1377,14 @@ describe("Token Pools", () => {
 
     const deployerBalance: bigint =
       await usdcContract.balanceOf(deployerAddress);
-    chai.expect(deployerBalance).to.equal(LPPOW5_USDC_DUST);
+    chai.expect(deployerBalance).to.equal(LPBORROW_USDC_DUST);
 
     const pow5StablePoolBalance: bigint = await usdcContract.balanceOf(
       pow5StablePoolContract.address,
     );
     chai
       .expect(pow5StablePoolBalance)
-      .to.equal(USDC_TOKEN_AMOUNT - LPPOW5_USDC_DUST);
+      .to.equal(USDC_TOKEN_AMOUNT - LPBORROW_USDC_DUST);
   });
 
   it("should check POW5 LP-SFT properties", async function (): Promise<void> {

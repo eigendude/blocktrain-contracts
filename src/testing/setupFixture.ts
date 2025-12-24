@@ -22,8 +22,8 @@ import {
   gameTokenPoolerAbi,
   gameTokenSwapperAbi,
   liquidityForgeAbi,
+  lpBorrowTokenAbi,
   lpNftStakeFarmAbi,
-  lpPow5TokenAbi,
   lpSftAbi,
   lpSftLendFarmAbi,
   lpYieldTokenAbi,
@@ -98,9 +98,9 @@ async function setupFixture(
     lpYieldTokenAbi,
     beneficiary,
   );
-  const lpPow5TokenContract = new ethers.Contract(
-    addressBook.lpPow5Token!,
-    lpPow5TokenAbi,
+  const lpBorrowTokenContract = new ethers.Contract(
+    addressBook.lpBorrowToken!,
+    lpBorrowTokenAbi,
     beneficiary,
   );
   const lpSftContract = new ethers.Contract(
@@ -269,7 +269,7 @@ async function setupFixture(
     dutchAuctionContract,
     liquidityForgeContract,
     lpYieldTokenContract,
-    lpPow5TokenContract,
+    lpBorrowTokenContract,
     lpSftContract,
     noLpSftContract,
     debtTokenContract,

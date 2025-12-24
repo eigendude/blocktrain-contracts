@@ -22,7 +22,7 @@ import { setupFixture } from "../../src/testing/setupFixture";
 import {
   DEBT_DECIMALS,
   INITIAL_POW1_SUPPLY,
-  LPPOW5_DECIMALS,
+  LPBORROW_DECIMALS,
   LPYIELD_DECIMALS,
   POW1_DECIMALS,
   POW5_DECIMALS,
@@ -88,11 +88,11 @@ describe("Token Constants", () => {
     chai.expect(lpYieldDecimals).to.equal(LPYIELD_DECIMALS);
   });
 
-  it("should test LPPOW5 decimals", async function () {
-    const { lpPow5Contract } = contracts;
+  it("should test LPBORROW decimals", async function () {
+    const { lpBorrowContract } = contracts;
 
-    const lpPow5Decimals: number = await lpPow5Contract.decimals();
-    chai.expect(lpPow5Decimals).to.equal(LPPOW5_DECIMALS);
+    const lpBorrowDecimals: number = await lpBorrowContract.decimals();
+    chai.expect(lpBorrowDecimals).to.equal(LPBORROW_DECIMALS);
   });
 
   it("should test DEBT decimals", async function () {
@@ -127,11 +127,11 @@ describe("Token Constants", () => {
     chai.expect(lpYieldSupply).to.equal(0n);
   });
 
-  it("should test LPPOW5 initial supply", async function () {
-    const { lpPow5Contract } = contracts;
+  it("should test LPBORROW initial supply", async function () {
+    const { lpBorrowContract } = contracts;
 
-    const lpPow5Supply: bigint = await lpPow5Contract.totalSupply();
-    chai.expect(lpPow5Supply).to.equal(0n);
+    const lpBorrowSupply: bigint = await lpBorrowContract.totalSupply();
+    chai.expect(lpBorrowSupply).to.equal(0n);
   });
 
   it("should test DEBT initial supply", async function () {

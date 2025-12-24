@@ -26,7 +26,7 @@ import gameTokenPoolerAbi from "./contracts/src/interfaces/token/routes/IGameTok
 import gameTokenSwapperAbi from "./contracts/src/interfaces/token/routes/IGameTokenSwapper.sol/IGameTokenSwapper.json";
 import marketStableSwapperAbi from "./contracts/src/interfaces/token/routes/IMarketStableSwapper.sol/IMarketStableSwapper.json";
 import debtTokenAbi from "./contracts/src/token/ERC20/DEBT.sol/DEBT.json";
-import lpPow5TokenAbi from "./contracts/src/token/ERC20/LPPOW5.sol/LPPOW5.json";
+import lpBorrowTokenAbi from "./contracts/src/token/ERC20/LPBORROW.sol/LPBORROW.json";
 import lpYieldTokenAbi from "./contracts/src/token/ERC20/LPYIELD.sol/LPYIELD.json";
 import pow1TokenAbi from "./contracts/src/token/ERC20/POW1.sol/POW1.json";
 import pow5TokenAbi from "./contracts/src/token/ERC20/POW5.sol/POW5.json";
@@ -42,7 +42,7 @@ export {
   lpNftAbi,
   lpNftStakeFarmAbi,
   lpYieldTokenAbi,
-  lpPow5TokenAbi,
+  lpBorrowTokenAbi,
   lpSftAbi,
   lpSftLendFarmAbi,
   marketStableSwapperAbi,

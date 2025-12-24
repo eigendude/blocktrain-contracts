@@ -11,7 +11,7 @@ import { ethers } from "ethers";
 import { UniswapV3PoolContract } from "../../interfaces/uniswap/pool/uniswapV3PoolContract";
 import { ETH_PRICE, USDC_PRICE } from "../../testing/defiMetrics";
 import {
-  INITIAL_LPPOW5_USDC_VALUE,
+  INITIAL_LPBORROW_USDC_VALUE,
   INITIAL_LPYIELD_WETH_VALUE,
   INITIAL_POW1_SUPPLY,
   INITIAL_POW5_AMOUNT,
@@ -33,7 +33,7 @@ const INITIAL_MARKET_SUPPLY: bigint =
  * @description Initial amount of USDC to deposit into the POW5 pool
  */
 const INITIAL_STABLE_SUPPLY: bigint =
-  ethers.parseUnits(INITIAL_LPPOW5_USDC_VALUE.toString(), USDC_DECIMALS) /
+  ethers.parseUnits(INITIAL_LPBORROW_USDC_VALUE.toString(), USDC_DECIMALS) /
   BigInt(USDC_PRICE); // 100 USDC ($100)
 
 //////////////////////////////////////////////////////////////////////////////

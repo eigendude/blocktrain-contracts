@@ -154,7 +154,7 @@ describe("Bureau 3: Liquidity Forge", () => {
         pow1Token: addressBook.pow1Token!,
         pow5Token: addressBook.pow5Token!,
         lpYieldToken: addressBook.lpYieldToken!,
-        lpPow5Token: addressBook.lpPow5Token!,
+        lpBorrowToken: addressBook.lpBorrowToken!,
         debtToken: addressBook.debtToken!,
         lpSft: addressBook.lpSft!,
         noLpSft: addressBook.noLpSft!,

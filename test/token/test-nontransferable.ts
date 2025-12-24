@@ -18,7 +18,7 @@ import { ContractLibraryEthers } from "../../src/hardhat/contractLibraryEthers";
 import { setupFixture } from "../../src/testing/setupFixture";
 import {
   DEBT_DECIMALS,
-  LPPOW5_DECIMALS,
+  LPBORROW_DECIMALS,
   LPYIELD_DECIMALS,
   POW1_DECIMALS,
   POW5_DECIMALS,
@@ -35,7 +35,7 @@ const setupTest = hardhat.deployments.createFixture(setupFixture);
 const POW1_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1
 const POW5_AMOUNT: bigint = ethers.parseUnits("1000", POW5_DECIMALS); // 1,000 POW5
 const LPYIELD_AMOUNT: bigint = ethers.parseUnits("1000", LPYIELD_DECIMALS); // 1,000 LPYIELD
-const LPPOW5_AMOUNT: bigint = ethers.parseUnits("1000", LPPOW5_DECIMALS); // 1,000 LPPOW5
+const LPBORROW_AMOUNT: bigint = ethers.parseUnits("1000", LPBORROW_DECIMALS); // 1,000 LPBORROW
 const DEBT_AMOUNT: bigint = ethers.parseUnits("1000", DEBT_DECIMALS); // 1,000 DEBT
 
 //
@@ -115,14 +115,14 @@ describe("ERC20Nontransferable", () => {
     await tx.wait();
   });
 
-  it("should grant ERC20_ISSUER_ROLE for LPPOW5", async function () {
+  it("should grant ERC20_ISSUER_ROLE for LPBORROW", async function () {
     this.timeout(60 * 1000);
 
-    const { lpPow5TokenContract } = contracts;
+    const { lpBorrowTokenContract } = contracts;
 
     // Grant issuer role to deployer
     const tx: ethers.ContractTransactionResponse = await (
-      lpPow5TokenContract.connect(deployer) as ethers.Contract
+      lpBorrowTokenContract.connect(deployer) as ethers.Contract
     ).grantRole(ERC20_ISSUER_ROLE, await deployer.getAddress());
     await tx.wait();
   });
@@ -179,15 +179,15 @@ describe("ERC20Nontransferable", () => {
     await tx.wait();
   });
 
-  it("should mint LPPOW5", async function (): Promise<void> {
+  it("should mint LPBORROW", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { lpPow5TokenContract } = contracts;
+    const { lpBorrowTokenContract } = contracts;
 
-    // Mint LPPOW5
+    // Mint LPBORROW
     const tx: ethers.ContractTransactionResponse = await (
-      lpPow5TokenContract.connect(deployer) as ethers.Contract
-    ).mint(await deployer.getAddress(), LPPOW5_AMOUNT);
+      lpBorrowTokenContract.connect(deployer) as ethers.Contract
+    ).mint(await deployer.getAddress(), LPBORROW_AMOUNT);
     await tx.wait();
   });
 
@@ -247,17 +247,16 @@ describe("ERC20Nontransferable", () => {
     }
   });
 
-  it("should fail to transfer LPPOW5", async function () {
+  it("should fail to transfer LPBORROW", async function () {
     this.timeout(60 * 1000);
 
-    const { lpPow5TokenContract } = contracts;
+    const { lpBorrowTokenContract } = contracts;
 
-    // Attempt to transfer LPPOW5
+    // Attempt to transfer LPBORROW
     try {
-      await (lpPow5TokenContract.connect(deployer) as ethers.Contract).transfer(
-        beneficiaryAddress,
-        LPPOW5_AMOUNT,
-      );
+      await (
+        lpBorrowTokenContract.connect(deployer) as ethers.Contract
+      ).transfer(beneficiaryAddress, LPBORROW_AMOUNT);
       chai.assert.fail("Expected to fail");
     } catch (error: unknown) {
       chai.expect(error).to.be.an("error");

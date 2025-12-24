@@ -22,7 +22,7 @@ import { ERC20Contract } from "../../src/interfaces/zeppelin/token/erc20/erc20Co
 import { ETH_PRICE, USDC_PRICE } from "../../src/testing/defiMetrics";
 import { setupFixture } from "../../src/testing/setupFixture";
 import {
-  INITIAL_LPPOW5_USDC_VALUE,
+  INITIAL_LPBORROW_USDC_VALUE,
   INITIAL_LPYIELD_WETH_VALUE,
   INITIAL_POW1_SUPPLY,
   INITIAL_POW5_AMOUNT,
@@ -48,14 +48,14 @@ const INITIAL_WETH_AMOUNT: bigint =
 
 // Initial amount of USDC to deposit into the Reverse Repo
 const INITIAL_USDC_AMOUNT: bigint =
-  ethers.parseUnits(INITIAL_LPPOW5_USDC_VALUE.toString(), USDC_DECIMALS) /
+  ethers.parseUnits(INITIAL_LPBORROW_USDC_VALUE.toString(), USDC_DECIMALS) /
   BigInt(USDC_PRICE); // 100 USDC ($100)
 
 // POW1 test reward for LPYIELD staking incentive
 const LPYIELD_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1 ($10)
 
-// POW1 test reward for LPPOW5 staking incentive
-const LPPOW5_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1 ($10)
+// POW1 test reward for LPBORROW staking incentive
+const LPBORROW_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1 ($10)
 
 // Token IDs of minted LP-NFTs
 const LPYIELD_LPNFT_TOKEN_ID: bigint = 1n;
@@ -160,7 +160,7 @@ describe("Bureau integration test", () => {
         pow1Token: addressBook.pow1Token!,
         pow5Token: addressBook.pow5Token!,
         lpYieldToken: addressBook.lpYieldToken!,
-        lpPow5Token: addressBook.lpPow5Token!,
+        lpBorrowToken: addressBook.lpBorrowToken!,
         debtToken: addressBook.debtToken!,
         lpSft: addressBook.lpSft!,
         noLpSft: addressBook.noLpSft!,
@@ -211,7 +211,7 @@ describe("Bureau integration test", () => {
       pow1LpSftLendFarmContract.address,
       LPYIELD_REWARD_AMOUNT,
     );
-    await pow1Contract.mint(deployerAddress, LPPOW5_REWARD_AMOUNT);
+    await pow1Contract.mint(deployerAddress, LPBORROW_REWARD_AMOUNT);
 
     // Mint USDC
     await testErc20MintableContract.mint(deployerAddress, INITIAL_USDC_AMOUNT);
@@ -247,10 +247,10 @@ describe("Bureau integration test", () => {
       INITIAL_WETH_AMOUNT,
     );
 
-    // Approve LPPOW5 stake farm
+    // Approve LPBORROW stake farm
     await pow1Contract.approve(
       pow5LpNftStakeFarmContract.address,
-      LPPOW5_REWARD_AMOUNT,
+      LPBORROW_REWARD_AMOUNT,
     );
 
     // Approve Reverse Repo
@@ -273,8 +273,8 @@ describe("Bureau integration test", () => {
 
     const { pow5LpNftStakeFarmContract } = deployerContracts;
 
-    // Create LPPOW5 incentive
-    await pow5LpNftStakeFarmContract.createIncentive(LPPOW5_REWARD_AMOUNT);
+    // Create LPBORROW incentive
+    await pow5LpNftStakeFarmContract.createIncentive(LPBORROW_REWARD_AMOUNT);
   });
 
   //////////////////////////////////////////////////////////////////////////////

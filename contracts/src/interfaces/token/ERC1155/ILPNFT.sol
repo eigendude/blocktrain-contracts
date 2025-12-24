@@ -19,12 +19,12 @@ interface ILPNFT is IERC165 {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev Enum for which pool the LP-NFT belongs to, either LPYIELD or LPPOW5
+   * @dev Enum for which pool the LP-NFT belongs to, either LPYIELD or LPBORROW
    */
   enum Pool {
     INVALID,
     LPYIELD,
-    LPPOW5
+    LPBORROW
   }
 
   //////////////////////////////////////////////////////////////////////////////
@@ -40,7 +40,7 @@ interface ILPNFT is IERC165 {
   error LPNFTInvalidTokenID();
 
   /**
-   * @dev Error raised if the LP-NFT is for neither LPYIELD nor LPPOW5 pools
+   * @dev Error raised if the LP-NFT is for neither LPYIELD nor LPBORROW pools
    *
    * @param tokenId The token ID of the LP-NFT
    */
@@ -89,7 +89,7 @@ interface ILPNFT is IERC165 {
   /////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev Get the pool of the LP-NFT, either LPYIELD or LPPOW5
+   * @dev Get the pool of the LP-NFT, either LPYIELD or LPBORROW
    *
    * @return The pool of the LP-NFT, or UNKNOWN if the LP-NFT is invalid
    */
@@ -117,11 +117,11 @@ interface ILPNFT is IERC165 {
   function lpYieldBalance() external view returns (uint256);
 
   /**
-   * @dev Get the LPPOW5 balance of the LP-NFT
+   * @dev Get the LPBORROW balance of the LP-NFT
    *
-   * @return The LPPOW5 balance
+   * @return The LPBORROW balance
    */
-  function lpPow5Balance() external view returns (uint256);
+  function lpBorrowBalance() external view returns (uint256);
 
   /**
    * @dev Get the mount of POW5 debt held by the LP-NFT

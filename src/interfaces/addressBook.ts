@@ -18,7 +18,7 @@ interface AddressBook {
   liquidityForge?: `0x${string}`;
   lpNft?: `0x${string}`;
   lpYieldToken?: `0x${string}`;
-  lpPow5Token?: `0x${string}`;
+  lpBorrowToken?: `0x${string}`;
   lpSft?: `0x${string}`;
   noLpSft?: `0x${string}`;
   debtToken?: `0x${string}`;

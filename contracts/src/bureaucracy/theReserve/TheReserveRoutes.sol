@@ -94,10 +94,10 @@ contract TheReserveRoutes is ITheReserveRoutes {
   }
 
   /**
-   * @dev See {ITheReserveRoutes-lpPow5Token}
+   * @dev See {ITheReserveRoutes-lpBorrowToken}
    */
-  function lpPow5Token() external view override returns (IERC20) {
-    return _routes.lpPow5Token;
+  function lpBorrowToken() external view override returns (IERC20) {
+    return _routes.lpBorrowToken;
   }
 
   /**

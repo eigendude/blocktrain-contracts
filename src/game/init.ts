@@ -21,8 +21,8 @@ import {
   DEFI_MANAGER_CONTRACT,
   DUTCH_AUCTION_CONTRACT,
   LIQUIDITY_FORGE_CONTRACT,
+  LPBORROW_TOKEN_CONTRACT,
   LPNFT_CONTRACT,
-  LPPOW5_TOKEN_CONTRACT,
   LPSFT_CONTRACT,
   LPYIELD_TOKEN_CONTRACT,
   MARKET_STABLE_SWAPPER_CONTRACT,
@@ -53,7 +53,7 @@ import { USDC_CONTRACT } from "../names/testing";
 import { ETH_PRICE } from "../testing/defiMetrics";
 import {
   INITIAL_POW5_AMOUNT,
-  LPPOW5_POOL_FEE,
+  LPBORROW_POOL_FEE,
   LPYIELD_POOL_FEE,
   UNI_V3_FEE_AMOUNT,
 } from "../utils/constants";
@@ -225,7 +225,7 @@ async function initializeGame(
       liquidityForge: contracts[LIQUIDITY_FORGE_CONTRACT]["address"],
       lpNft: contracts[LPNFT_CONTRACT]["address"],
       lpYieldToken: contracts[LPYIELD_TOKEN_CONTRACT]["address"],
-      lpPow5Token: contracts[LPPOW5_TOKEN_CONTRACT]["address"],
+      lpBorrowToken: contracts[LPBORROW_TOKEN_CONTRACT]["address"],
       lpSft: contracts[LPSFT_CONTRACT]["address"],
       noLpSft: contracts[NOLPSFT_CONTRACT]["address"],
       debtToken: contracts[DEBT_TOKEN_CONTRACT]["address"],
@@ -283,7 +283,7 @@ async function initializeGame(
     addressBook.pow5StablePool = await uniswapV3FactoryContract.getPool(
       addressBook.pow5Token!,
       addressBook.usdcToken!,
-      LPPOW5_POOL_FEE,
+      LPBORROW_POOL_FEE,
     );
     addressBook.wrappedNativeUsdcPool = await uniswapV3FactoryContract.getPool(
       addressBook.wrappedNativeToken!,
@@ -319,7 +319,7 @@ async function initializeGame(
     pow1Token: addressBook.pow1Token!,
     pow5Token: addressBook.pow5Token!,
     lpYieldToken: addressBook.lpYieldToken!,
-    lpPow5Token: addressBook.lpPow5Token!,
+    lpBorrowToken: addressBook.lpBorrowToken!,
     debtToken: addressBook.debtToken!,
     lpSft: addressBook.lpSft!,
     noLpSft: addressBook.noLpSft!,

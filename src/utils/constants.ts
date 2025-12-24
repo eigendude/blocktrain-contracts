@@ -38,9 +38,9 @@ const POW5_DECIMALS: number = 16;
 const LPYIELD_DECIMALS: number = 16;
 
 /**
- * @description The decimal count for LPPOW5
+ * @description The decimal count for LPBORROW
  */
-const LPPOW5_DECIMALS: number = 9;
+const LPBORROW_DECIMALS: number = 9;
 
 /**
  * @description The decimal count for DEBT
@@ -87,9 +87,9 @@ const INITIAL_POW5_PRICE: number = 0.05; // $0.05
 const INITIAL_LPYIELD_WETH_VALUE: number = 100; // $100
 
 /**
- * @description The initial value of USDC paired in the LPPOW5 pool
+ * @description The initial value of USDC paired in the LPBORROW pool
  */
-const INITIAL_LPPOW5_USDC_VALUE: number = 100; // $100
+const INITIAL_LPBORROW_USDC_VALUE: number = 100; // $100
 
 /**
  * @description The initial LPYIELD amount, sqrt(POW1 * WETH)
@@ -102,9 +102,9 @@ const INITIAL_LPYIELD_AMOUNT: bigint = 20_036_097_492_521_525_709n; // 2,004 LPY
 const INITIAL_POW5_AMOUNT: bigint = ethers.parseUnits("2000", POW5_DECIMALS); // 2,000 POW5
 
 /**
- * @description The initial LPPOW5 liquidity amount, sqrt(POW5 * USDC)
+ * @description The initial LPBORROW liquidity amount, sqrt(POW5 * USDC)
  */
-const INITIAL_LPPOW5_AMOUNT: bigint = 44_721_359_549_995n; // 44 LPPOW5
+const INITIAL_LPBORROW_AMOUNT: bigint = 44_721_359_549_995n; // 44 LPBORROW
 
 ////////////////////////////////////////////////////////////////////////////////
 // Uniswap constants
@@ -165,9 +165,9 @@ const TICK_SPACINGS: { [amount in UNI_V3_FEE_AMOUNT]: number } = {
 const LPYIELD_POOL_FEE: UNI_V3_FEE_AMOUNT = UNI_V3_FEE_AMOUNT.HIGH;
 
 /**
- * @description The fee for the LPPOW5 pool
+ * @description The fee for the LPBORROW pool
  */
-const LPPOW5_POOL_FEE: UNI_V3_FEE_AMOUNT = UNI_V3_FEE_AMOUNT.HIGH;
+const LPBORROW_POOL_FEE: UNI_V3_FEE_AMOUNT = UNI_V3_FEE_AMOUNT.HIGH;
 
 ////////////////////////////////////////////////////////////////////////////////
 // Utility constants
@@ -186,8 +186,8 @@ const ZERO_ADDRESS: `0x${string}` =
 export {
   INITIAL_LPYIELD_AMOUNT,
   INITIAL_LPYIELD_WETH_VALUE,
-  INITIAL_LPPOW5_AMOUNT,
-  INITIAL_LPPOW5_USDC_VALUE,
+  INITIAL_LPBORROW_AMOUNT,
+  INITIAL_LPBORROW_USDC_VALUE,
   INITIAL_POW1_PRICE,
   INITIAL_POW1_SUPPLY,
   INITIAL_POW5_AMOUNT,
@@ -195,8 +195,8 @@ export {
   INITIAL_POW5_PRICE,
   LPYIELD_DECIMALS,
   LPYIELD_POOL_FEE,
-  LPPOW5_DECIMALS,
-  LPPOW5_POOL_FEE,
+  LPBORROW_DECIMALS,
+  LPBORROW_POOL_FEE,
   MAX_SQRT_RATIO,
   MAX_TICK,
   MIN_SQRT_RATIO,

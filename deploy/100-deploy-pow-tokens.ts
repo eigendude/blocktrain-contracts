@@ -17,8 +17,8 @@ import { getNetworkName } from "../src/hardhat/hardhatUtils";
 import { AddressBook } from "../src/interfaces/addressBook";
 import {
   DEBT_TOKEN_CONTRACT,
+  LPBORROW_TOKEN_CONTRACT,
   LPNFT_CONTRACT,
-  LPPOW5_TOKEN_CONTRACT,
   LPSFT_CONTRACT,
   LPYIELD_TOKEN_CONTRACT,
   NOLPSFT_CONTRACT,
@@ -103,20 +103,22 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
   }
 
   //
-  // Deploy LPPOW5 token
+  // Deploy LPBORROW token
   //
 
-  if (addressBook.lpPow5Token && networkName !== "localhost") {
-    console.log(`Using ${LPPOW5_TOKEN_CONTRACT} at ${addressBook.lpPow5Token}`);
+  if (addressBook.lpBorrowToken && networkName !== "localhost") {
+    console.log(
+      `Using ${LPBORROW_TOKEN_CONTRACT} at ${addressBook.lpBorrowToken}`,
+    );
   } else {
-    console.log(`Deploying ${LPPOW5_TOKEN_CONTRACT}`);
-    const tx = await deployments.deploy(LPPOW5_TOKEN_CONTRACT, {
+    console.log(`Deploying ${LPBORROW_TOKEN_CONTRACT}`);
+    const tx = await deployments.deploy(LPBORROW_TOKEN_CONTRACT, {
       ...opts,
       args: [
         deployer, // owner
       ],
     });
-    addressBook.lpPow5Token = tx.address as `0x${string}`;
+    addressBook.lpBorrowToken = tx.address as `0x${string}`;
   }
 
   //
@@ -150,7 +152,7 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
         addressBook.pow1Token!, // pow1Token
         addressBook.pow5Token!, // pow5Token
         addressBook.lpYieldToken!, // lpYieldToken
-        addressBook.lpPow5Token!, // lpPow5Token
+        addressBook.lpBorrowToken!, // lpBorrowToken
         addressBook.debtToken!, // debtToken
         addressBook.uniswapV3NftManager!, // uniswapV3NftManager
       ],
@@ -174,7 +176,7 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
         addressBook.pow1Token!, // pow1Token
         addressBook.pow5Token!, // pow5Token
         addressBook.lpYieldToken!, // lpYieldToken
-        addressBook.lpPow5Token!, // lpPow5Token
+        addressBook.lpBorrowToken!, // lpBorrowToken
         addressBook.uniswapV3NftManager!, // uniswapV3NftManager
       ],
     });

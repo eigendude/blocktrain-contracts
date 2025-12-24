@@ -42,7 +42,7 @@ const POW1_LPSFT_LEND_FARM_REWARD_RATE: bigint = ethers.parseUnits(
 const POW5_LPSFT_LEND_FARM_REWARD_RATE: bigint = ethers.parseUnits(
   "1",
   POW1_DECIMALS,
-); // 1 POW1 per lent LPPOW5 per second
+); // 1 POW1 per lent LPBORROW per second
 
 const POW5_INTEREST_RATE: bigint = ethers.parseUnits("1", POW1_DECIMALS); // 1 POW1 per lent POW5 per second
 
@@ -81,7 +81,7 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
       addressBook.pow1Token!, // pow1Token
       addressBook.pow5Token!, // pow5Token
       addressBook.lpYieldToken!, // lpYieldToken
-      addressBook.lpPow5Token!, // lpPow5Token
+      addressBook.lpBorrowToken!, // lpBorrowToken
       addressBook.debtToken!, // debtToken
       addressBook.lpSft!, // lpSft
     ],
@@ -178,7 +178,7 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
         deployer, // owner
         addressBook.lpSft!, // sftToken
         addressBook.pow1Token!, // rewardToken
-        addressBook.lpPow5Token!, // lpToken
+        addressBook.lpBorrowToken!, // lpToken
         POW5_LPSFT_LEND_FARM_REWARD_RATE, // rewardRate
       ],
     },

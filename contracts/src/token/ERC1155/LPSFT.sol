@@ -58,7 +58,7 @@ contract LPSFT is ILPSFT, ERC1155Enumerable, LPNFTHolder, LPSFTIssuable {
   /**
    * @dev The LP POW5 token
    */
-  IERC20Issuable public lpPow5Token;
+  IERC20Issuable public lpBorrowToken;
 
   /**
    * @dev The Uniswap V3 NFT manager
@@ -78,7 +78,7 @@ contract LPSFT is ILPSFT, ERC1155Enumerable, LPNFTHolder, LPSFTIssuable {
     address pow1Token_,
     address pow5Token_,
     address lpYieldToken_,
-    address lpPow5Token_,
+    address lpBorrowToken_,
     address uniswapV3NftManager_
   ) {
     initialize(
@@ -87,7 +87,7 @@ contract LPSFT is ILPSFT, ERC1155Enumerable, LPNFTHolder, LPSFTIssuable {
       pow1Token_,
       pow5Token_,
       lpYieldToken_,
-      lpPow5Token_,
+      lpBorrowToken_,
       uniswapV3NftManager_
     );
   }
@@ -100,7 +100,7 @@ contract LPSFT is ILPSFT, ERC1155Enumerable, LPNFTHolder, LPSFTIssuable {
    * @param pow1Token_ The POW1 token
    * @param pow5Token_ The POW5 token
    * @param lpYieldToken_ The LPYIELD token
-   * @param lpPow5Token_ The LPPOW5 token
+   * @param lpBorrowToken_ The LPBORROW token
    * @param uniswapV3NftManager_ The Uniswap V3 NFT manager
    */
   function initialize(
@@ -109,7 +109,7 @@ contract LPSFT is ILPSFT, ERC1155Enumerable, LPNFTHolder, LPSFTIssuable {
     address pow1Token_,
     address pow5Token_,
     address lpYieldToken_,
-    address lpPow5Token_,
+    address lpBorrowToken_,
     address uniswapV3NftManager_
   ) public initializer {
     // Validate parameters
@@ -118,7 +118,7 @@ contract LPSFT is ILPSFT, ERC1155Enumerable, LPNFTHolder, LPSFTIssuable {
     require(pow1Token_ != address(0), "Invalid POW1");
     require(pow5Token_ != address(0), "Invalid POW5");
     require(lpYieldToken_ != address(0), "Invalid LPYIELD");
-    require(lpPow5Token_ != address(0), "Invalid LPPOW5");
+    require(lpBorrowToken_ != address(0), "Invalid LPBORROW");
     require(
       uniswapV3NftManager_ != address(0),
       "Invalid Uniswap V3 NFT manager"
@@ -136,7 +136,7 @@ contract LPSFT is ILPSFT, ERC1155Enumerable, LPNFTHolder, LPSFTIssuable {
     pow1Token = IERC20(pow1Token_);
     pow5Token = IERC20(pow5Token_);
     lpYieldToken = IERC20Issuable(lpYieldToken_);
-    lpPow5Token = IERC20Issuable(lpPow5Token_);
+    lpBorrowToken = IERC20Issuable(lpBorrowToken_);
     uniswapV3NftManager = INonfungiblePositionManager(uniswapV3NftManager_);
   }
 
@@ -229,16 +229,16 @@ contract LPSFT is ILPSFT, ERC1155Enumerable, LPNFTHolder, LPSFTIssuable {
 
         // Read all pool balances
         uint256 lpYieldBalance_ = lpYieldToken.balanceOf(tokenAddress);
-        uint256 lpPow5Balance_ = lpPow5Token.balanceOf(tokenAddress);
+        uint256 lpBorrowBalance_ = lpBorrowToken.balanceOf(tokenAddress);
 
         // Burn all pool balances
         if (lpYieldBalance_ > 0) {
           // slither-disable-next-line reentrancy-no-eth
           lpYieldToken.burn(tokenAddress, lpYieldBalance_);
         }
-        if (lpPow5Balance_ > 0) {
+        if (lpBorrowBalance_ > 0) {
           // slither-disable-next-line reentrancy-no-eth
-          lpPow5Token.burn(tokenAddress, lpPow5Balance_);
+          lpBorrowToken.burn(tokenAddress, lpBorrowBalance_);
         }
       }
     }
@@ -288,7 +288,7 @@ contract LPSFT is ILPSFT, ERC1155Enumerable, LPNFTHolder, LPSFTIssuable {
         } else if (
           token0 == address(pow5Token) || token1 == address(pow5Token)
         ) {
-          lpPow5Token.mint(tokenAddress, uint256(liquidityAmount));
+          lpBorrowToken.mint(tokenAddress, uint256(liquidityAmount));
         }
       }
     }

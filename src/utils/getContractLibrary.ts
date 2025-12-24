@@ -25,7 +25,7 @@ import { POW5InterestFarmContract } from "../interfaces/defi/pow5InterestFarmCon
 import { POW5LpNftStakeFarmContract } from "../interfaces/defi/pow5LpNftStakeFarmContract";
 import { POW5LpSftLendFarmContract } from "../interfaces/defi/pow5LpSftLendFarmContract";
 import { DEBTContract } from "../interfaces/token/erc20/debtContract";
-import { LPPOW5Contract } from "../interfaces/token/erc20/lpPow5Contract";
+import { LPBORROWContract } from "../interfaces/token/erc20/lpBorrowContract";
 import { LPYIELDContract } from "../interfaces/token/erc20/lpYieldContract";
 import { POW1Contract } from "../interfaces/token/erc20/pow1Contract";
 import { POW5Contract } from "../interfaces/token/erc20/pow5Contract";
@@ -64,7 +64,7 @@ function getContractLibrary(
       addressBook.liquidityForge!,
     ),
     lpYieldContract: new LPYIELDContract(signer, addressBook.lpYieldToken!),
-    lpPow5Contract: new LPPOW5Contract(signer, addressBook.lpPow5Token!),
+    lpBorrowContract: new LPBORROWContract(signer, addressBook.lpBorrowToken!),
     lpSftContract: new LPSFTContract(signer, addressBook.lpSft!),
     noLpSftContract: new NOLPSFTContract(signer, addressBook.noLpSft!),
     debtContract: new DEBTContract(signer, addressBook.debtToken!),
