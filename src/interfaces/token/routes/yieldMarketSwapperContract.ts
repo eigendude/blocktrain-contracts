@@ -13,7 +13,7 @@ import { GameTokenSwapperMixin } from "./gameTokenSwapperMixin";
 
 const GameTokenSwapperContract = GameTokenSwapperMixin(BaseContract);
 
-class POW1MarketSwapperContract extends GameTokenSwapperContract {
+class YIELDMarketSwapperContract extends GameTokenSwapperContract {
   constructor(
     contractRunner: ethers.Provider | ethers.Signer,
     contractAddress: `0x${string}`,
@@ -22,4 +22,4 @@ class POW1MarketSwapperContract extends GameTokenSwapperContract {
   }
 }
 
-export { POW1MarketSwapperContract };
+export { YIELDMarketSwapperContract };

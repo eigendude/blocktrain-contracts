@@ -22,11 +22,11 @@ import { setupFixture } from "../../src/testing/setupFixture";
 import {
   INITIAL_LPYIELD_AMOUNT,
   INITIAL_LPYIELD_WETH_VALUE,
-  INITIAL_POW1_PRICE,
-  INITIAL_POW1_SUPPLY,
   INITIAL_POW5_PRICE,
+  INITIAL_YIELD_PRICE,
+  INITIAL_YIELD_SUPPLY,
   LPYIELD_DECIMALS,
-  POW1_DECIMALS,
+  YIELD_DECIMALS,
 } from "../../src/utils/constants";
 import { getContractLibrary } from "../../src/utils/getContractLibrary";
 import { extractJSONFromURI } from "../../src/utils/lpNftUtils";
@@ -55,27 +55,27 @@ const INITIAL_WETH_LOSS: bigint = 42n; // 42 wei
 // Amount of WETH lost to the pool when minting next two auction LP-NFTs
 const NEXT_WETH_LOSS: bigint = 42n; // 42 wei
 
-// POW1 test reward for LPYIELD staking incentive
-const LPYIELD_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1 ($10)
+// YIELD test reward for LPYIELD staking incentive
+const LPYIELD_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", YIELD_DECIMALS); // 1,000 YIELD ($10)
 
 // Remaining dust balances after depositing into LP pool
-const LPYIELD_POW1_DUST: bigint = 443n;
+const LPYIELD_YIELD_DUST: bigint = 443n;
 const LPYIELD_WETH_DUST: bigint = 1n;
 
 // Token ID of initial minted LP-NFT/L-SFT
-const POW1_LPNFT_TOKEN_ID: bigint = 1n;
+const YIELD_LPNFT_TOKEN_ID: bigint = 1n;
 
 // Token IDs of LP-NFTs for sale
-const POW1_LPNFT_FIRST_TOKEN_ID: bigint = 2n;
-const POW1_LPNFT_SECOND_TOKEN_ID: bigint = 3n;
-const POW1_LPNFT_THIRD_TOKEN_ID: bigint = 4n;
+const YIELD_LPNFT_FIRST_TOKEN_ID: bigint = 2n;
+const YIELD_LPNFT_SECOND_TOKEN_ID: bigint = 3n;
+const YIELD_LPNFT_THIRD_TOKEN_ID: bigint = 4n;
 
 // Amount of WETH to use to purchase first LP-NFT for
-const POW1_LPNFT_FIRST_WETH_AMOUNT: bigint =
+const YIELD_LPNFT_FIRST_WETH_AMOUNT: bigint =
   ethers.parseEther("10") / BigInt(ETH_PRICE); // $10 in WETH
 
 // Amount of WETH left over after purchasing first LP-NFT
-const POW1_LPNFT_FIRST_WETH_LEFTOVER: bigint = 955_968_108_113n; // About $0.002
+const YIELD_LPNFT_FIRST_WETH_LEFTOVER: bigint = 955_968_108_113n; // About $0.002
 
 //
 // Test cases
@@ -155,11 +155,11 @@ describe("Bureau 1: Dutch Auction", () => {
     const {
       dutchAuctionContract,
       lpSftContract,
-      pow1Contract,
-      pow1LpNftStakeFarmContract,
-      pow1MarketPoolContract,
-      pow1MarketPoolerContract,
-      pow1MarketSwapperContract,
+      yieldContract,
+      yieldLpNftStakeFarmContract,
+      yieldMarketPoolContract,
+      yieldMarketPoolerContract,
+      yieldMarketSwapperContract,
       pow5Contract,
       pow5StableSwapperContract,
       usdcContract,
@@ -169,8 +169,8 @@ describe("Bureau 1: Dutch Auction", () => {
 
     // Test routes
     chai
-      .expect(await dutchAuctionContract.pow1Token())
-      .to.equal(pow1Contract.address);
+      .expect(await dutchAuctionContract.yieldToken())
+      .to.equal(yieldContract.address);
     chai
       .expect(await dutchAuctionContract.pow5Token())
       .to.equal(pow5Contract.address);
@@ -184,11 +184,11 @@ describe("Bureau 1: Dutch Auction", () => {
       .expect(await dutchAuctionContract.lpSft())
       .to.equal(lpSftContract.address);
     chai
-      .expect(await dutchAuctionContract.pow1MarketPool())
-      .to.equal(pow1MarketPoolContract.address);
+      .expect(await dutchAuctionContract.yieldMarketPool())
+      .to.equal(yieldMarketPoolContract.address);
     chai
-      .expect(await dutchAuctionContract.pow1MarketSwapper())
-      .to.equal(pow1MarketSwapperContract.address);
+      .expect(await dutchAuctionContract.yieldMarketSwapper())
+      .to.equal(yieldMarketSwapperContract.address);
     chai
       .expect(await dutchAuctionContract.pow5StableSwapper())
       .to.equal(pow5StableSwapperContract.address);
@@ -196,11 +196,11 @@ describe("Bureau 1: Dutch Auction", () => {
       .expect(await dutchAuctionContract.marketStableSwapper())
       .to.equal(wrappedNativeUsdcSwapperContract.address);
     chai
-      .expect(await dutchAuctionContract.pow1MarketPooler())
-      .to.equal(pow1MarketPoolerContract.address);
+      .expect(await dutchAuctionContract.yieldMarketPooler())
+      .to.equal(yieldMarketPoolerContract.address);
     chai
-      .expect(await dutchAuctionContract.pow1LpNftStakeFarm())
-      .to.equal(pow1LpNftStakeFarmContract.address);
+      .expect(await dutchAuctionContract.yieldLpNftStakeFarm())
+      .to.equal(yieldLpNftStakeFarmContract.address);
     chai
       .expect(await dutchAuctionContract.uniswapV3NftManager())
       .to.equal(addressBook.uniswapV3NftManager!);
@@ -216,7 +216,7 @@ describe("Bureau 1: Dutch Auction", () => {
     const permissionManager: PermissionManager = new PermissionManager(
       deployer,
       {
-        pow1Token: addressBook.pow1Token!,
+        yieldToken: addressBook.yieldToken!,
         pow5Token: addressBook.pow5Token!,
         lpYieldToken: addressBook.lpYieldToken!,
         lpBorrowToken: addressBook.lpBorrowToken!,
@@ -227,9 +227,9 @@ describe("Bureau 1: Dutch Auction", () => {
         yieldHarvest: addressBook.yieldHarvest!,
         liquidityForge: addressBook.liquidityForge!,
         reverseRepo: addressBook.reverseRepo!,
-        pow1LpNftStakeFarm: addressBook.pow1LpNftStakeFarm!,
+        yieldLpNftStakeFarm: addressBook.yieldLpNftStakeFarm!,
         pow5LpNftStakeFarm: addressBook.pow5LpNftStakeFarm!,
-        pow1LpSftLendFarm: addressBook.pow1LpSftLendFarm!,
+        yieldLpSftLendFarm: addressBook.yieldLpSftLendFarm!,
         pow5LpSftLendFarm: addressBook.pow5LpSftLendFarm!,
         defiManager: addressBook.defiManager!,
         pow5InterestFarm: addressBook.pow5InterestFarm!,
@@ -243,26 +243,26 @@ describe("Bureau 1: Dutch Auction", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Mint POW1 reward to POW1 LP-NFT stake farm
+  // Spec: Mint YIELD reward to YIELD LP-NFT stake farm
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should grant deployer ERC20_ISSUER_ROLE for POW1 token", async function (): Promise<void> {
+  it("should grant deployer ERC20_ISSUER_ROLE for YIELD token", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { pow1Contract } = deployerContracts;
+    const { yieldContract } = deployerContracts;
 
     // Grant ERC-20 issuer role to deployer
-    await pow1Contract.grantRole(ERC20_ISSUER_ROLE, deployerAddress);
+    await yieldContract.grantRole(ERC20_ISSUER_ROLE, deployerAddress);
   });
 
-  it("should mint POW1 reward to POW1 LP-NFT stake farm", async function (): Promise<void> {
+  it("should mint YIELD reward to YIELD LP-NFT stake farm", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { pow1Contract, pow1LpNftStakeFarmContract } = deployerContracts;
+    const { yieldContract, yieldLpNftStakeFarmContract } = deployerContracts;
 
-    // Mint POW1 to the POW1 LP-SFT lend farm
-    await pow1Contract.mint(
-      pow1LpNftStakeFarmContract.address,
+    // Mint YIELD to the YIELD LP-SFT lend farm
+    await yieldContract.mint(
+      yieldLpNftStakeFarmContract.address,
       LPYIELD_REWARD_AMOUNT,
     );
   });
@@ -272,32 +272,32 @@ describe("Bureau 1: Dutch Auction", () => {
   //////////////////////////////////////////////////////////////////////////////
 
   it("should get pool token order for LPYIELD", async function (): Promise<void> {
-    const { pow1Contract, pow1MarketPoolContract, wrappedNativeContract } =
+    const { yieldContract, yieldMarketPoolContract, wrappedNativeContract } =
       deployerContracts;
 
-    let pow1IsToken0: boolean;
+    let yieldIsToken0: boolean;
 
-    const token0: `0x${string}` = await pow1MarketPoolContract.token0();
-    const token1: `0x${string}` = await pow1MarketPoolContract.token1();
+    const token0: `0x${string}` = await yieldMarketPoolContract.token0();
+    const token1: `0x${string}` = await yieldMarketPoolContract.token1();
 
     if (
-      token0.toLowerCase() === pow1Contract.address.toLowerCase() &&
+      token0.toLowerCase() === yieldContract.address.toLowerCase() &&
       token1.toLowerCase() === wrappedNativeContract.address.toLowerCase()
     ) {
-      pow1IsToken0 = true;
+      yieldIsToken0 = true;
     } else if (
       token0.toLowerCase() === wrappedNativeContract.address.toLowerCase() &&
-      token1.toLowerCase() === pow1Contract.address.toLowerCase()
+      token1.toLowerCase() === yieldContract.address.toLowerCase()
     ) {
-      pow1IsToken0 = false;
+      yieldIsToken0 = false;
     } else {
-      throw new Error("POW1 pool tokens are incorrect");
+      throw new Error("YIELD pool tokens are incorrect");
     }
 
-    chai.expect(pow1IsToken0).to.be.a("boolean");
+    chai.expect(yieldIsToken0).to.be.a("boolean");
 
     console.log(
-      `    POW1 is ${pow1IsToken0 ? "token0" : "token1"} ($${INITIAL_POW1_PRICE})`,
+      `    YIELD is ${yieldIsToken0 ? "token0" : "token1"} ($${INITIAL_YIELD_PRICE})`,
     );
   });
 
@@ -309,9 +309,9 @@ describe("Bureau 1: Dutch Auction", () => {
     this.timeout(60 * 1000);
 
     const poolManager: PoolManager = new PoolManager(deployer, {
-      pow1Token: addressBook.pow1Token!,
+      yieldToken: addressBook.yieldToken!,
       marketToken: addressBook.wrappedNativeToken!,
-      pow1MarketPool: addressBook.pow1MarketPool!,
+      yieldMarketPool: addressBook.yieldMarketPool!,
       pow5Token: addressBook.pow5Token!,
       stableToken: addressBook.usdcToken!,
       pow5StablePool: addressBook.pow5StablePool!,
@@ -399,18 +399,18 @@ describe("Bureau 1: Dutch Auction", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Approve the Dutch Auction spending POW1 and WETH
+  // Spec: Approve the Dutch Auction spending YIELD and WETH
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should approve Dutch Auction to spend POW1", async function (): Promise<void> {
+  it("should approve Dutch Auction to spend YIELD", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { dutchAuctionContract, pow1Contract } = deployerContracts;
+    const { dutchAuctionContract, yieldContract } = deployerContracts;
 
-    // Approve Dutch Auction spending POW1 for deployer
-    await pow1Contract.approve(
+    // Approve Dutch Auction spending YIELD for deployer
+    await yieldContract.approve(
       dutchAuctionContract.address,
-      INITIAL_POW1_SUPPLY,
+      INITIAL_YIELD_SUPPLY,
     );
   });
 
@@ -444,9 +444,9 @@ describe("Bureau 1: Dutch Auction", () => {
     const { dutchAuctionContract } = deployerContracts;
 
     // Calculate DeFi metrics
-    const pow1Value: string = ethers.formatUnits(
-      INITIAL_POW1_SUPPLY / BigInt(1 / INITIAL_POW1_PRICE),
-      POW1_DECIMALS,
+    const yieldValue: string = ethers.formatUnits(
+      INITIAL_YIELD_SUPPLY / BigInt(1 / INITIAL_YIELD_PRICE),
+      YIELD_DECIMALS,
     );
     const wethValue: string = ethers.formatEther(
       INITIAL_WETH_AMOUNT * BigInt(ETH_PRICE),
@@ -455,9 +455,9 @@ describe("Bureau 1: Dutch Auction", () => {
     // Log DeFi metrics
     console.log(
       `    Depositing: ${ethers.formatUnits(
-        INITIAL_POW1_SUPPLY,
-        POW1_DECIMALS,
-      )} POW1 ($${pow1Value})`,
+        INITIAL_YIELD_SUPPLY,
+        YIELD_DECIMALS,
+      )} YIELD ($${yieldValue})`,
     );
     console.log(
       `    Depositing: ${ethers
@@ -467,7 +467,7 @@ describe("Bureau 1: Dutch Auction", () => {
 
     // Initialize DutchAuction
     await dutchAuctionContract.initialize(
-      INITIAL_POW1_SUPPLY, // pow1Amount
+      INITIAL_YIELD_SUPPLY, // yieldAmount
       INITIAL_WETH_AMOUNT, // marketTokenAmount
       beneficiaryAddress, // receiver
     );
@@ -485,27 +485,27 @@ describe("Bureau 1: Dutch Auction", () => {
   // Spec: Check token balances
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should check LP-SFT POW1 balance", async function (): Promise<void> {
+  it("should check LP-SFT YIELD balance", async function (): Promise<void> {
     const { defiManagerContract } = beneficiaryContracts;
 
-    // Check LP-SFT POW1 balance
-    const pow1Balance: bigint =
-      await defiManagerContract.pow1Balance(POW1_LPNFT_TOKEN_ID);
+    // Check LP-SFT YIELD balance
+    const yieldBalance: bigint =
+      await defiManagerContract.yieldBalance(YIELD_LPNFT_TOKEN_ID);
 
     // Calculate DeFi properties
-    const pow1Value: string = ethers.formatUnits(
-      pow1Balance / BigInt(1 / INITIAL_POW1_PRICE),
-      POW1_DECIMALS,
+    const yieldValue: string = ethers.formatUnits(
+      yieldBalance / BigInt(1 / INITIAL_YIELD_PRICE),
+      YIELD_DECIMALS,
     );
 
-    // Log LP-SFT POW1 balance
+    // Log LP-SFT YIELD balance
     console.log(
-      `    LP-SFT POW1 dust: ${parseInt(
-        pow1Balance.toString(),
-      ).toLocaleString()} POW1 wei ($${pow1Value.toLocaleString()})`,
+      `    LP-SFT YIELD dust: ${parseInt(
+        yieldBalance.toString(),
+      ).toLocaleString()} YIELD wei ($${yieldValue.toLocaleString()})`,
     );
 
-    chai.expect(pow1Balance).to.equal(LPYIELD_POW1_DUST);
+    chai.expect(yieldBalance).to.equal(LPYIELD_YIELD_DUST);
   });
 
   it("should check beneficiary WETH balance", async function (): Promise<void> {
@@ -528,23 +528,23 @@ describe("Bureau 1: Dutch Auction", () => {
   });
 
   it("should log Uniswap pool reserves", async function (): Promise<void> {
-    const { pow1Contract, pow1MarketPoolContract, wrappedNativeContract } =
+    const { yieldContract, yieldMarketPoolContract, wrappedNativeContract } =
       deployerContracts;
 
     // Get Uniswap pool reserves
-    const pow1Balance: bigint = await pow1Contract.balanceOf(
-      pow1MarketPoolContract.address,
+    const yieldBalance: bigint = await yieldContract.balanceOf(
+      yieldMarketPoolContract.address,
     );
     const wethBalance: bigint = await wrappedNativeContract.balanceOf(
-      pow1MarketPoolContract.address,
+      yieldMarketPoolContract.address,
     );
 
     // Log Uniswap pool reserves
     console.log(
-      `    Pool POW1 reserves: ${ethers
-        .formatUnits(pow1Balance, POW1_DECIMALS)
-        .toLocaleString()} POW1 ($${ethers.formatUnits(
-        (BigInt(100 * INITIAL_POW1_PRICE) * pow1Balance) / 100n,
+      `    Pool YIELD reserves: ${ethers
+        .formatUnits(yieldBalance, YIELD_DECIMALS)
+        .toLocaleString()} YIELD ($${ethers.formatUnits(
+        (BigInt(100 * INITIAL_YIELD_PRICE) * yieldBalance) / 100n,
       )})`,
     );
     console.log(
@@ -555,7 +555,9 @@ describe("Bureau 1: Dutch Auction", () => {
         .toLocaleString()})`,
     );
 
-    chai.expect(pow1Balance).to.equal(INITIAL_POW1_SUPPLY - LPYIELD_POW1_DUST);
+    chai
+      .expect(yieldBalance)
+      .to.equal(INITIAL_YIELD_SUPPLY - LPYIELD_YIELD_DUST);
     chai.expect(wethBalance).to.equal(INITIAL_WETH_AMOUNT - LPYIELD_WETH_DUST);
   });
 
@@ -564,7 +566,7 @@ describe("Bureau 1: Dutch Auction", () => {
 
     // Check LP-SFT LPYIELD balance
     const lpYieldBalance: bigint =
-      await defiManagerContract.lpYieldBalance(POW1_LPNFT_TOKEN_ID);
+      await defiManagerContract.lpYieldBalance(YIELD_LPNFT_TOKEN_ID);
 
     // Calculate DeFi properties
     // TODO: Calculate LPYIELD price instead of using POW5 price
@@ -605,11 +607,11 @@ describe("Bureau 1: Dutch Auction", () => {
 
     // Get owner
     const owner: `0x${string}` =
-      await lpSftContract.ownerOf(POW1_LPNFT_TOKEN_ID);
+      await lpSftContract.ownerOf(YIELD_LPNFT_TOKEN_ID);
     chai.expect(owner).to.equal(beneficiaryAddress);
   });
 
-  it("should check POW1 LP-SFT properties", async function (): Promise<void> {
+  it("should check YIELD LP-SFT properties", async function (): Promise<void> {
     this.timeout(10 * 1000);
 
     const { lpSftContract } = beneficiaryContracts;
@@ -622,10 +624,10 @@ describe("Bureau 1: Dutch Auction", () => {
     const beneficiaryTokenIds: bigint[] =
       await lpSftContract.getTokenIds(beneficiaryAddress);
     chai.expect(beneficiaryTokenIds.length).to.equal(1);
-    chai.expect(beneficiaryTokenIds[0]).to.equal(POW1_LPNFT_TOKEN_ID);
+    chai.expect(beneficiaryTokenIds[0]).to.equal(YIELD_LPNFT_TOKEN_ID);
 
     // Check token URI
-    const nftTokenUri: string = await lpSftContract.uri(POW1_LPNFT_TOKEN_ID);
+    const nftTokenUri: string = await lpSftContract.uri(YIELD_LPNFT_TOKEN_ID);
 
     // Check that data URI has correct mime type
     chai.expect(nftTokenUri).to.match(/data:application\/json;base64,.+/);
@@ -709,23 +711,23 @@ describe("Bureau 1: Dutch Auction", () => {
   });
 
   it("should log Uniswap pool reserves after minting initial LP-NFT for sale", async function (): Promise<void> {
-    const { pow1Contract, pow1MarketPoolContract, wrappedNativeContract } =
+    const { yieldContract, yieldMarketPoolContract, wrappedNativeContract } =
       deployerContracts;
 
     // Get Uniswap pool reserves
-    const pow1Balance: bigint = await pow1Contract.balanceOf(
-      pow1MarketPoolContract.address,
+    const yieldBalance: bigint = await yieldContract.balanceOf(
+      yieldMarketPoolContract.address,
     );
     const wethBalance: bigint = await wrappedNativeContract.balanceOf(
-      pow1MarketPoolContract.address,
+      yieldMarketPoolContract.address,
     );
 
     // Log Uniswap pool reserves
     console.log(
-      `    Pool POW1 reserves: ${ethers
-        .formatUnits(pow1Balance, POW1_DECIMALS)
-        .toLocaleString()} POW1 ($${ethers.formatUnits(
-        (BigInt(100 * INITIAL_POW1_PRICE) * pow1Balance) / 100n,
+      `    Pool YIELD reserves: ${ethers
+        .formatUnits(yieldBalance, YIELD_DECIMALS)
+        .toLocaleString()} YIELD ($${ethers.formatUnits(
+        (BigInt(100 * INITIAL_YIELD_PRICE) * yieldBalance) / 100n,
       )})`,
     );
     console.log(
@@ -736,7 +738,9 @@ describe("Bureau 1: Dutch Auction", () => {
         .toLocaleString()})`,
     );
 
-    chai.expect(pow1Balance).to.equal(INITIAL_POW1_SUPPLY - LPYIELD_POW1_DUST);
+    chai
+      .expect(yieldBalance)
+      .to.equal(INITIAL_YIELD_SUPPLY - LPYIELD_YIELD_DUST);
     chai
       .expect(wethBalance)
       .to.equal(INITIAL_WETH_AMOUNT - LPYIELD_WETH_DUST + INITIAL_WETH_LOSS);
@@ -797,23 +801,23 @@ describe("Bureau 1: Dutch Auction", () => {
   });
 
   it("should log Uniswap pool reserves", async function (): Promise<void> {
-    const { pow1Contract, pow1MarketPoolContract, wrappedNativeContract } =
+    const { yieldContract, yieldMarketPoolContract, wrappedNativeContract } =
       deployerContracts;
 
     // Get Uniswap pool reserves
-    const pow1Balance: bigint = await pow1Contract.balanceOf(
-      pow1MarketPoolContract.address,
+    const yieldBalance: bigint = await yieldContract.balanceOf(
+      yieldMarketPoolContract.address,
     );
     const wethBalance: bigint = await wrappedNativeContract.balanceOf(
-      pow1MarketPoolContract.address,
+      yieldMarketPoolContract.address,
     );
 
     // Log Uniswap pool reserves
     console.log(
-      `    Pool POW1 reserves: ${ethers
-        .formatUnits(pow1Balance, POW1_DECIMALS)
-        .toLocaleString()} POW1 ($${ethers.formatUnits(
-        (BigInt(100 * INITIAL_POW1_PRICE) * pow1Balance) / 100n,
+      `    Pool YIELD reserves: ${ethers
+        .formatUnits(yieldBalance, YIELD_DECIMALS)
+        .toLocaleString()} YIELD ($${ethers.formatUnits(
+        (BigInt(100 * INITIAL_YIELD_PRICE) * yieldBalance) / 100n,
       )})`,
     );
     console.log(
@@ -824,7 +828,9 @@ describe("Bureau 1: Dutch Auction", () => {
         .toLocaleString()})`,
     );
 
-    chai.expect(pow1Balance).to.equal(INITIAL_POW1_SUPPLY - LPYIELD_POW1_DUST);
+    chai
+      .expect(yieldBalance)
+      .to.equal(INITIAL_YIELD_SUPPLY - LPYIELD_YIELD_DUST);
     chai
       .expect(wethBalance)
       .to.equal(
@@ -845,9 +851,9 @@ describe("Bureau 1: Dutch Auction", () => {
     const currentAuctions: bigint[] =
       await dutchAuctionContract.getCurrentAuctions();
     chai.expect(currentAuctions.length).to.equal(3);
-    chai.expect(currentAuctions[0]).to.equal(POW1_LPNFT_FIRST_TOKEN_ID);
-    chai.expect(currentAuctions[1]).to.equal(POW1_LPNFT_SECOND_TOKEN_ID);
-    chai.expect(currentAuctions[2]).to.equal(POW1_LPNFT_THIRD_TOKEN_ID);
+    chai.expect(currentAuctions[0]).to.equal(YIELD_LPNFT_FIRST_TOKEN_ID);
+    chai.expect(currentAuctions[1]).to.equal(YIELD_LPNFT_SECOND_TOKEN_ID);
+    chai.expect(currentAuctions[2]).to.equal(YIELD_LPNFT_THIRD_TOKEN_ID);
 
     const currentAuctionStates: {
       lpNftTokenId: bigint;
@@ -860,7 +866,7 @@ describe("Bureau 1: Dutch Auction", () => {
 
     chai
       .expect(currentAuctionStates[0].lpNftTokenId)
-      .to.equal(POW1_LPNFT_FIRST_TOKEN_ID);
+      .to.equal(YIELD_LPNFT_FIRST_TOKEN_ID);
     chai
       .expect(currentAuctionStates[0].startPriceBips)
       .to.equal(ethers.parseUnits("0.0002", 18));
@@ -872,7 +878,7 @@ describe("Bureau 1: Dutch Auction", () => {
 
     chai
       .expect(currentAuctionStates[1].lpNftTokenId)
-      .to.equal(POW1_LPNFT_SECOND_TOKEN_ID);
+      .to.equal(YIELD_LPNFT_SECOND_TOKEN_ID);
     chai
       .expect(currentAuctionStates[1].startPriceBips)
       .to.equal(ethers.parseUnits("0.0002", 18));
@@ -884,7 +890,7 @@ describe("Bureau 1: Dutch Auction", () => {
 
     chai
       .expect(currentAuctionStates[2].lpNftTokenId)
-      .to.equal(POW1_LPNFT_THIRD_TOKEN_ID);
+      .to.equal(YIELD_LPNFT_THIRD_TOKEN_ID);
     chai
       .expect(currentAuctionStates[2].startPriceBips)
       .to.equal(ethers.parseUnits("0.0002", 18));
@@ -905,7 +911,7 @@ describe("Bureau 1: Dutch Auction", () => {
     const { wrappedNativeContract } = beneficiaryContracts;
 
     // Deposit ETH into W-ETH
-    await wrappedNativeContract.deposit(POW1_LPNFT_FIRST_WETH_AMOUNT);
+    await wrappedNativeContract.deposit(YIELD_LPNFT_FIRST_WETH_AMOUNT);
   });
 
   it("should check WETH balance before purchasing first LP-NFT", async function (): Promise<void> {
@@ -928,10 +934,10 @@ describe("Bureau 1: Dutch Auction", () => {
     );
 
     try {
-      chai.expect(wethBalance).to.equal(POW1_LPNFT_FIRST_WETH_AMOUNT);
+      chai.expect(wethBalance).to.equal(YIELD_LPNFT_FIRST_WETH_AMOUNT);
     } catch (error: unknown) {
       if (error instanceof chai.AssertionError) {
-        chai.expect(wethBalance).to.equal(POW1_LPNFT_FIRST_WETH_AMOUNT + 1n);
+        chai.expect(wethBalance).to.equal(YIELD_LPNFT_FIRST_WETH_AMOUNT + 1n);
       }
     }
   });
@@ -945,7 +951,7 @@ describe("Bureau 1: Dutch Auction", () => {
     // Approve Dutch Auction spending WETH
     await wrappedNativeContract.approve(
       dutchAuctionContract.address,
-      POW1_LPNFT_FIRST_WETH_AMOUNT,
+      YIELD_LPNFT_FIRST_WETH_AMOUNT,
     );
   });
 
@@ -956,9 +962,9 @@ describe("Bureau 1: Dutch Auction", () => {
 
     // Purchase first LP-NFT for sale
     await dutchAuctionContract.purchase(
-      POW1_LPNFT_FIRST_TOKEN_ID,
+      YIELD_LPNFT_FIRST_TOKEN_ID,
       0n,
-      POW1_LPNFT_FIRST_WETH_AMOUNT,
+      YIELD_LPNFT_FIRST_WETH_AMOUNT,
       deployerAddress,
       beneficiaryAddress,
     );
@@ -984,27 +990,27 @@ describe("Bureau 1: Dutch Auction", () => {
     );
 
     // TODO
-    chai.expect(wethBalance).to.equal(POW1_LPNFT_FIRST_WETH_LEFTOVER);
+    chai.expect(wethBalance).to.equal(YIELD_LPNFT_FIRST_WETH_LEFTOVER);
   });
 
   it("should log Uniswap pool reserves", async function (): Promise<void> {
-    const { pow1Contract, pow1MarketPoolContract, wrappedNativeContract } =
+    const { yieldContract, yieldMarketPoolContract, wrappedNativeContract } =
       deployerContracts;
 
     // Get Uniswap pool reserves
-    const pow1Balance: bigint = await pow1Contract.balanceOf(
-      pow1MarketPoolContract.address,
+    const yieldBalance: bigint = await yieldContract.balanceOf(
+      yieldMarketPoolContract.address,
     );
     const wethBalance: bigint = await wrappedNativeContract.balanceOf(
-      pow1MarketPoolContract.address,
+      yieldMarketPoolContract.address,
     );
 
     // Log Uniswap pool reserves
     console.log(
-      `    Pool POW1 reserves: ${ethers
-        .formatUnits(pow1Balance, POW1_DECIMALS)
-        .toLocaleString()} POW1 ($${ethers.formatUnits(
-        (BigInt(100 * INITIAL_POW1_PRICE) * pow1Balance) / 100n,
+      `    Pool YIELD reserves: ${ethers
+        .formatUnits(yieldBalance, YIELD_DECIMALS)
+        .toLocaleString()} YIELD ($${ethers.formatUnits(
+        (BigInt(100 * INITIAL_YIELD_PRICE) * yieldBalance) / 100n,
       )})`,
     );
     console.log(
@@ -1016,15 +1022,15 @@ describe("Bureau 1: Dutch Auction", () => {
     );
 
     chai
-      .expect(pow1Balance)
-      .to.equal(INITIAL_POW1_SUPPLY - LPYIELD_POW1_DUST - 363n);
+      .expect(yieldBalance)
+      .to.equal(INITIAL_YIELD_SUPPLY - LPYIELD_YIELD_DUST - 363n);
     chai
       .expect(wethBalance)
       .to.equal(
         INITIAL_WETH_AMOUNT -
           LPYIELD_WETH_DUST +
           INITIAL_WETH_LOSS +
-          POW1_LPNFT_FIRST_WETH_AMOUNT -
+          YIELD_LPNFT_FIRST_WETH_AMOUNT -
           1_758_085_942_872n,
       );
   });
@@ -1032,14 +1038,14 @@ describe("Bureau 1: Dutch Auction", () => {
   it("should check balances after purchasing first LP-NFT", async function (): Promise<void> {
     const { defiManagerContract, wrappedNativeContract } = beneficiaryContracts;
 
-    // Check LP-SFT POW1 balance
-    const pow1Balance: bigint =
-      await defiManagerContract.pow1Balance(POW1_LPNFT_TOKEN_ID);
-    chai.expect(pow1Balance).to.equal(LPYIELD_POW1_DUST);
+    // Check LP-SFT YIELD balance
+    const yieldBalance: bigint =
+      await defiManagerContract.yieldBalance(YIELD_LPNFT_TOKEN_ID);
+    chai.expect(yieldBalance).to.equal(LPYIELD_YIELD_DUST);
 
     // Check beneficiary WETH balance
     const wethBalance: bigint =
       await wrappedNativeContract.balanceOf(beneficiaryAddress);
-    chai.expect(wethBalance).to.equal(POW1_LPNFT_FIRST_WETH_LEFTOVER);
+    chai.expect(wethBalance).to.equal(YIELD_LPNFT_FIRST_WETH_LEFTOVER);
   });
 });

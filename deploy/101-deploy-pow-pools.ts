@@ -17,15 +17,15 @@ import { getNetworkName } from "../src/hardhat/hardhatUtils";
 import { AddressBook } from "../src/interfaces/addressBook";
 import {
   MARKET_STABLE_SWAPPER_CONTRACT,
-  POW1_MARKET_POOL_CONTRACT,
-  POW1_MARKET_POOL_FACTORY_CONTRACT,
-  POW1_MARKET_POOLER_CONTRACT,
-  POW1_MARKET_SWAPPER_CONTRACT,
   POW5_STABLE_POOL_CONTRACT,
   POW5_STABLE_POOL_FACTORY_CONTRACT,
   POW5_STABLE_POOLER_CONTRACT,
   POW5_STABLE_SWAPPER_CONTRACT,
   UNI_V3_POOL_FACTORY_CONTRACT,
+  YIELD_MARKET_POOL_CONTRACT,
+  YIELD_MARKET_POOL_FACTORY_CONTRACT,
+  YIELD_MARKET_POOLER_CONTRACT,
+  YIELD_MARKET_SWAPPER_CONTRACT,
 } from "../src/names/dapp";
 import { LPBORROW_POOL_FEE, LPYIELD_POOL_FEE } from "../src/utils/constants";
 
@@ -49,75 +49,76 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
   const addressBook: AddressBook = await getAddressBook(networkName);
 
   //////////////////////////////////////////////////////////////////////////////
-  // Deploy POW1 contracts
+  // Deploy YIELD contracts
   //////////////////////////////////////////////////////////////////////////////
 
   //
-  // Deploy Uniswap V3 pool factory for POW1
+  // Deploy Uniswap V3 pool factory for YIELD
   //
 
-  console.log(`Deploying ${POW1_MARKET_POOL_FACTORY_CONTRACT}`);
-  const pow1MarketPoolFactoryTx = await deployments.deploy(
-    POW1_MARKET_POOL_FACTORY_CONTRACT,
+  console.log(`Deploying ${YIELD_MARKET_POOL_FACTORY_CONTRACT}`);
+  const yieldMarketPoolFactoryTx = await deployments.deploy(
+    YIELD_MARKET_POOL_FACTORY_CONTRACT,
     {
       ...opts,
       contract: UNI_V3_POOL_FACTORY_CONTRACT,
       args: [
         addressBook.uniswapV3Factory!, // factory
-        addressBook.pow1Token!, // gameToken
+        addressBook.yieldToken!, // gameToken
         addressBook.wrappedNativeToken!, // assetToken
         LPYIELD_POOL_FEE, // swapFee
       ],
     },
   );
-  addressBook.pow1MarketPoolFactory =
-    pow1MarketPoolFactoryTx.address as `0x${string}`;
+  addressBook.yieldMarketPoolFactory =
+    yieldMarketPoolFactoryTx.address as `0x${string}`;
 
   //
-  // Read Uniswap V3 pool address for POW1
+  // Read Uniswap V3 pool address for YIELD
   //
 
-  addressBook.pow1MarketPool = await deployments.read(
-    POW1_MARKET_POOL_FACTORY_CONTRACT,
+  addressBook.yieldMarketPool = await deployments.read(
+    YIELD_MARKET_POOL_FACTORY_CONTRACT,
     "uniswapV3Pool",
   );
 
   //
-  // Deploy POW1MarketSwapper
+  // Deploy YIELDMarketSwapper
   //
 
-  console.log(`Deploying ${POW1_MARKET_SWAPPER_CONTRACT}`);
-  const pow1MarketSwapperTx = await deployments.deploy(
-    POW1_MARKET_SWAPPER_CONTRACT,
+  console.log(`Deploying ${YIELD_MARKET_SWAPPER_CONTRACT}`);
+  const yieldMarketSwapperTx = await deployments.deploy(
+    YIELD_MARKET_SWAPPER_CONTRACT,
     {
       ...opts,
       args: [
-        addressBook.pow1Token!, // gameToken
+        addressBook.yieldToken!, // gameToken
         addressBook.wrappedNativeToken!, // assetToken
-        addressBook.pow1MarketPool!, // uniswapV3Pool
+        addressBook.yieldMarketPool!, // uniswapV3Pool
       ],
     },
   );
-  addressBook.pow1MarketSwapper = pow1MarketSwapperTx.address as `0x${string}`;
+  addressBook.yieldMarketSwapper =
+    yieldMarketSwapperTx.address as `0x${string}`;
 
   //
-  // Deploy POW1MarketPooler
+  // Deploy YIELDMarketPooler
   //
 
-  console.log(`Deploying ${POW1_MARKET_POOLER_CONTRACT}`);
-  const pow1MarketPoolerTx = await deployments.deploy(
-    POW1_MARKET_POOLER_CONTRACT,
+  console.log(`Deploying ${YIELD_MARKET_POOLER_CONTRACT}`);
+  const yieldMarketPoolerTx = await deployments.deploy(
+    YIELD_MARKET_POOLER_CONTRACT,
     {
       ...opts,
       args: [
-        addressBook.pow1Token!, // gameToken
+        addressBook.yieldToken!, // gameToken
         addressBook.wrappedNativeToken!, // assetToken
-        addressBook.pow1MarketPool!, // uniswapV3Pool
+        addressBook.yieldMarketPool!, // uniswapV3Pool
         addressBook.uniswapV3NftManager!, // uniswapV3NftManager
       ],
     },
   );
-  addressBook.pow1MarketPooler = pow1MarketPoolerTx.address as `0x${string}`;
+  addressBook.yieldMarketPooler = yieldMarketPoolerTx.address as `0x${string}`;
 
   //////////////////////////////////////////////////////////////////////////////
   // Deploy POW5 contracts
@@ -219,8 +220,8 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
 
   writeAddress(
     networkName,
-    POW1_MARKET_POOL_CONTRACT,
-    addressBook.pow1MarketPool!,
+    YIELD_MARKET_POOL_CONTRACT,
+    addressBook.yieldMarketPool!,
   );
   writeAddress(
     networkName,

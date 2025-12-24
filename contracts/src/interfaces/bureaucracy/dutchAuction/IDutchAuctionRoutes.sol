@@ -33,9 +33,9 @@ interface IDutchAuctionRoutes is IERC165 {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev The POW1 game token
+   * @dev The YIELD game token
    */
-  function pow1Token() external view returns (IERC20);
+  function yieldToken() external view returns (IERC20);
 
   /**
    * @dev The POW5 game token
@@ -43,7 +43,7 @@ interface IDutchAuctionRoutes is IERC165 {
   function pow5Token() external view returns (IERC20);
 
   /**
-   * @dev The market token paired with POW1
+   * @dev The market token paired with YIELD
    */
   function marketToken() external view returns (IERC20);
 
@@ -66,18 +66,18 @@ interface IDutchAuctionRoutes is IERC165 {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev The POW1-market liquidity pool
+   * @dev The YIELD-market liquidity pool
    */
-  function pow1MarketPool() external view returns (IUniswapV3Pool);
+  function yieldMarketPool() external view returns (IUniswapV3Pool);
 
   //////////////////////////////////////////////////////////////////////////////
   // Token Swappers
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev The swapper for the POW1-market token pair
+   * @dev The swapper for the YIELD-market token pair
    */
-  function pow1MarketSwapper() external view returns (IGameTokenSwapper);
+  function yieldMarketSwapper() external view returns (IGameTokenSwapper);
 
   /**
    * @dev The swapper for the POW5-stable token pair
@@ -94,18 +94,18 @@ interface IDutchAuctionRoutes is IERC165 {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev The pooler for the POW1-market token pair
+   * @dev The pooler for the YIELD-market token pair
    */
-  function pow1MarketPooler() external view returns (IGameTokenPooler);
+  function yieldMarketPooler() external view returns (IGameTokenPooler);
 
   //////////////////////////////////////////////////////////////////////////////
   // LP-NFT Stake Farms
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev The POW1 LP-NFT stake farm
+   * @dev The YIELD LP-NFT stake farm
    */
-  function pow1LpNftStakeFarm() external view returns (ILPNFTStakeFarm);
+  function yieldLpNftStakeFarm() external view returns (ILPNFTStakeFarm);
 
   //////////////////////////////////////////////////////////////////////////////
   // Uniswap V3 Interfaces

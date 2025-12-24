@@ -28,7 +28,7 @@ const setupTest = hardhat.deployments.createFixture(setupFixture);
 //
 
 // Token ID of initial minted LP-NFT/L-SFT
-const POW1_LPNFT_TOKEN_ID: bigint = 1n;
+const YIELD_LPNFT_TOKEN_ID: bigint = 1n;
 
 //
 // Test cases
@@ -76,9 +76,9 @@ describe("DutchAuctionManager", () => {
 
     // Initialize pools
     const poolManager: PoolManager = new PoolManager(deployer, {
-      pow1Token: addressBook.pow1Token!,
+      yieldToken: addressBook.yieldToken!,
       marketToken: addressBook.wrappedNativeToken!,
-      pow1MarketPool: addressBook.pow1MarketPool!,
+      yieldMarketPool: addressBook.yieldMarketPool!,
       pow5Token: addressBook.pow5Token!,
       stableToken: addressBook.usdcToken!,
       pow5StablePool: addressBook.pow5StablePool!,
@@ -89,7 +89,7 @@ describe("DutchAuctionManager", () => {
     const permissionManager: PermissionManager = new PermissionManager(
       deployer,
       {
-        pow1Token: addressBook.pow1Token!,
+        yieldToken: addressBook.yieldToken!,
         pow5Token: addressBook.pow5Token!,
         lpYieldToken: addressBook.lpYieldToken!,
         lpBorrowToken: addressBook.lpBorrowToken!,
@@ -100,9 +100,9 @@ describe("DutchAuctionManager", () => {
         yieldHarvest: addressBook.yieldHarvest!,
         liquidityForge: addressBook.liquidityForge!,
         reverseRepo: addressBook.reverseRepo!,
-        pow1LpNftStakeFarm: addressBook.pow1LpNftStakeFarm!,
+        yieldLpNftStakeFarm: addressBook.yieldLpNftStakeFarm!,
         pow5LpNftStakeFarm: addressBook.pow5LpNftStakeFarm!,
-        pow1LpSftLendFarm: addressBook.pow1LpSftLendFarm!,
+        yieldLpSftLendFarm: addressBook.yieldLpSftLendFarm!,
         pow5LpSftLendFarm: addressBook.pow5LpSftLendFarm!,
         defiManager: addressBook.defiManager!,
         pow5InterestFarm: addressBook.pow5InterestFarm!,
@@ -114,7 +114,7 @@ describe("DutchAuctionManager", () => {
     const dutchAuctionManager: DutchAuctionManager = new DutchAuctionManager(
       deployer,
       {
-        pow1Token: addressBook.pow1Token!,
+        yieldToken: addressBook.yieldToken!,
         marketToken: addressBook.wrappedNativeToken!,
         dutchAuction: addressBook.dutchAuction!,
       },
@@ -142,17 +142,17 @@ describe("DutchAuctionManager", () => {
 
     // Get owner
     const owner: `0x${string}` =
-      await lpSftContract.ownerOf(POW1_LPNFT_TOKEN_ID);
+      await lpSftContract.ownerOf(YIELD_LPNFT_TOKEN_ID);
     chai.expect(owner).to.equal(beneficiaryAddress);
 
     // Get token IDs
     const tokenIds: bigint[] =
       await lpSftContract.getTokenIds(beneficiaryAddress);
     chai.expect(tokenIds.length).to.equal(1);
-    chai.expect(tokenIds[0]).to.equal(POW1_LPNFT_TOKEN_ID);
+    chai.expect(tokenIds[0]).to.equal(YIELD_LPNFT_TOKEN_ID);
   });
 
-  it("should check POW1 LP-SFT properties", async function (): Promise<void> {
+  it("should check YIELD LP-SFT properties", async function (): Promise<void> {
     this.timeout(10 * 1000);
 
     // Create contract
@@ -162,7 +162,7 @@ describe("DutchAuctionManager", () => {
     );
 
     // Check token URI
-    const nftTokenUri: string = await lpSftContract.uri(POW1_LPNFT_TOKEN_ID);
+    const nftTokenUri: string = await lpSftContract.uri(YIELD_LPNFT_TOKEN_ID);
 
     // Check that data URI has correct mime type
     chai.expect(nftTokenUri).to.match(/data:application\/json;base64,.+/);

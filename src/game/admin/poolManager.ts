@@ -13,8 +13,8 @@ import { ETH_PRICE, USDC_PRICE } from "../../testing/defiMetrics";
 import {
   INITIAL_LPBORROW_USDC_VALUE,
   INITIAL_LPYIELD_WETH_VALUE,
-  INITIAL_POW1_SUPPLY,
   INITIAL_POW5_AMOUNT,
+  INITIAL_YIELD_SUPPLY,
   USDC_DECIMALS,
 } from "../../utils/constants";
 import { encodePriceSqrt } from "../../utils/fixedMath";
@@ -24,7 +24,7 @@ import { encodePriceSqrt } from "../../utils/fixedMath";
 //////////////////////////////////////////////////////////////////////////////
 
 /**
- * @description Initial amount of WETH to deposit into the POW1 pool
+ * @description Initial amount of WETH to deposit into the YIELD pool
  */
 const INITIAL_MARKET_SUPPLY: bigint =
   ethers.parseEther(INITIAL_LPYIELD_WETH_VALUE.toString()) / BigInt(ETH_PRICE); // $100 in ETH
@@ -42,9 +42,9 @@ const INITIAL_STABLE_SUPPLY: bigint =
 
 // Required addresses
 type Addresses = {
-  pow1Token: `0x${string}`;
+  yieldToken: `0x${string}`;
   marketToken: `0x${string}`;
-  pow1MarketPool: `0x${string}`;
+  yieldMarketPool: `0x${string}`;
   pow5Token: `0x${string}`;
   stableToken: `0x${string}`;
   pow5StablePool: `0x${string}`;
@@ -55,7 +55,7 @@ type Addresses = {
 //////////////////////////////////////////////////////////////////////////////
 
 /**
- * @description Manages the initialization of Uniswap V3 pools for POW1 and
+ * @description Manages the initialization of Uniswap V3 pools for YIELD and
  * POW5 tokens
  */
 class PoolManager {
@@ -68,9 +68,9 @@ class PoolManager {
   }
 
   /**
-   * @description Initializes the Uniswap V3 pools for POW1 and POW5
+   * @description Initializes the Uniswap V3 pools for YIELD and POW5
    *
-   * This function checks if the POW1 and POW5 pools are already initialized by
+   * This function checks if the YIELD and POW5 pools are already initialized by
    * querying the Uniswap V3 pool's current slot price. If the pools are not
    * initialized, it calculates the correct initial price and pushes
    * transactions to initialize the pools.
@@ -81,30 +81,30 @@ class PoolManager {
    * @returns {Promise<Array<ethers.ContractTransactionReceipt>>} A promise that
    * resolves to an array of transaction receipts.
    *
-   * @throws {Error} If the tokens in either POW1 or POW5 pools are incorrect
+   * @throws {Error} If the tokens in either YIELD or POW5 pools are incorrect
    */
   async initializePools(): Promise<Array<ethers.ContractTransactionReceipt>> {
     const transactions: Array<Promise<ethers.ContractTransactionReceipt>> = [];
 
     // Create contracts
-    const pow1MarketPoolContract: UniswapV3PoolContract =
-      new UniswapV3PoolContract(this.admin, this.addresses.pow1MarketPool);
+    const yieldMarketPoolContract: UniswapV3PoolContract =
+      new UniswapV3PoolContract(this.admin, this.addresses.yieldMarketPool);
     const pow5StablePoolContract: UniswapV3PoolContract =
       new UniswapV3PoolContract(this.admin, this.addresses.pow5StablePool);
 
     // Check if pools are initialized
-    const pow1SqrtPriceX96: bigint = (await pow1MarketPoolContract.slot0())
+    const yieldSqrtPriceX96: bigint = (await yieldMarketPoolContract.slot0())
       .sqrtPriceX96;
     const pow5SqrtPriceX96: bigint = (await pow5StablePoolContract.slot0())
       .sqrtPriceX96;
 
-    // Initialize POW1 pool if not initialized
-    if (pow1SqrtPriceX96 === 0n) {
+    // Initialize YIELD pool if not initialized
+    if (yieldSqrtPriceX96 === 0n) {
       const tx: ethers.ContractTransactionResponse = await this.initializePool(
-        pow1MarketPoolContract,
-        this.addresses.pow1Token,
+        yieldMarketPoolContract,
+        this.addresses.yieldToken,
         this.addresses.marketToken,
-        INITIAL_POW1_SUPPLY,
+        INITIAL_YIELD_SUPPLY,
         INITIAL_MARKET_SUPPLY,
       );
       transactions.push(

@@ -29,9 +29,9 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev The POW1 token contract
+   * @dev The YIELD token contract
    */
-  IERC20 public immutable pow1Token;
+  IERC20 public immutable yieldToken;
 
   /**
    * @dev The POW5 token contract
@@ -79,7 +79,7 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
   /**
    * @dev Initializes the LP-NFT template
    *
-   * @param pow1Token_ The POW1 token
+   * @param yieldToken_ The YIELD token
    * @param pow5Token_ The POW5 token
    * @param lpYieldToken_ The LPYIELD token
    * @param lpBorrowToken_ The LPBORROW token
@@ -87,7 +87,7 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
    * @param uniswapV3NftManager_ The Uniswap V3 NFT manager
    */
   constructor(
-    address pow1Token_,
+    address yieldToken_,
     address pow5Token_,
     address lpYieldToken_,
     address lpBorrowToken_,
@@ -95,7 +95,7 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
     address uniswapV3NftManager_
   ) {
     // Validate parameters
-    require(pow1Token_ != address(0), "Invalid POW1");
+    require(yieldToken_ != address(0), "Invalid YIELD");
     require(pow5Token_ != address(0), "Invalid POW5");
     require(lpYieldToken_ != address(0), "Invalid LPYIELD");
     require(lpBorrowToken_ != address(0), "Invalid LPBORROW");
@@ -106,7 +106,7 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
     _disableInitializers();
 
     // Initialize routes
-    pow1Token = IERC20(pow1Token_);
+    yieldToken = IERC20(yieldToken_);
     pow5Token = IERC20(pow5Token_);
     lpYieldToken = IERC20(lpYieldToken_);
     lpBorrowToken = IERC20(lpBorrowToken_);
@@ -157,7 +157,7 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
     );
 
     // Update state
-    if (token0 == address(pow1Token) || token1 == address(pow1Token)) {
+    if (token0 == address(yieldToken) || token1 == address(yieldToken)) {
       _pool = Pool.LPYIELD;
     } else if (token0 == address(pow5Token) || token1 == address(pow5Token)) {
       _pool = Pool.LPBORROW;
@@ -195,10 +195,10 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
       payable(beneficiary).transfer(ethBalance);
     }
 
-    // Recover POW1
-    uint256 recoveredPow1Balance = pow1Token.balanceOf(address(this));
-    if (recoveredPow1Balance > 0) {
-      pow1Token.safeTransfer(beneficiary, recoveredPow1Balance);
+    // Recover YIELD
+    uint256 recoveredYieldBalance = yieldToken.balanceOf(address(this));
+    if (recoveredYieldBalance > 0) {
+      yieldToken.safeTransfer(beneficiary, recoveredYieldBalance);
     }
 
     // Recover POW5
@@ -241,11 +241,11 @@ contract LPNFT is ILPNFT, Initializable, AccessControl {
   }
 
   /**
-   * @dev See {ILPNFT-pow1Balance}
+   * @dev See {ILPNFT-yieldBalance}
    */
-  function pow1Balance() public view override returns (uint256) {
+  function yieldBalance() public view override returns (uint256) {
     // Read external state
-    return pow1Token.balanceOf(address(this));
+    return yieldToken.balanceOf(address(this));
   }
 
   /**

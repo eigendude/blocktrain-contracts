@@ -8,12 +8,12 @@
 
 import { ethers } from "ethers";
 
-import { BaseContract } from "../baseContract";
-import { FarmMixin } from "./farmMixin";
+import { BaseContract } from "../../../baseContract";
+import { TestGameTokenStakerMixin } from "./testGameTokenStakerMixin";
 
-const FarmContract = FarmMixin(BaseContract);
+const TestGameTokenStakerContract = TestGameTokenStakerMixin(BaseContract);
 
-class POW1LpNftStakeFarmContract extends FarmContract {
+class TestYIELDMarketStakerContract extends TestGameTokenStakerContract {
   constructor(
     contractRunner: ethers.Provider | ethers.Signer,
     contractAddress: `0x${string}`,
@@ -22,4 +22,4 @@ class POW1LpNftStakeFarmContract extends FarmContract {
   }
 }
 
-export { POW1LpNftStakeFarmContract };
+export { TestYIELDMarketStakerContract };

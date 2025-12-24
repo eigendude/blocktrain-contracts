@@ -63,9 +63,9 @@ contract LPNFTStakeFarm is Context, ReentrancyGuard, ILPNFTStakeFarm {
   IERC20 public immutable lpToken;
 
   /**
-   * @dev The POW1 token used to return tokens
+   * @dev The YIELD token used to return tokens
    */
-  IERC20 public immutable pow1Token;
+  IERC20 public immutable yieldToken;
 
   /**
    * @dev The POW5 token used to return tokens
@@ -125,7 +125,7 @@ contract LPNFTStakeFarm is Context, ReentrancyGuard, ILPNFTStakeFarm {
    * @param lpSft_ The address of the SFT token
    * @param rewardToken_ The address of the reward token
    * @param lpToken_ The address of the LP token used to hold staked balances
-   * @param pow1Token_ The address of the POW1 token, used to return tokens
+   * @param yieldToken_ The address of the YIELD token, used to return tokens
    * @param pow5Token_ The address of the POW5 token, used to return tokens
    * @param uniswapV3NftManager_ The address of the Uniswap V3 NFT manager
    * @param rewardRate_ The reward rate per second per staked token
@@ -134,7 +134,7 @@ contract LPNFTStakeFarm is Context, ReentrancyGuard, ILPNFTStakeFarm {
     address lpSft_,
     address rewardToken_,
     address lpToken_,
-    address pow1Token_,
+    address yieldToken_,
     address pow5Token_,
     address uniswapV3NftManager_,
     uint256 rewardRate_
@@ -143,7 +143,7 @@ contract LPNFTStakeFarm is Context, ReentrancyGuard, ILPNFTStakeFarm {
     require(lpSft_ != address(0), "Invalid SFT token");
     require(rewardToken_ != address(0), "Invalid reward token");
     require(lpToken_ != address(0), "Invalid LP token");
-    require(pow1Token_ != address(0), "Invalid POW1 token");
+    require(yieldToken_ != address(0), "Invalid YIELD token");
     require(pow5Token_ != address(0), "Invalid POW5 token");
     require(uniswapV3NftManager_ != address(0), "Invalid NFT manager");
     require(rewardRate_ > 0, "Invalid reward rate");
@@ -152,7 +152,7 @@ contract LPNFTStakeFarm is Context, ReentrancyGuard, ILPNFTStakeFarm {
     lpSft = ILPSFT(lpSft_);
     rewardToken = IERC20(rewardToken_);
     lpToken = IERC20(lpToken_);
-    pow1Token = IERC20(pow1Token_);
+    yieldToken = IERC20(yieldToken_);
     pow5Token = IERC20(pow5Token_);
     uniswapV3NftManager = INonfungiblePositionManager(uniswapV3NftManager_);
 
@@ -405,11 +405,11 @@ contract LPNFTStakeFarm is Context, ReentrancyGuard, ILPNFTStakeFarm {
    * @param recipient The address of the recipient receiving the tokens
    */
   function _returnTokens(address recipient) private {
-    uint256 pow1Balance = pow1Token.balanceOf(address(this));
+    uint256 yieldBalance = yieldToken.balanceOf(address(this));
     uint256 pow5Balance = pow5Token.balanceOf(address(this));
 
-    if (pow1Balance > 0) {
-      pow1Token.safeTransfer(recipient, pow1Balance);
+    if (yieldBalance > 0) {
+      yieldToken.safeTransfer(recipient, yieldBalance);
     }
     if (pow5Balance > 0) {
       pow5Token.safeTransfer(recipient, pow5Balance);

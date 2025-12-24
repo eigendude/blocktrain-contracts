@@ -19,24 +19,24 @@ import { TheReserveContract } from "../interfaces/bureaucracy/theReserve/theRese
 import { YieldHarvestContract } from "../interfaces/bureaucracy/yieldHarvest/yieldHarvestContract";
 import { ContractLibrary } from "../interfaces/contractLibrary";
 import { DeFiManagerContract } from "../interfaces/defi/defiManagerContract";
-import { POW1LpNftStakeFarmContract } from "../interfaces/defi/pow1LpNftStakeFarmContract";
-import { POW1LpSftLendFarmContract } from "../interfaces/defi/pow1LpSftLendFarmContract";
 import { POW5InterestFarmContract } from "../interfaces/defi/pow5InterestFarmContract";
 import { POW5LpNftStakeFarmContract } from "../interfaces/defi/pow5LpNftStakeFarmContract";
 import { POW5LpSftLendFarmContract } from "../interfaces/defi/pow5LpSftLendFarmContract";
+import { YIELDLpNftStakeFarmContract } from "../interfaces/defi/yieldLpNftStakeFarmContract";
+import { YIELDLpSftLendFarmContract } from "../interfaces/defi/yieldLpSftLendFarmContract";
 import { DEBTContract } from "../interfaces/token/erc20/debtContract";
 import { LPBORROWContract } from "../interfaces/token/erc20/lpBorrowContract";
 import { LPYIELDContract } from "../interfaces/token/erc20/lpYieldContract";
-import { POW1Contract } from "../interfaces/token/erc20/pow1Contract";
 import { POW5Contract } from "../interfaces/token/erc20/pow5Contract";
 import { WrappedNativeContract } from "../interfaces/token/erc20/wrappedNativeContract";
+import { YIELDContract } from "../interfaces/token/erc20/yieldContract";
 import { LPSFTContract } from "../interfaces/token/erc1155/lpSftContract";
 import { NOLPSFTContract } from "../interfaces/token/erc1155/noLpSftContract";
 import { MarketStableSwapperContract } from "../interfaces/token/routes/marketStableSwapperContract";
-import { POW1MarketPoolerContract } from "../interfaces/token/routes/pow1MarketPoolerContract";
-import { POW1MarketSwapperContract } from "../interfaces/token/routes/pow1MarketSwapperContract";
 import { POW5StablePoolerContract } from "../interfaces/token/routes/pow5StablePoolerContract";
 import { POW5StableSwapperContract } from "../interfaces/token/routes/pow5StableSwapperContract";
+import { YIELDMarketPoolerContract } from "../interfaces/token/routes/yieldMarketPoolerContract";
+import { YIELDMarketSwapperContract } from "../interfaces/token/routes/yieldMarketSwapperContract";
 import { NonfungiblePositionManagerContract } from "../interfaces/uniswap/nonfungiblePositionManagerContract";
 import { UniswapV3PoolContract } from "../interfaces/uniswap/pool/uniswapV3PoolContract";
 import { UniswapV3FactoryContract } from "../interfaces/uniswap/uniswapV3FactoryContract";
@@ -68,26 +68,26 @@ function getContractLibrary(
     lpSftContract: new LPSFTContract(signer, addressBook.lpSft!),
     noLpSftContract: new NOLPSFTContract(signer, addressBook.noLpSft!),
     debtContract: new DEBTContract(signer, addressBook.debtToken!),
-    pow1Contract: new POW1Contract(signer, addressBook.pow1Token!),
-    pow1LpNftStakeFarmContract: new POW1LpNftStakeFarmContract(
+    yieldContract: new YIELDContract(signer, addressBook.yieldToken!),
+    yieldLpNftStakeFarmContract: new YIELDLpNftStakeFarmContract(
       signer,
-      addressBook.pow1LpNftStakeFarm!,
+      addressBook.yieldLpNftStakeFarm!,
     ),
-    pow1LpSftLendFarmContract: new POW1LpSftLendFarmContract(
+    yieldLpSftLendFarmContract: new YIELDLpSftLendFarmContract(
       signer,
-      addressBook.pow1LpSftLendFarm!,
+      addressBook.yieldLpSftLendFarm!,
     ),
-    pow1MarketPoolContract: new UniswapV3PoolContract(
+    yieldMarketPoolContract: new UniswapV3PoolContract(
       signer,
-      addressBook.pow1MarketPool!,
+      addressBook.yieldMarketPool!,
     ),
-    pow1MarketPoolerContract: new POW1MarketPoolerContract(
+    yieldMarketPoolerContract: new YIELDMarketPoolerContract(
       signer,
-      addressBook.pow1MarketPooler!,
+      addressBook.yieldMarketPooler!,
     ),
-    pow1MarketSwapperContract: new POW1MarketSwapperContract(
+    yieldMarketSwapperContract: new YIELDMarketSwapperContract(
       signer,
-      addressBook.pow1MarketSwapper!,
+      addressBook.yieldMarketSwapper!,
     ),
     pow5Contract: new POW5Contract(signer, addressBook.pow5Token!),
     pow5InterestFarmContract: new POW5InterestFarmContract(

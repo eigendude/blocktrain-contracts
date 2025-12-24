@@ -70,12 +70,12 @@ describe("The Reserve Smart Contract", () => {
       lpSftContract,
       noLpSftContract,
       debtContract,
-      pow1Contract,
-      pow1LpNftStakeFarmContract,
-      pow1LpSftLendFarmContract,
-      pow1MarketPoolContract,
-      pow1MarketPoolerContract,
-      pow1MarketSwapperContract,
+      yieldContract,
+      yieldLpNftStakeFarmContract,
+      yieldLpSftLendFarmContract,
+      yieldMarketPoolContract,
+      yieldMarketPoolerContract,
+      yieldMarketSwapperContract,
       pow5Contract,
       pow5LpNftStakeFarmContract,
       pow5LpSftLendFarmContract,
@@ -92,8 +92,8 @@ describe("The Reserve Smart Contract", () => {
 
     // Test routes
     chai
-      .expect(await theReserveContract.pow1Token())
-      .to.equal(pow1Contract.address);
+      .expect(await theReserveContract.yieldToken())
+      .to.equal(yieldContract.address);
     chai
       .expect(await theReserveContract.pow5Token())
       .to.equal(pow5Contract.address);
@@ -119,8 +119,8 @@ describe("The Reserve Smart Contract", () => {
       .expect(await theReserveContract.noLpSft())
       .to.equal(noLpSftContract.address);
     chai
-      .expect(await theReserveContract.pow1MarketPool())
-      .to.equal(pow1MarketPoolContract.address);
+      .expect(await theReserveContract.yieldMarketPool())
+      .to.equal(yieldMarketPoolContract.address);
     chai
       .expect(await theReserveContract.pow5StablePool())
       .to.equal(pow5StablePoolContract.address);
@@ -128,8 +128,8 @@ describe("The Reserve Smart Contract", () => {
       .expect(await theReserveContract.marketStablePool())
       .to.equal(wrappedNativeUsdcPoolContract.address);
     chai
-      .expect(await theReserveContract.pow1MarketSwapper())
-      .to.equal(pow1MarketSwapperContract.address);
+      .expect(await theReserveContract.yieldMarketSwapper())
+      .to.equal(yieldMarketSwapperContract.address);
     chai
       .expect(await theReserveContract.pow5StableSwapper())
       .to.equal(pow5StableSwapperContract.address);
@@ -137,20 +137,20 @@ describe("The Reserve Smart Contract", () => {
       .expect(await theReserveContract.marketStableSwapper())
       .to.equal(wrappedNativeUsdcSwapperContract.address);
     chai
-      .expect(await theReserveContract.pow1MarketPooler())
-      .to.equal(pow1MarketPoolerContract.address);
+      .expect(await theReserveContract.yieldMarketPooler())
+      .to.equal(yieldMarketPoolerContract.address);
     chai
       .expect(await theReserveContract.pow5StablePooler())
       .to.equal(pow5StablePoolerContract.address);
     chai
-      .expect(await theReserveContract.pow1LpNftStakeFarm())
-      .to.equal(pow1LpNftStakeFarmContract.address);
+      .expect(await theReserveContract.yieldLpNftStakeFarm())
+      .to.equal(yieldLpNftStakeFarmContract.address);
     chai
       .expect(await theReserveContract.pow5LpNftStakeFarm())
       .to.equal(pow5LpNftStakeFarmContract.address);
     chai
-      .expect(await theReserveContract.pow1LpSftLendFarm())
-      .to.equal(pow1LpSftLendFarmContract.address);
+      .expect(await theReserveContract.yieldLpSftLendFarm())
+      .to.equal(yieldLpSftLendFarmContract.address);
     chai
       .expect(await theReserveContract.pow5LpSftLendFarm())
       .to.equal(pow5LpSftLendFarmContract.address);

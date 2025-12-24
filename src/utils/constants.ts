@@ -23,9 +23,9 @@ import { ethers } from "ethers";
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @description The decimal count for POW1
+ * @description The decimal count for YIELD
  */
-const POW1_DECIMALS: number = 18;
+const YIELD_DECIMALS: number = 18;
 
 /**
  * @description The decimal count for POW5
@@ -58,23 +58,23 @@ const USDC_DECIMALS: number = 6;
 const WETH_DECIMALS: number = 18;
 
 /**
- * @description The initial supply of POW1
+ * @description The initial supply of YIELD
  */
-const INITIAL_POW1_SUPPLY: bigint = ethers.parseUnits("10000", POW1_DECIMALS); // 10,000 POW1 ($100)
+const INITIAL_YIELD_SUPPLY: bigint = ethers.parseUnits("10000", YIELD_DECIMALS); // 10,000 YIELD ($100)
 
 /**
  * @description The initial pool deposit of POW5
  */
-const INITIAL_POW5_DEPOSIT: bigint = ethers.parseUnits("2000", POW5_DECIMALS); // 2,000 POW1 ($100)
+const INITIAL_POW5_DEPOSIT: bigint = ethers.parseUnits("2000", POW5_DECIMALS); // 2,000 YIELD ($100)
 
 ////////////////////////////////////////////////////////////////////////////////
 // DeFi constants
 ////////////////////////////////////////////////////////////////////////////////
 
 /**
- * @description The initial price of POW1, in dollars
+ * @description The initial price of YIELD, in dollars
  */
-const INITIAL_POW1_PRICE: number = 0.01; // $0.01
+const INITIAL_YIELD_PRICE: number = 0.01; // $0.01
 
 /**
  * @description The initial price of POW5, in dollars
@@ -92,7 +92,7 @@ const INITIAL_LPYIELD_WETH_VALUE: number = 100; // $100
 const INITIAL_LPBORROW_USDC_VALUE: number = 100; // $100
 
 /**
- * @description The initial LPYIELD amount, sqrt(POW1 * WETH)
+ * @description The initial LPYIELD amount, sqrt(YIELD * WETH)
  */
 const INITIAL_LPYIELD_AMOUNT: bigint = 20_036_097_492_521_525_709n; // 2,004 LPYIELD
 
@@ -188,8 +188,8 @@ export {
   INITIAL_LPYIELD_WETH_VALUE,
   INITIAL_LPBORROW_AMOUNT,
   INITIAL_LPBORROW_USDC_VALUE,
-  INITIAL_POW1_PRICE,
-  INITIAL_POW1_SUPPLY,
+  INITIAL_YIELD_PRICE,
+  INITIAL_YIELD_SUPPLY,
   INITIAL_POW5_AMOUNT,
   INITIAL_POW5_DEPOSIT,
   INITIAL_POW5_PRICE,
@@ -202,7 +202,7 @@ export {
   MIN_SQRT_RATIO,
   MIN_TICK,
   DEBT_DECIMALS,
-  POW1_DECIMALS,
+  YIELD_DECIMALS,
   POW5_DECIMALS,
   TICK_SPACINGS,
   UNI_V3_FEE_AMOUNT,

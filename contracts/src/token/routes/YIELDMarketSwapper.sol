@@ -21,7 +21,7 @@ import {UniV3Swapper} from "./UniV3Swapper.sol";
 /**
  * @dev Token router to swap between the game token and a yielding asset token
  */
-contract POW1MarketSwapper is
+contract YIELDMarketSwapper is
   Context,
   ReentrancyGuard,
   UniV3Swapper,
@@ -34,15 +34,15 @@ contract POW1MarketSwapper is
   /**
    * @dev Initializes the contract
    *
-   * @param pow1Token_ The address of the POW1 token
+   * @param yieldToken_ The address of the YIELD token
    * @param marketToken_ The address of the market token
-   * @param pow1MarketPool_ The address of the pool contract for the token pair
+   * @param yieldMarketPool_ The address of the pool contract for the token pair
    */
   constructor(
-    address pow1Token_,
+    address yieldToken_,
     address marketToken_,
-    address pow1MarketPool_
-  ) UniV3Swapper(pow1Token_, marketToken_, pow1MarketPool_) {}
+    address yieldMarketPool_
+  ) UniV3Swapper(yieldToken_, marketToken_, yieldMarketPool_) {}
 
   //////////////////////////////////////////////////////////////////////////////
   // Implementation of {IGameTokenSwapper}

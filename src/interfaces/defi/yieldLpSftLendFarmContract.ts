@@ -17,7 +17,7 @@ const AccessControlContract = AccessControlMixin(BaseContract);
 const FarmContract = FarmMixin(AccessControlContract);
 const LpSftLendFarmContract = LpSftLendFarmMixin(FarmContract);
 
-class POW1LpSftLendFarmContract extends LpSftLendFarmContract {
+class YIELDLpSftLendFarmContract extends LpSftLendFarmContract {
   constructor(
     contractRunner: ethers.Provider | ethers.Signer,
     contractAddress: `0x${string}`,
@@ -26,4 +26,4 @@ class POW1LpSftLendFarmContract extends LpSftLendFarmContract {
   }
 }
 
-export { POW1LpSftLendFarmContract };
+export { YIELDLpSftLendFarmContract };

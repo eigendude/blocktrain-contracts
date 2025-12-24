@@ -20,14 +20,14 @@ interface IGameTokenSwapper {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev Emitted when POW1 is purchased with the asset token or POW5 is
+   * @dev Emitted when YIELD is purchased with the asset token or POW5 is
    * purchased with the stable token
    *
    * @param sender The sender of the asset token
-   * @param recipient The address of the recipient of the POW1
-   * @param gameTokenAddress The address of the POW1 or POW5 token contract
+   * @param recipient The address of the recipient of the YIELD
+   * @param gameTokenAddress The address of the YIELD or POW5 token contract
    * @param assetTokenAddress The amount of the asset token being spent
-   * @param pow1Returned The amount of POW1 received
+   * @param yieldReturned The amount of YIELD received
    */
   event GameTokenBought(
     address indexed sender,
@@ -35,17 +35,17 @@ interface IGameTokenSwapper {
     address indexed gameTokenAddress,
     address assetTokenAddress,
     uint256 assetTokenAmount,
-    uint256 pow1Returned
+    uint256 yieldReturned
   );
 
   /**
-   * @dev Emitted when POW1 is sold for the asset token or POW5 is sold for
+   * @dev Emitted when YIELD is sold for the asset token or POW5 is sold for
    * the stable token
    *
    * @param sender The sender of the game token
    * @param recipient The address of the recipient of the asset token
-   * @param gameTokenAddress The address of the POW1 or POW5 token contract
-   * @param pow1Amount The amount of POW1 being spent
+   * @param gameTokenAddress The address of the YIELD or POW5 token contract
+   * @param yieldAmount The amount of YIELD being spent
    * @param assetTokenReturned The amount of the asset token received
    */
   event GameTokenSold(
@@ -53,7 +53,7 @@ interface IGameTokenSwapper {
     address indexed recipient,
     address indexed gameTokenAddress,
     address assetTokenAddress,
-    uint256 pow1Amount,
+    uint256 yieldAmount,
     uint256 assetTokenReturned
   );
 

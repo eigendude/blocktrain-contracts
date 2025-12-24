@@ -20,8 +20,8 @@ import {
   DEBT_DECIMALS,
   LPBORROW_DECIMALS,
   LPYIELD_DECIMALS,
-  POW1_DECIMALS,
   POW5_DECIMALS,
+  YIELD_DECIMALS,
 } from "../../src/utils/constants";
 
 // Setup Hardhat
@@ -32,7 +32,7 @@ const setupTest = hardhat.deployments.createFixture(setupFixture);
 //
 
 // Amounts of tokens to mint for testing
-const POW1_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1
+const YIELD_AMOUNT: bigint = ethers.parseUnits("1000", YIELD_DECIMALS); // 1,000 YIELD
 const POW5_AMOUNT: bigint = ethers.parseUnits("1000", POW5_DECIMALS); // 1,000 POW5
 const LPYIELD_AMOUNT: bigint = ethers.parseUnits("1000", LPYIELD_DECIMALS); // 1,000 LPYIELD
 const LPBORROW_AMOUNT: bigint = ethers.parseUnits("1000", LPBORROW_DECIMALS); // 1,000 LPBORROW
@@ -79,14 +79,14 @@ describe("ERC20Nontransferable", () => {
   // Spec: Grant issuer roles to deployer
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should grant ERC20_ISSUER_ROLE for POW1", async function () {
+  it("should grant ERC20_ISSUER_ROLE for YIELD", async function () {
     this.timeout(60 * 1000);
 
-    const { pow1TokenContract } = contracts;
+    const { yieldTokenContract } = contracts;
 
     // Grant issuer role to deployer
     const tx: ethers.ContractTransactionResponse = await (
-      pow1TokenContract.connect(deployer) as ethers.Contract
+      yieldTokenContract.connect(deployer) as ethers.Contract
     ).grantRole(ERC20_ISSUER_ROLE, await deployer.getAddress());
     await tx.wait();
   });
@@ -143,15 +143,15 @@ describe("ERC20Nontransferable", () => {
   // Spec: Mint tokens to deployer
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should mint POW1", async function () {
+  it("should mint YIELD", async function () {
     this.timeout(60 * 1000);
 
-    const { pow1TokenContract } = contracts;
+    const { yieldTokenContract } = contracts;
 
-    // Mint POW1
+    // Mint YIELD
     const tx: ethers.ContractTransactionResponse = await (
-      pow1TokenContract.connect(deployer) as ethers.Contract
-    ).mint(await deployer.getAddress(), POW1_AMOUNT);
+      yieldTokenContract.connect(deployer) as ethers.Contract
+    ).mint(await deployer.getAddress(), YIELD_AMOUNT);
     await tx.wait();
   });
 
@@ -207,15 +207,15 @@ describe("ERC20Nontransferable", () => {
   // Spec: Test token transfers
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should succeed to transfer POW1", async function () {
+  it("should succeed to transfer YIELD", async function () {
     this.timeout(60 * 1000);
 
-    const { pow1TokenContract } = contracts;
+    const { yieldTokenContract } = contracts;
 
-    // Transfer POW1
+    // Transfer YIELD
     const tx: ethers.ContractTransactionResponse = await (
-      pow1TokenContract.connect(deployer) as ethers.Contract
-    ).transfer(beneficiaryAddress, POW1_AMOUNT);
+      yieldTokenContract.connect(deployer) as ethers.Contract
+    ).transfer(beneficiaryAddress, YIELD_AMOUNT);
     await tx.wait();
   });
 

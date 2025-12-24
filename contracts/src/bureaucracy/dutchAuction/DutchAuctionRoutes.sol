@@ -64,10 +64,10 @@ contract DutchAuctionRoutes is IDutchAuctionRoutes {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev See {IDutchAuctionRoutes-pow1Token}
+   * @dev See {IDutchAuctionRoutes-yieldToken}
    */
-  function pow1Token() external view override returns (IERC20) {
-    return _routes.pow1Token;
+  function yieldToken() external view override returns (IERC20) {
+    return _routes.yieldToken;
   }
 
   /**
@@ -99,22 +99,22 @@ contract DutchAuctionRoutes is IDutchAuctionRoutes {
   }
 
   /**
-   * @dev See {IDutchAuctionRoutes-pow1MarketPool}
+   * @dev See {IDutchAuctionRoutes-yieldMarketPool}
    */
-  function pow1MarketPool() external view override returns (IUniswapV3Pool) {
-    return _routes.pow1MarketPool;
+  function yieldMarketPool() external view override returns (IUniswapV3Pool) {
+    return _routes.yieldMarketPool;
   }
 
   /**
-   * @dev See {IDutchAuctionRoutes-pow1MarketSwapper}
+   * @dev See {IDutchAuctionRoutes-yieldMarketSwapper}
    */
-  function pow1MarketSwapper()
+  function yieldMarketSwapper()
     external
     view
     override
     returns (IGameTokenSwapper)
   {
-    return _routes.pow1MarketSwapper;
+    return _routes.yieldMarketSwapper;
   }
 
   /**
@@ -142,27 +142,27 @@ contract DutchAuctionRoutes is IDutchAuctionRoutes {
   }
 
   /**
-   * @dev See {IDutchAuctionRoutes-pow1MarketPooler}
+   * @dev See {IDutchAuctionRoutes-yieldMarketPooler}
    */
-  function pow1MarketPooler()
+  function yieldMarketPooler()
     external
     view
     override
     returns (IGameTokenPooler)
   {
-    return _routes.pow1MarketPooler;
+    return _routes.yieldMarketPooler;
   }
 
   /**
-   * @dev See {IDutchAuctionRoutes-pow1LpNftStakeFarm}
+   * @dev See {IDutchAuctionRoutes-yieldLpNftStakeFarm}
    */
-  function pow1LpNftStakeFarm()
+  function yieldLpNftStakeFarm()
     external
     view
     override
     returns (ILPNFTStakeFarm)
   {
-    return _routes.pow1LpNftStakeFarm;
+    return _routes.yieldLpNftStakeFarm;
   }
 
   /**

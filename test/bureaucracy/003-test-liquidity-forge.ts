@@ -22,12 +22,12 @@ import { setupFixture } from "../../src/testing/setupFixture";
 import {
   INITIAL_LPYIELD_AMOUNT,
   INITIAL_LPYIELD_WETH_VALUE,
-  INITIAL_POW1_SUPPLY,
   INITIAL_POW5_AMOUNT,
   INITIAL_POW5_PRICE,
+  INITIAL_YIELD_SUPPLY,
   LPYIELD_DECIMALS,
-  POW1_DECIMALS,
   POW5_DECIMALS,
+  YIELD_DECIMALS,
 } from "../../src/utils/constants";
 import { getContractLibrary } from "../../src/utils/getContractLibrary";
 
@@ -45,8 +45,8 @@ const INITIAL_ETH: string = "1"; // 1 ETH
 const INITIAL_WETH_AMOUNT: bigint =
   ethers.parseEther(INITIAL_LPYIELD_WETH_VALUE.toString()) / BigInt(ETH_PRICE); // $100 in ETH
 
-// POW1 test reward for LPYIELD staking incentive
-const LPYIELD_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1 ($10)
+// YIELD test reward for LPYIELD staking incentive
+const LPYIELD_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", YIELD_DECIMALS); // 1,000 YIELD ($10)
 
 // Token IDs of minted LP-NFTs
 const LPYIELD_LPNFT_TOKEN_ID: bigint = 1n;
@@ -127,9 +127,9 @@ describe("Bureau 3: Liquidity Forge", () => {
     this.timeout(60 * 1000);
 
     const poolManager: PoolManager = new PoolManager(deployer, {
-      pow1Token: addressBook.pow1Token!,
+      yieldToken: addressBook.yieldToken!,
       marketToken: addressBook.wrappedNativeToken!,
-      pow1MarketPool: addressBook.pow1MarketPool!,
+      yieldMarketPool: addressBook.yieldMarketPool!,
       pow5Token: addressBook.pow5Token!,
       stableToken: addressBook.usdcToken!,
       pow5StablePool: addressBook.pow5StablePool!,
@@ -151,7 +151,7 @@ describe("Bureau 3: Liquidity Forge", () => {
     const permissionManager: PermissionManager = new PermissionManager(
       deployer,
       {
-        pow1Token: addressBook.pow1Token!,
+        yieldToken: addressBook.yieldToken!,
         pow5Token: addressBook.pow5Token!,
         lpYieldToken: addressBook.lpYieldToken!,
         lpBorrowToken: addressBook.lpBorrowToken!,
@@ -162,9 +162,9 @@ describe("Bureau 3: Liquidity Forge", () => {
         yieldHarvest: addressBook.yieldHarvest!,
         liquidityForge: addressBook.liquidityForge!,
         reverseRepo: addressBook.reverseRepo!,
-        pow1LpNftStakeFarm: addressBook.pow1LpNftStakeFarm!,
+        yieldLpNftStakeFarm: addressBook.yieldLpNftStakeFarm!,
         pow5LpNftStakeFarm: addressBook.pow5LpNftStakeFarm!,
-        pow1LpSftLendFarm: addressBook.pow1LpSftLendFarm!,
+        yieldLpSftLendFarm: addressBook.yieldLpSftLendFarm!,
         pow5LpSftLendFarm: addressBook.pow5LpSftLendFarm!,
         defiManager: addressBook.defiManager!,
         pow5InterestFarm: addressBook.pow5InterestFarm!,
@@ -184,14 +184,17 @@ describe("Bureau 3: Liquidity Forge", () => {
   it("should initialize Dutch Auction", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { dutchAuctionContract, pow1Contract, wrappedNativeContract } =
+    const { dutchAuctionContract, yieldContract, wrappedNativeContract } =
       deployerContracts;
 
     // Obtain tokens
     await wrappedNativeContract.deposit(INITIAL_WETH_AMOUNT);
 
     // Approve tokens
-    await pow1Contract.approve(addressBook.dutchAuction!, INITIAL_POW1_SUPPLY);
+    await yieldContract.approve(
+      addressBook.dutchAuction!,
+      INITIAL_YIELD_SUPPLY,
+    );
     await wrappedNativeContract.approve(
       addressBook.dutchAuction!,
       INITIAL_WETH_AMOUNT,
@@ -199,7 +202,7 @@ describe("Bureau 3: Liquidity Forge", () => {
 
     // Initialize DutchAuction
     await dutchAuctionContract.initialize(
-      INITIAL_POW1_SUPPLY, // gameTokenAmount
+      INITIAL_YIELD_SUPPLY, // gameTokenAmount
       INITIAL_WETH_AMOUNT, // assetTokenAmount
       beneficiaryAddress, // receiver
     );
@@ -212,15 +215,15 @@ describe("Bureau 3: Liquidity Forge", () => {
   it("should initialize YieldHarvest", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { pow1Contract } = deployerContracts;
+    const { yieldContract } = deployerContracts;
     const { lpSftContract } = beneficiaryContracts;
 
     // Grant roles
-    await pow1Contract.grantRole(ERC20_ISSUER_ROLE, deployerAddress);
+    await yieldContract.grantRole(ERC20_ISSUER_ROLE, deployerAddress);
 
-    // Mint POW1 to the POW1 LP-SFT lend farm
-    await pow1Contract.mint(
-      addressBook.pow1LpSftLendFarm!,
+    // Mint YIELD to the YIELD LP-SFT lend farm
+    await yieldContract.mint(
+      addressBook.yieldLpSftLendFarm!,
       LPYIELD_REWARD_AMOUNT,
     );
 
@@ -255,7 +258,7 @@ describe("Bureau 3: Liquidity Forge", () => {
     }
   });
 
-  it("should check POW1 LP-SFT LPPOW balance", async function (): Promise<void> {
+  it("should check YIELD LP-SFT LPPOW balance", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     // Calculate DeFi properties
@@ -409,10 +412,10 @@ describe("Bureau 3: Liquidity Forge", () => {
   it("should check LP-SFT balances after repaying POW5", async function (): Promise<void> {
     const { defiManagerContract } = beneficiaryContracts;
 
-    const pow1Amount: bigint = await defiManagerContract.pow1Balance(
+    const yieldAmount: bigint = await defiManagerContract.yieldBalance(
       LPYIELD_LPNFT_TOKEN_ID,
     );
-    chai.expect(pow1Amount).to.not.equal(0n);
+    chai.expect(yieldAmount).to.not.equal(0n);
 
     const lpYieldAmount: bigint = await defiManagerContract.lpYieldBalance(
       LPYIELD_LPNFT_TOKEN_ID,

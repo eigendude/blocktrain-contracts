@@ -9,9 +9,9 @@
 import { ethers } from "ethers";
 
 import { DeFiManagerContract } from "../../interfaces/defi/defiManagerContract";
-import { POW1LpSftLendFarmContract } from "../../interfaces/defi/pow1LpSftLendFarmContract";
 import { POW5InterestFarmContract } from "../../interfaces/defi/pow5InterestFarmContract";
 import { POW5LpSftLendFarmContract } from "../../interfaces/defi/pow5LpSftLendFarmContract";
+import { YIELDLpSftLendFarmContract } from "../../interfaces/defi/yieldLpSftLendFarmContract";
 import { DEBTContract } from "../../interfaces/token/erc20/debtContract";
 import { LPBORROWContract } from "../../interfaces/token/erc20/lpBorrowContract";
 import { LPYIELDContract } from "../../interfaces/token/erc20/lpYieldContract";
@@ -43,7 +43,7 @@ const LPSFT_FARM_OPERATOR_ROLE: string = ethers.encodeBytes32String(
 
 // Required addresses
 type Addresses = {
-  pow1Token: `0x${string}`;
+  yieldToken: `0x${string}`;
   pow5Token: `0x${string}`;
   lpYieldToken: `0x${string}`;
   lpBorrowToken: `0x${string}`;
@@ -54,9 +54,9 @@ type Addresses = {
   yieldHarvest: `0x${string}`;
   liquidityForge: `0x${string}`;
   reverseRepo: `0x${string}`;
-  pow1LpNftStakeFarm: `0x${string}`;
+  yieldLpNftStakeFarm: `0x${string}`;
   pow5LpNftStakeFarm: `0x${string}`;
-  pow1LpSftLendFarm: `0x${string}`;
+  yieldLpSftLendFarm: `0x${string}`;
   pow5LpSftLendFarm: `0x${string}`;
   defiManager: `0x${string}`;
   pow5InterestFarm: `0x${string}`;
@@ -121,10 +121,10 @@ class PermissionManager {
       this.admin,
       this.addresses.noLpSft,
     );
-    const pow1LpSftLendFarmContract: POW1LpSftLendFarmContract =
-      new POW1LpSftLendFarmContract(
+    const yieldLpSftLendFarmContract: YIELDLpSftLendFarmContract =
+      new YIELDLpSftLendFarmContract(
         this.admin,
-        this.addresses.pow1LpSftLendFarm,
+        this.addresses.yieldLpSftLendFarm,
       );
     const pow5LpSftLendFarmContract: POW5LpSftLendFarmContract =
       new POW5LpSftLendFarmContract(
@@ -142,7 +142,7 @@ class PermissionManager {
     const roleAssignments: RoleGroup[] = [
       // Dutch Auction
       {
-        [this.addresses.pow1LpNftStakeFarm]: [
+        [this.addresses.yieldLpNftStakeFarm]: [
           {
             role: LPSFT_ISSUER_ROLE,
             contract: lpSftContract,
@@ -164,7 +164,7 @@ class PermissionManager {
           },
           {
             role: LPSFT_FARM_OPERATOR_ROLE,
-            contract: pow1LpSftLendFarmContract,
+            contract: yieldLpSftLendFarmContract,
           },
           {
             role: LPSFT_FARM_OPERATOR_ROLE,

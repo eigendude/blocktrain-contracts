@@ -21,8 +21,8 @@ import { ETH_PRICE } from "../../src/testing/defiMetrics";
 import { setupFixture } from "../../src/testing/setupFixture";
 import {
   INITIAL_LPYIELD_WETH_VALUE,
-  INITIAL_POW1_SUPPLY,
-  POW1_DECIMALS,
+  INITIAL_YIELD_SUPPLY,
+  YIELD_DECIMALS,
   ZERO_ADDRESS,
 } from "../../src/utils/constants";
 import { getContractLibrary } from "../../src/utils/getContractLibrary";
@@ -120,9 +120,9 @@ describe("Bureau 2: Yield Harvest", () => {
     this.timeout(60 * 1000);
 
     const poolManager: PoolManager = new PoolManager(deployer, {
-      pow1Token: addressBook.pow1Token!,
+      yieldToken: addressBook.yieldToken!,
       marketToken: addressBook.wrappedNativeToken!,
-      pow1MarketPool: addressBook.pow1MarketPool!,
+      yieldMarketPool: addressBook.yieldMarketPool!,
       pow5Token: addressBook.pow5Token!,
       stableToken: addressBook.usdcToken!,
       pow5StablePool: addressBook.pow5StablePool!,
@@ -144,7 +144,7 @@ describe("Bureau 2: Yield Harvest", () => {
     const permissionManager: PermissionManager = new PermissionManager(
       deployer,
       {
-        pow1Token: addressBook.pow1Token!,
+        yieldToken: addressBook.yieldToken!,
         pow5Token: addressBook.pow5Token!,
         lpYieldToken: addressBook.lpYieldToken!,
         lpBorrowToken: addressBook.lpBorrowToken!,
@@ -155,9 +155,9 @@ describe("Bureau 2: Yield Harvest", () => {
         yieldHarvest: addressBook.yieldHarvest!,
         liquidityForge: addressBook.liquidityForge!,
         reverseRepo: addressBook.reverseRepo!,
-        pow1LpNftStakeFarm: addressBook.pow1LpNftStakeFarm!,
+        yieldLpNftStakeFarm: addressBook.yieldLpNftStakeFarm!,
         pow5LpNftStakeFarm: addressBook.pow5LpNftStakeFarm!,
-        pow1LpSftLendFarm: addressBook.pow1LpSftLendFarm!,
+        yieldLpSftLendFarm: addressBook.yieldLpSftLendFarm!,
         pow5LpSftLendFarm: addressBook.pow5LpSftLendFarm!,
         defiManager: addressBook.defiManager!,
         pow5InterestFarm: addressBook.pow5InterestFarm!,
@@ -177,16 +177,16 @@ describe("Bureau 2: Yield Harvest", () => {
   it("should initialize Dutch Auction", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { dutchAuctionContract, pow1Contract, wrappedNativeContract } =
+    const { dutchAuctionContract, yieldContract, wrappedNativeContract } =
       deployerContracts;
 
     // Obtain tokens
     await wrappedNativeContract.deposit(INITIAL_WETH_AMOUNT);
 
     // Approve tokens
-    await pow1Contract.approve(
+    await yieldContract.approve(
       dutchAuctionContract.address,
-      INITIAL_POW1_SUPPLY,
+      INITIAL_YIELD_SUPPLY,
     );
     await wrappedNativeContract.approve(
       dutchAuctionContract.address,
@@ -195,28 +195,28 @@ describe("Bureau 2: Yield Harvest", () => {
 
     // Initialize DutchAuction
     await dutchAuctionContract.initialize(
-      INITIAL_POW1_SUPPLY, // gameTokenAmount
+      INITIAL_YIELD_SUPPLY, // gameTokenAmount
       INITIAL_WETH_AMOUNT, // assetTokenAmount
       beneficiaryAddress, // receiver
     );
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Mint POW1 reward to POW1 LP-SFT lend farm
+  // Spec: Mint YIELD reward to YIELD LP-SFT lend farm
   /////////////////////////////////////////////////////////////////////////////
 
-  it("should mint POW1 reward to the POW1 LP-SFT lend farm", async function (): Promise<void> {
+  it("should mint YIELD reward to the YIELD LP-SFT lend farm", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { pow1Contract, pow1LpSftLendFarmContract } = deployerContracts;
+    const { yieldContract, yieldLpSftLendFarmContract } = deployerContracts;
 
     // Grant issuer role to deployer
-    await pow1Contract.grantRole(ERC20_ISSUER_ROLE, deployerAddress);
+    await yieldContract.grantRole(ERC20_ISSUER_ROLE, deployerAddress);
 
-    // Mint POW1 to the POW1 LP-SFT lend farm
-    await pow1Contract.mint(
-      pow1LpSftLendFarmContract.address,
-      ethers.parseUnits("5000", POW1_DECIMALS), // TODO: Handle rewards
+    // Mint YIELD to the YIELD LP-SFT lend farm
+    await yieldContract.mint(
+      yieldLpSftLendFarmContract.address,
+      ethers.parseUnits("5000", YIELD_DECIMALS), // TODO: Handle rewards
     );
   });
 

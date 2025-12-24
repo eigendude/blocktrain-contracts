@@ -22,8 +22,8 @@ import {
   LPSFT_CONTRACT,
   LPYIELD_TOKEN_CONTRACT,
   NOLPSFT_CONTRACT,
-  POW1_TOKEN_CONTRACT,
   POW5_TOKEN_CONTRACT,
+  YIELD_TOKEN_CONTRACT,
 } from "../src/names/dapp";
 
 //
@@ -50,20 +50,20 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
   //////////////////////////////////////////////////////////////////////////////
 
   //
-  // Deploy POW1 token
+  // Deploy YIELD token
   //
 
-  if (addressBook.pow1Token && networkName !== "localhost") {
-    console.log(`Using ${POW1_TOKEN_CONTRACT} at ${addressBook.pow1Token}`);
+  if (addressBook.yieldToken && networkName !== "localhost") {
+    console.log(`Using ${YIELD_TOKEN_CONTRACT} at ${addressBook.yieldToken}`);
   } else {
-    console.log(`Deploying ${POW1_TOKEN_CONTRACT}`);
-    const tx = await deployments.deploy(POW1_TOKEN_CONTRACT, {
+    console.log(`Deploying ${YIELD_TOKEN_CONTRACT}`);
+    const tx = await deployments.deploy(YIELD_TOKEN_CONTRACT, {
       ...opts,
       args: [
         deployer, // owner
       ],
     });
-    addressBook.pow1Token = tx.address as `0x${string}`;
+    addressBook.yieldToken = tx.address as `0x${string}`;
   }
 
   //
@@ -149,7 +149,7 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
     const tx = await deployments.deploy(LPNFT_CONTRACT, {
       ...opts,
       args: [
-        addressBook.pow1Token!, // pow1Token
+        addressBook.yieldToken!, // yieldToken
         addressBook.pow5Token!, // pow5Token
         addressBook.lpYieldToken!, // lpYieldToken
         addressBook.lpBorrowToken!, // lpBorrowToken
@@ -173,7 +173,7 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
       args: [
         deployer, // owner
         addressBook.lpNft!, // lpNftTemplate
-        addressBook.pow1Token!, // pow1Token
+        addressBook.yieldToken!, // yieldToken
         addressBook.pow5Token!, // pow5Token
         addressBook.lpYieldToken!, // lpYieldToken
         addressBook.lpBorrowToken!, // lpBorrowToken

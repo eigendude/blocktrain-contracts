@@ -56,14 +56,14 @@ abstract contract DutchAuctionActions is
    */
   function purchase(
     uint256 lpNftTokenId,
-    uint256 pow1Amount,
+    uint256 yieldAmount,
     uint256 marketTokenAmount,
     address beneficiary,
     address receiver
   ) external override nonReentrant {
     // Validate parameters
     require(lpNftTokenId != 0, "Invalid LP-NFT ID");
-    require(pow1Amount > 0 || marketTokenAmount > 0, "Invalid payment");
+    require(yieldAmount > 0 || marketTokenAmount > 0, "Invalid payment");
     require(beneficiary != address(0), "Invalid beneficiary");
     require(receiver != address(0), "Invalid receiver");
 
@@ -84,11 +84,11 @@ abstract contract DutchAuctionActions is
     auction.salePrice = currentPriceBips;
 
     // Call external contracts
-    if (pow1Amount > 0) {
-      _routes.pow1Token.safeTransferFrom(
+    if (yieldAmount > 0) {
+      _routes.yieldToken.safeTransferFrom(
         _msgSender(),
         address(this),
-        pow1Amount
+        yieldAmount
       );
     }
     if (marketTokenAmount > 0) {
@@ -100,21 +100,21 @@ abstract contract DutchAuctionActions is
     }
 
     // Amounts to deposit
-    uint256 pow1DepositAmount = pow1Amount;
+    uint256 yieldDepositAmount = yieldAmount;
     uint256 marketDepositAmount = marketTokenAmount;
 
     // Handle the tip
     {
       // Calculate the auction tip amounts
-      uint256 pow1TipAmount = (pow1Amount * currentPriceBips) / 1e18;
+      uint256 yieldTipAmount = (yieldAmount * currentPriceBips) / 1e18;
       uint256 marketTipAmount = (marketTokenAmount * currentPriceBips) / 1e18;
 
-      require(pow1TipAmount > 0 || marketTipAmount > 0, "Invalid tips");
+      require(yieldTipAmount > 0 || marketTipAmount > 0, "Invalid tips");
 
       // Send the tip to the beneficiary (TODO)
-      if (pow1TipAmount > 0) {
-        _routes.pow1Token.safeTransfer(beneficiary, pow1TipAmount);
-        pow1DepositAmount -= pow1TipAmount;
+      if (yieldTipAmount > 0) {
+        _routes.yieldToken.safeTransfer(beneficiary, yieldTipAmount);
+        yieldDepositAmount -= yieldTipAmount;
       }
       if (marketTipAmount > 0) {
         _routes.marketToken.safeTransfer(beneficiary, marketTipAmount);
@@ -123,14 +123,14 @@ abstract contract DutchAuctionActions is
     }
 
     // Get the pool fee
-    uint24 poolFee = _routes.pow1MarketPool.fee();
+    uint24 poolFee = _routes.yieldMarketPool.fee();
 
     // Perform single-sided supply swap
     // slither-disable-next-line incorrect-equality
-    if (pow1DepositAmount == 0) {
+    if (yieldDepositAmount == 0) {
       // Get market token reserve
       uint256 marketTokenReserve = _routes.marketToken.balanceOf(
-        address(_routes.pow1MarketPool)
+        address(_routes.yieldMarketPool)
       );
 
       // Calculate market swap amount
@@ -143,13 +143,13 @@ abstract contract DutchAuctionActions is
 
       // Approve swap
       _routes.marketToken.safeIncreaseAllowance(
-        address(_routes.pow1MarketSwapper),
+        address(_routes.yieldMarketSwapper),
         marketSwapAmount
       );
 
       // Perform swap
       // slither-disable-next-line reentrancy-no-eth
-      pow1DepositAmount = _routes.pow1MarketSwapper.buyGameToken(
+      yieldDepositAmount = _routes.yieldMarketSwapper.buyGameToken(
         marketSwapAmount,
         address(this)
       );
@@ -158,33 +158,33 @@ abstract contract DutchAuctionActions is
       marketDepositAmount -= marketSwapAmount;
       // slither-disable-next-line incorrect-equality
     } else if (marketDepositAmount == 0) {
-      // Get POW1 reserve
-      uint256 pow1Reserve = _routes.pow1Token.balanceOf(
-        address(_routes.pow1MarketPool)
+      // Get YIELD reserve
+      uint256 yieldReserve = _routes.yieldToken.balanceOf(
+        address(_routes.yieldMarketPool)
       );
 
-      // Calculate POW1 swap amount
-      uint256 pow1SwapAmount = LiquidityMath.computeSwapAmountV2(
-        pow1Reserve,
-        pow1DepositAmount,
+      // Calculate YIELD swap amount
+      uint256 yieldSwapAmount = LiquidityMath.computeSwapAmountV2(
+        yieldReserve,
+        yieldDepositAmount,
         poolFee
       );
-      require(pow1SwapAmount <= pow1DepositAmount, "Bad liquidity math");
+      require(yieldSwapAmount <= yieldDepositAmount, "Bad liquidity math");
 
       // Approve swap
-      _routes.pow1Token.safeIncreaseAllowance(
-        address(_routes.pow1MarketSwapper),
-        pow1SwapAmount
+      _routes.yieldToken.safeIncreaseAllowance(
+        address(_routes.yieldMarketSwapper),
+        yieldSwapAmount
       );
 
       // Perform swap
-      marketDepositAmount = _routes.pow1MarketSwapper.sellGameToken(
-        pow1SwapAmount,
+      marketDepositAmount = _routes.yieldMarketSwapper.sellGameToken(
+        yieldSwapAmount,
         address(this)
       );
 
       // Update amount
-      pow1DepositAmount -= pow1SwapAmount;
+      yieldDepositAmount -= yieldSwapAmount;
     }
 
     // Read state
@@ -192,7 +192,7 @@ abstract contract DutchAuctionActions is
 
     // Validate amounts
     require(
-      pow1DepositAmount > mintDustAmount &&
+      yieldDepositAmount > mintDustAmount &&
         marketDepositAmount > mintDustAmount,
       "Not enough for dust"
     );
@@ -206,10 +206,10 @@ abstract contract DutchAuctionActions is
     _establishAuctionState(newLpNftTokenId);
 
     // Call external contracts
-    if (pow1DepositAmount > 0) {
-      _routes.pow1Token.safeIncreaseAllowance(
+    if (yieldDepositAmount > 0) {
+      _routes.yieldToken.safeIncreaseAllowance(
         address(_routes.uniswapV3NftManager),
-        pow1DepositAmount
+        yieldDepositAmount
       );
     }
     if (marketDepositAmount > 0) {
@@ -224,14 +224,14 @@ abstract contract DutchAuctionActions is
     _routes.uniswapV3NftManager.increaseLiquidity(
       INonfungiblePositionManager.IncreaseLiquidityParams({
         tokenId: lpNftTokenId,
-        amount0Desired: address(_routes.pow1Token) <
+        amount0Desired: address(_routes.yieldToken) <
           address(_routes.marketToken)
-          ? pow1DepositAmount
+          ? yieldDepositAmount
           : marketDepositAmount,
-        amount1Desired: address(_routes.pow1Token) <
+        amount1Desired: address(_routes.yieldToken) <
           address(_routes.marketToken)
           ? marketDepositAmount
-          : pow1DepositAmount,
+          : yieldDepositAmount,
         amount0Min: 0,
         amount1Min: 0,
         // slither-disable-next-line timestamp
@@ -242,7 +242,7 @@ abstract contract DutchAuctionActions is
     // Stake LP-NFT in the stake farm
     _routes.uniswapV3NftManager.safeTransferFrom(
       address(this),
-      address(_routes.pow1LpNftStakeFarm),
+      address(_routes.yieldLpNftStakeFarm),
       lpNftTokenId,
       ""
     );

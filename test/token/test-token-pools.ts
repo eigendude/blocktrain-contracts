@@ -19,8 +19,8 @@ import { getNetworkName } from "../../src/hardhat/hardhatUtils";
 import { AddressBook } from "../../src/interfaces/addressBook";
 import { ContractLibrary } from "../../src/interfaces/contractLibrary";
 import { TestERC20MintableContract } from "../../src/interfaces/test/token/erc20/extensions/testErc20MintableContract";
-import { TestPOW1MarketStakerContract } from "../../src/interfaces/test/token/routes/testPow1MarketStakerContract";
 import { TestPOW5StableStakerContract } from "../../src/interfaces/test/token/routes/testPow5StableStakerContract";
+import { TestYIELDMarketStakerContract } from "../../src/interfaces/test/token/routes/testYieldMarketStakerContract";
 import { ETH_PRICE, USDC_PRICE } from "../../src/testing/defiMetrics";
 import { setupFixture } from "../../src/testing/setupFixture";
 import { TokenTracker } from "../../src/testing/tokenTracker";
@@ -29,17 +29,17 @@ import {
   INITIAL_LPBORROW_USDC_VALUE,
   INITIAL_LPYIELD_AMOUNT,
   INITIAL_LPYIELD_WETH_VALUE,
-  INITIAL_POW1_PRICE,
-  INITIAL_POW1_SUPPLY,
   INITIAL_POW5_DEPOSIT,
   INITIAL_POW5_PRICE,
+  INITIAL_YIELD_PRICE,
+  INITIAL_YIELD_SUPPLY,
   LPBORROW_DECIMALS,
   LPBORROW_POOL_FEE,
   LPYIELD_DECIMALS,
   LPYIELD_POOL_FEE,
-  POW1_DECIMALS,
   POW5_DECIMALS,
   USDC_DECIMALS,
+  YIELD_DECIMALS,
   ZERO_ADDRESS,
 } from "../../src/utils/constants";
 import { encodePriceSqrt } from "../../src/utils/fixedMath";
@@ -54,7 +54,7 @@ const setupTest = hardhat.deployments.createFixture(setupFixture);
 // Test parameters
 //
 
-// POW1 test reward for LPYIELD and LPBORROW staking incentives, in wei of POW1
+// YIELD test reward for LPYIELD and LPBORROW staking incentives, in wei of YIELD
 const LPYIELD_REWARD_AMOUNT: bigint = 1_000_000n;
 const LPBORROW_REWARD_AMOUNT: bigint = 1_000n;
 
@@ -66,11 +66,11 @@ const USDC_TOKEN_AMOUNT: bigint =
   BigInt(USDC_PRICE); // 100 USDC ($100)
 
 // The LPYIELD and LPBORROW LP-NFT token IDs
-const POW1_LPNFT_TOKEN_ID: bigint = 1n;
+const YIELD_LPNFT_TOKEN_ID: bigint = 1n;
 const POW5_LPNFT_TOKEN_ID: bigint = 2n;
 
 // Remaining dust balances after depositing into LP pools
-const LPYIELD_POW1_DUST: bigint = 443n;
+const LPYIELD_YIELD_DUST: bigint = 443n;
 const LPYIELD_WETH_DUST: bigint = 0n;
 const LPBORROW_POW5_DUST: bigint = 355_055n;
 const LPBORROW_USDC_DUST: bigint = 0n;
@@ -103,10 +103,10 @@ describe("Token Pools", () => {
   let deployer: SignerWithAddress;
   let deployerAddress: `0x${string}`;
   let addressBook: AddressBook;
-  let pow1IsToken0: boolean;
+  let yieldIsToken0: boolean;
   let pow5IsToken0: boolean;
   let deployerContracts: ContractLibrary;
-  let testPow1MarketStakerContract: TestPOW1MarketStakerContract;
+  let testYieldMarketStakerContract: TestYIELDMarketStakerContract;
   let testPow5StableStakerContract: TestPOW5StableStakerContract;
 
   //////////////////////////////////////////////////////////////////////////////
@@ -135,9 +135,9 @@ describe("Token Pools", () => {
     deployerContracts = getContractLibrary(deployer, addressBook);
 
     // Create the test contracts
-    testPow1MarketStakerContract = new TestPOW1MarketStakerContract(
+    testYieldMarketStakerContract = new TestYIELDMarketStakerContract(
       deployer,
-      addressBook.testPow1MarketStakerContract!,
+      addressBook.testYieldMarketStakerContract!,
     );
     testPow5StableStakerContract = new TestPOW5StableStakerContract(
       deployer,
@@ -195,22 +195,22 @@ describe("Token Pools", () => {
   // Test setup: Mint LPYIELD and LPBORROW staking rewards
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should grant POW1 issuer role to deployer", async function (): Promise<void> {
+  it("should grant YIELD issuer role to deployer", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { pow1Contract } = deployerContracts;
+    const { yieldContract } = deployerContracts;
 
     // Grant issuer role to deployer
-    await pow1Contract.grantRole(ERC20_ISSUER_ROLE, deployerAddress);
+    await yieldContract.grantRole(ERC20_ISSUER_ROLE, deployerAddress);
   });
 
   it("should mint LPYIELD reward to deployer", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { pow1Contract } = deployerContracts;
+    const { yieldContract } = deployerContracts;
 
-    // Mint POW1
-    const receipt: ethers.ContractTransactionReceipt = await pow1Contract.mint(
+    // Mint YIELD
+    const receipt: ethers.ContractTransactionReceipt = await yieldContract.mint(
       deployerAddress,
       LPYIELD_REWARD_AMOUNT,
     );
@@ -225,7 +225,7 @@ describe("Token Pools", () => {
     chai.expect(tokenRoutes.length).to.equal(1);
 
     chai.expect(tokenRoutes[0]).to.deep.equal({
-      token: pow1Contract.address,
+      token: yieldContract.address,
       from: ZERO_ADDRESS,
       to: deployerAddress,
       value: LPYIELD_REWARD_AMOUNT,
@@ -235,10 +235,10 @@ describe("Token Pools", () => {
   it("should mint LPBORROW reward to deployer", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { pow1Contract } = deployerContracts;
+    const { yieldContract } = deployerContracts;
 
-    // Mint POW1
-    const receipt: ethers.ContractTransactionReceipt = await pow1Contract.mint(
+    // Mint YIELD
+    const receipt: ethers.ContractTransactionReceipt = await yieldContract.mint(
       deployerAddress,
       LPBORROW_REWARD_AMOUNT,
     );
@@ -253,7 +253,7 @@ describe("Token Pools", () => {
     chai.expect(tokenRoutes.length).to.equal(1);
 
     chai.expect(tokenRoutes[0]).to.deep.equal({
-      token: pow1Contract.address,
+      token: yieldContract.address,
       from: ZERO_ADDRESS,
       to: deployerAddress,
       value: LPBORROW_REWARD_AMOUNT,
@@ -261,78 +261,78 @@ describe("Token Pools", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Grant POW1 issuer role to POW1Staker
+  // Spec: Grant YIELD issuer role to YIELDStaker
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should not have POW1 issuer role on POW1Staker", async function (): Promise<void> {
-    const { pow1Contract } = deployerContracts;
+  it("should not have YIELD issuer role on YIELDStaker", async function (): Promise<void> {
+    const { yieldContract } = deployerContracts;
 
     // Check for issuer role
-    const hasRole: boolean = await pow1Contract.hasRole(
+    const hasRole: boolean = await yieldContract.hasRole(
       ERC20_ISSUER_ROLE,
-      testPow1MarketStakerContract.address,
+      testYieldMarketStakerContract.address,
     );
     chai.expect(hasRole).to.be.false;
   });
 
-  it("should grant POW1 issuer role to POW1Staker", async function (): Promise<void> {
+  it("should grant YIELD issuer role to YIELDStaker", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { pow1Contract } = deployerContracts;
+    const { yieldContract } = deployerContracts;
 
-    // Grant issuer role to POW1Staker
+    // Grant issuer role to YIELDStaker
     const receipt: ethers.ContractTransactionReceipt =
-      await pow1Contract.grantRole(
+      await yieldContract.grantRole(
         ERC20_ISSUER_ROLE,
-        testPow1MarketStakerContract.address,
+        testYieldMarketStakerContract.address,
       );
 
     const logs: (ethers.EventLog | ethers.Log)[] = receipt.logs;
     chai.expect(logs.length).to.be.greaterThan(0);
 
     const log: ethers.EventLog = logs[0] as ethers.EventLog;
-    chai.expect(log.address).to.equal(pow1Contract.address);
+    chai.expect(log.address).to.equal(yieldContract.address);
     chai.expect(log.fragment.name).to.equal("RoleGranted");
     chai.expect(log.args.length).to.equal(3);
     chai.expect(log.args[0]).to.equal(ERC20_ISSUER_ROLE);
-    chai.expect(log.args[1]).to.equal(testPow1MarketStakerContract.address);
+    chai.expect(log.args[1]).to.equal(testYieldMarketStakerContract.address);
     chai.expect(log.args[2]).to.equal(deployerAddress);
   });
 
-  it("should have POW1 issuer role on POW1Staker", async function (): Promise<void> {
-    const { pow1Contract } = deployerContracts;
+  it("should have YIELD issuer role on YIELDStaker", async function (): Promise<void> {
+    const { yieldContract } = deployerContracts;
 
     // Check for issuer role
-    const hasRole: boolean = await pow1Contract.hasRole(
+    const hasRole: boolean = await yieldContract.hasRole(
       ERC20_ISSUER_ROLE,
-      testPow1MarketStakerContract.address,
+      testYieldMarketStakerContract.address,
     );
     chai.expect(hasRole).to.be.true;
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Grant POW1 issuer role to POW5Staker
+  // Spec: Grant YIELD issuer role to POW5Staker
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should not have POW1 issuer role on POW5Staker", async function (): Promise<void> {
-    const { pow1Contract } = deployerContracts;
+  it("should not have YIELD issuer role on POW5Staker", async function (): Promise<void> {
+    const { yieldContract } = deployerContracts;
 
     // Check for issuer role
-    const hasRole: boolean = await pow1Contract.hasRole(
+    const hasRole: boolean = await yieldContract.hasRole(
       ERC20_ISSUER_ROLE,
       testPow5StableStakerContract.address,
     );
     chai.expect(hasRole).to.be.false;
   });
 
-  it("should grant POW1 issuer role to POW5Staker", async function (): Promise<void> {
+  it("should grant YIELD issuer role to POW5Staker", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { pow1Contract } = deployerContracts;
+    const { yieldContract } = deployerContracts;
 
     // Grant issuer role to pow5StableStaker
     const receipt: ethers.ContractTransactionReceipt =
-      await pow1Contract.grantRole(
+      await yieldContract.grantRole(
         ERC20_ISSUER_ROLE,
         testPow5StableStakerContract.address,
       );
@@ -341,7 +341,7 @@ describe("Token Pools", () => {
     chai.expect(logs.length).to.be.greaterThan(0);
 
     const log: ethers.EventLog = logs[0] as ethers.EventLog;
-    chai.expect(log.address).to.equal(pow1Contract.address);
+    chai.expect(log.address).to.equal(yieldContract.address);
     chai.expect(log.fragment.name).to.equal("RoleGranted");
     chai.expect(log.args.length).to.equal(3);
     chai.expect(log.args[0]).to.equal(ERC20_ISSUER_ROLE);
@@ -349,11 +349,11 @@ describe("Token Pools", () => {
     chai.expect(log.args[2]).to.equal(deployerAddress);
   });
 
-  it("should have POW1 issuer role on POW5Staker", async function (): Promise<void> {
-    const { pow1Contract } = deployerContracts;
+  it("should have YIELD issuer role on POW5Staker", async function (): Promise<void> {
+    const { yieldContract } = deployerContracts;
 
     // Check for issuer role
-    const hasRole: boolean = await pow1Contract.hasRole(
+    const hasRole: boolean = await yieldContract.hasRole(
       ERC20_ISSUER_ROLE,
       testPow5StableStakerContract.address,
     );
@@ -361,21 +361,21 @@ describe("Token Pools", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Grant LPSFT issuer role to POW1Staker
+  // Spec: Grant LPSFT issuer role to YIELDStaker
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should not have LPSFT issuer role on POW1Staker", async function (): Promise<void> {
+  it("should not have LPSFT issuer role on YIELDStaker", async function (): Promise<void> {
     const { lpSftContract } = deployerContracts;
 
     // Check for issuer role
     const hasRole: boolean = await lpSftContract.hasRole(
       LPSFT_ISSUER_ROLE,
-      testPow1MarketStakerContract.address,
+      testYieldMarketStakerContract.address,
     );
     chai.expect(hasRole).to.be.false;
   });
 
-  it("should grant LPSFT issuer role to POW1Staker", async function (): Promise<void> {
+  it("should grant LPSFT issuer role to YIELDStaker", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     const { lpSftContract } = deployerContracts;
@@ -384,7 +384,7 @@ describe("Token Pools", () => {
     const receipt: ethers.ContractTransactionReceipt =
       await lpSftContract.grantRole(
         LPSFT_ISSUER_ROLE,
-        testPow1MarketStakerContract.address,
+        testYieldMarketStakerContract.address,
       );
 
     const logs: (ethers.EventLog | ethers.Log)[] = receipt.logs;
@@ -395,17 +395,17 @@ describe("Token Pools", () => {
     chai.expect(log.fragment.name).to.equal("RoleGranted");
     chai.expect(log.args.length).to.equal(3);
     chai.expect(log.args[0]).to.equal(LPSFT_ISSUER_ROLE);
-    chai.expect(log.args[1]).to.equal(testPow1MarketStakerContract.address);
+    chai.expect(log.args[1]).to.equal(testYieldMarketStakerContract.address);
     chai.expect(log.args[2]).to.equal(deployerAddress);
   });
 
-  it("should have LPSFT issuer role on POW1Staker", async function (): Promise<void> {
+  it("should have LPSFT issuer role on YIELDStaker", async function (): Promise<void> {
     const { lpSftContract } = deployerContracts;
 
     // Check for issuer role
     const hasRole: boolean = await lpSftContract.hasRole(
       LPSFT_ISSUER_ROLE,
-      testPow1MarketStakerContract.address,
+      testYieldMarketStakerContract.address,
     );
     chai.expect(hasRole).to.be.true;
   });
@@ -483,18 +483,18 @@ describe("Token Pools", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Approve spending POW1 reward for LPYIELD staking incentive
+  // Spec: Approve spending YIELD reward for LPYIELD staking incentive
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should approve spending POW1 for LPYIELD", async function (): Promise<void> {
+  it("should approve spending YIELD for LPYIELD", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { pow1Contract } = deployerContracts;
+    const { yieldContract } = deployerContracts;
 
-    // Approve POW1Staker spending POW1
+    // Approve YIELDStaker spending YIELD
     const receipt: ethers.ContractTransactionReceipt =
-      await pow1Contract.approve(
-        testPow1MarketStakerContract.address,
+      await yieldContract.approve(
+        testYieldMarketStakerContract.address,
         LPYIELD_REWARD_AMOUNT,
       );
 
@@ -502,37 +502,37 @@ describe("Token Pools", () => {
     chai.expect(logs.length).to.be.greaterThan(0);
 
     const log: ethers.EventLog = logs[0] as ethers.EventLog;
-    chai.expect(log.address).to.equal(pow1Contract.address);
+    chai.expect(log.address).to.equal(yieldContract.address);
     chai.expect(log.fragment.name).to.equal("Approval");
     chai.expect(log.args.length).to.equal(3);
     chai.expect(log.args[0]).to.equal(deployerAddress);
-    chai.expect(log.args[1]).to.equal(testPow1MarketStakerContract.address);
+    chai.expect(log.args[1]).to.equal(testYieldMarketStakerContract.address);
     chai.expect(log.args[2]).to.equal(LPYIELD_REWARD_AMOUNT);
   });
 
-  it("should check POW1 allowance for LPYIELD", async function (): Promise<void> {
-    const { pow1Contract } = deployerContracts;
+  it("should check YIELD allowance for LPYIELD", async function (): Promise<void> {
+    const { yieldContract } = deployerContracts;
 
     // Check allowance
-    const allowance: bigint = await pow1Contract.allowance(
+    const allowance: bigint = await yieldContract.allowance(
       deployerAddress,
-      testPow1MarketStakerContract.address,
+      testYieldMarketStakerContract.address,
     );
     chai.expect(allowance).to.equal(LPYIELD_REWARD_AMOUNT);
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Approve spending POW1 reward for LPBORROW staking incentive
+  // Spec: Approve spending YIELD reward for LPBORROW staking incentive
   //////////////////////////////////////////////////////////////////////////////
 
   it("should approve spending POW5 for LPBORROW", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { pow1Contract } = deployerContracts;
+    const { yieldContract } = deployerContracts;
 
-    // Approve POW5Staker spending POW1
+    // Approve POW5Staker spending YIELD
     const receipt: ethers.ContractTransactionReceipt =
-      await pow1Contract.approve(
+      await yieldContract.approve(
         testPow5StableStakerContract.address,
         LPBORROW_REWARD_AMOUNT,
       );
@@ -541,7 +541,7 @@ describe("Token Pools", () => {
     chai.expect(logs.length).to.be.greaterThan(0);
 
     const log: ethers.EventLog = logs[0] as ethers.EventLog;
-    chai.expect(log.address).to.equal(pow1Contract.address);
+    chai.expect(log.address).to.equal(yieldContract.address);
     chai.expect(log.fragment.name).to.equal("Approval");
     chai.expect(log.args.length).to.equal(3);
     chai.expect(log.args[0]).to.equal(deployerAddress);
@@ -549,11 +549,11 @@ describe("Token Pools", () => {
     chai.expect(log.args[2]).to.equal(LPBORROW_REWARD_AMOUNT);
   });
 
-  it("should check POW1 allowance for LPBORROW", async function (): Promise<void> {
-    const { pow1Contract } = deployerContracts;
+  it("should check YIELD allowance for LPBORROW", async function (): Promise<void> {
+    const { yieldContract } = deployerContracts;
 
     // Check allowance
-    const allowance: bigint = await pow1Contract.allowance(
+    const allowance: bigint = await yieldContract.allowance(
       deployerAddress,
       testPow5StableStakerContract.address,
     );
@@ -569,7 +569,9 @@ describe("Token Pools", () => {
 
     // Create incentive
     const receipt: ethers.ContractTransactionReceipt =
-      await testPow1MarketStakerContract.createIncentive(LPYIELD_REWARD_AMOUNT);
+      await testYieldMarketStakerContract.createIncentive(
+        LPYIELD_REWARD_AMOUNT,
+      );
     chai.expect(receipt.logs.length).to.equal(4);
 
     // Check token transfers
@@ -582,15 +584,15 @@ describe("Token Pools", () => {
     chai.expect(tokenRoutes.length).to.equal(2);
 
     chai.expect(tokenRoutes[0]).to.deep.equal({
-      token: addressBook.pow1Token,
+      token: addressBook.yieldToken,
       from: deployerAddress,
-      to: testPow1MarketStakerContract.address,
+      to: testYieldMarketStakerContract.address,
       value: LPYIELD_REWARD_AMOUNT,
     });
 
     chai.expect(tokenRoutes[1]).to.deep.equal({
-      token: addressBook.pow1Token,
-      from: testPow1MarketStakerContract.address,
+      token: addressBook.yieldToken,
+      from: testYieldMarketStakerContract.address,
       to: addressBook.uniswapV3Staker,
       value: LPYIELD_REWARD_AMOUNT,
     });
@@ -598,7 +600,7 @@ describe("Token Pools", () => {
 
   it("should check incentive for LPYIELD", async function (): Promise<void> {
     // Check incentive
-    const incentive = await testPow1MarketStakerContract.getIncentive();
+    const incentive = await testYieldMarketStakerContract.getIncentive();
     chai.expect(incentive.totalRewardUnclaimed).to.equal(LPYIELD_REWARD_AMOUNT); // totalRewardUnclaimed
     chai.expect(incentive.totalSecondsClaimedX128).to.equal(0n); // totalSecondsClaimedX128
     chai.expect(incentive.numberOfStakes).to.equal(0n); // numberOfStakes
@@ -630,14 +632,14 @@ describe("Token Pools", () => {
     chai.expect(tokenRoutes.length).to.equal(2);
 
     chai.expect(tokenRoutes[0]).to.deep.equal({
-      token: addressBook.pow1Token,
+      token: addressBook.yieldToken,
       from: deployerAddress,
       to: testPow5StableStakerContract.address,
       value: LPBORROW_REWARD_AMOUNT,
     });
 
     chai.expect(tokenRoutes[1]).to.deep.equal({
-      token: addressBook.pow1Token,
+      token: addressBook.yieldToken,
       from: testPow5StableStakerContract.address,
       to: addressBook.uniswapV3Staker,
       value: LPBORROW_REWARD_AMOUNT,
@@ -659,35 +661,35 @@ describe("Token Pools", () => {
   //////////////////////////////////////////////////////////////////////////////
 
   it("should get pool token order for LPYIELD", async function (): Promise<void> {
-    const { pow1MarketPoolerContract } = deployerContracts;
+    const { yieldMarketPoolerContract } = deployerContracts;
 
     // Get pool token order
-    pow1IsToken0 = await pow1MarketPoolerContract.gameIsToken0();
-    chai.expect(pow1IsToken0).to.be.a("boolean");
+    yieldIsToken0 = await yieldMarketPoolerContract.gameIsToken0();
+    chai.expect(yieldIsToken0).to.be.a("boolean");
 
-    console.log(`    POW1 is ${pow1IsToken0 ? "token0" : "token1"}`);
+    console.log(`    YIELD is ${yieldIsToken0 ? "token0" : "token1"}`);
   });
 
   it("should initialize the LPYIELD pool", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { pow1MarketPoolContract } = deployerContracts;
+    const { yieldMarketPoolContract } = deployerContracts;
 
     // The initial sqrt price [sqrt(amountToken1/amountToken0)] as a Q64.96 value
     const INITIAL_PRICE: bigint = encodePriceSqrt(
-      pow1IsToken0 ? WETH_TOKEN_AMOUNT : INITIAL_POW1_SUPPLY,
-      pow1IsToken0 ? INITIAL_POW1_SUPPLY : WETH_TOKEN_AMOUNT,
+      yieldIsToken0 ? WETH_TOKEN_AMOUNT : INITIAL_YIELD_SUPPLY,
+      yieldIsToken0 ? INITIAL_YIELD_SUPPLY : WETH_TOKEN_AMOUNT,
     );
 
     // Initialize the Uniswap V3 pool
     const receipt: ethers.ContractTransactionReceipt =
-      await pow1MarketPoolContract.initialize(INITIAL_PRICE);
+      await yieldMarketPoolContract.initialize(INITIAL_PRICE);
 
     const logs: (ethers.EventLog | ethers.Log)[] = receipt.logs;
     chai.expect(logs.length).to.equal(1);
 
     const log: ethers.EventLog = logs[0] as ethers.EventLog;
-    chai.expect(log.address).to.equal(pow1MarketPoolContract.address);
+    chai.expect(log.address).to.equal(yieldMarketPoolContract.address);
   });
 
   //////////////////////////////////////////////////////////////////////////////
@@ -724,15 +726,15 @@ describe("Token Pools", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Approve the LPYIELD pool spending POW1 and WETH tokens
+  // Spec: Approve the LPYIELD pool spending YIELD and WETH tokens
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should check POW1 and WETH balances", async function (): Promise<void> {
-    const { pow1Contract, wrappedNativeContract } = deployerContracts;
+  it("should check YIELD and WETH balances", async function (): Promise<void> {
+    const { yieldContract, wrappedNativeContract } = deployerContracts;
 
-    // Check POW1 balance
-    const pow1Balance: bigint = await pow1Contract.balanceOf(deployerAddress);
-    chai.expect(pow1Balance).to.equal(INITIAL_POW1_SUPPLY);
+    // Check YIELD balance
+    const yieldBalance: bigint = await yieldContract.balanceOf(deployerAddress);
+    chai.expect(yieldBalance).to.equal(INITIAL_YIELD_SUPPLY);
 
     // Check WETH balance
     const wethBalance: bigint =
@@ -740,39 +742,39 @@ describe("Token Pools", () => {
     chai.expect(wethBalance).to.equal(WETH_TOKEN_AMOUNT);
   });
 
-  it("should allow POW1Staker to spend POW1", async function (): Promise<void> {
+  it("should allow YIELDStaker to spend YIELD", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { pow1Contract } = deployerContracts;
+    const { yieldContract } = deployerContracts;
 
-    // Approve POW1Staker spending POW1
+    // Approve YIELDStaker spending YIELD
     const receipt: ethers.ContractTransactionReceipt =
-      await pow1Contract.approve(
-        testPow1MarketStakerContract.address,
-        INITIAL_POW1_SUPPLY,
+      await yieldContract.approve(
+        testYieldMarketStakerContract.address,
+        INITIAL_YIELD_SUPPLY,
       );
 
     const logs: (ethers.EventLog | ethers.Log)[] = receipt.logs;
     chai.expect(logs.length).to.be.greaterThan(0);
 
     const log: ethers.EventLog = logs[0] as ethers.EventLog;
-    chai.expect(log.address).to.equal(pow1Contract.address);
+    chai.expect(log.address).to.equal(yieldContract.address);
     chai.expect(log.fragment.name).to.equal("Approval");
     chai.expect(log.args.length).to.equal(3);
     chai.expect(log.args[0]).to.equal(deployerAddress);
-    chai.expect(log.args[1]).to.equal(testPow1MarketStakerContract.address);
-    chai.expect(log.args[2]).to.equal(INITIAL_POW1_SUPPLY);
+    chai.expect(log.args[1]).to.equal(testYieldMarketStakerContract.address);
+    chai.expect(log.args[2]).to.equal(INITIAL_YIELD_SUPPLY);
   });
 
-  it("should allow POW1Staker to spend WETH", async function (): Promise<void> {
+  it("should allow YIELDStaker to spend WETH", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     const { wrappedNativeContract } = deployerContracts;
 
-    // Approve POW1Staker spending WETH
+    // Approve YIELDStaker spending WETH
     const receipt: ethers.ContractTransactionReceipt =
       await wrappedNativeContract.approve(
-        testPow1MarketStakerContract.address,
+        testYieldMarketStakerContract.address,
         WETH_TOKEN_AMOUNT,
       );
 
@@ -784,34 +786,34 @@ describe("Token Pools", () => {
     chai.expect(log.fragment.name).to.equal("Approval");
     chai.expect(log.args.length).to.equal(3);
     chai.expect(log.args[0]).to.equal(deployerAddress);
-    chai.expect(log.args[1]).to.equal(testPow1MarketStakerContract.address);
+    chai.expect(log.args[1]).to.equal(testYieldMarketStakerContract.address);
     chai.expect(log.args[2]).to.equal(WETH_TOKEN_AMOUNT);
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Stake POW1 and WETH tokens and mint LPYIELD LP-NFT
+  // Spec: Stake YIELD and WETH tokens and mint LPYIELD LP-NFT
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should mint POW1/WETH LP-NFT", async function (): Promise<void> {
+  it("should mint YIELD/WETH LP-NFT", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     // TODO
     // const { lpSftContract } = deployerContracts;
 
     // Calculate DeFi metrics
-    const pow1DepositAmount: number = parseInt(
-      ethers.formatUnits(INITIAL_POW1_SUPPLY, POW1_DECIMALS),
+    const yieldDepositAmount: number = parseInt(
+      ethers.formatUnits(INITIAL_YIELD_SUPPLY, YIELD_DECIMALS),
     );
     const microWethDepositAmount: number = parseInt(
       ethers.formatEther(WETH_TOKEN_AMOUNT * 1_000_000n),
     );
-    const pow1DepositValue: number = pow1DepositAmount * INITIAL_POW1_PRICE;
+    const yieldDepositValue: number = yieldDepositAmount * INITIAL_YIELD_PRICE;
     const wethDepositValue: number =
       (microWethDepositAmount * ETH_PRICE) / 1_000_000.0; // TODO: Fix rounding
 
     // Log DeFi metrics
     console.log(
-      `    Depositing: ${pow1DepositAmount.toLocaleString()} POW1 ($${pow1DepositValue.toLocaleString()})`,
+      `    Depositing: ${yieldDepositAmount.toLocaleString()} YIELD ($${yieldDepositValue.toLocaleString()})`,
     );
     console.log(
       `    Depositing: ${(
@@ -820,8 +822,8 @@ describe("Token Pools", () => {
     );
 
     const receipt: ethers.ContractTransactionReceipt =
-      await testPow1MarketStakerContract.stakeLpNftImbalance(
-        INITIAL_POW1_SUPPLY, // gameTokenAmount
+      await testYieldMarketStakerContract.stakeLpNftImbalance(
+        INITIAL_YIELD_SUPPLY, // gameTokenAmount
         WETH_TOKEN_AMOUNT, // assetTokenAmount
         deployerAddress, // recipient
       );
@@ -838,14 +840,14 @@ describe("Token Pools", () => {
           // Found the event
           chai
             .expect(eventLog.address)
-            .to.equal(testPow1MarketStakerContract.address);
+            .to.equal(testYieldMarketStakerContract.address);
           chai.expect(eventLog.args.length).to.equal(4);
           chai.expect(eventLog.args[0]).to.equal(deployerAddress); // sender
           chai.expect(eventLog.args[1]).to.equal(deployerAddress); // recipient
           chai
             .expect(eventLog.args[2])
             .to.equal(addressBook.uniswapV3NftManager!); // nftAddress
-          chai.expect(eventLog.args[3]).to.equal(POW1_LPNFT_TOKEN_ID); // nftTokenId
+          chai.expect(eventLog.args[3]).to.equal(YIELD_LPNFT_TOKEN_ID); // nftTokenId
         }
       }
     }
@@ -862,80 +864,83 @@ describe("Token Pools", () => {
     // TODO
     /*
     chai.expect(tokenRoutes[0]).to.deep.equal({
-      token: addressBook.pow1Token,
+      token: addressBook.yieldToken,
       from: deployerAddress,
-      to: testPow1MarketStakerContract.address,
-      value: INITIAL_POW1_SUPPLY,
+      to: testYieldMarketStakerContract.address,
+      value: INITIAL_YIELD_SUPPLY,
     });
 
     chai.expect(tokenRoutes[1]).to.deep.equal({
       token: addressBook.wrappedNativeToken,
       from: deployerAddress,
-      to: testPow1MarketStakerContract.address,
+      to: testYieldMarketStakerContract.address,
       value: WETH_TOKEN_AMOUNT,
     });
 
     chai.expect(tokenRoutes[2]).to.deep.equal({
-      token: addressBook.pow1Token,
-      from: testPow1MarketStakerContract.address,
-      to: addressBook.pow1MarketPooler,
-      value: INITIAL_POW1_SUPPLY,
+      token: addressBook.yieldToken,
+      from: testYieldMarketStakerContract.address,
+      to: addressBook.yieldMarketPooler,
+      value: INITIAL_YIELD_SUPPLY,
     });
 
     chai.expect(tokenRoutes[3]).to.deep.equal({
       token: addressBook.wrappedNativeToken,
-      from: testPow1MarketStakerContract.address,
-      to: addressBook.pow1MarketPooler,
+      from: testYieldMarketStakerContract.address,
+      to: addressBook.yieldMarketPooler,
       value: WETH_TOKEN_AMOUNT,
     });
 
     chai.expect(tokenRoutes[4]).to.deep.equal({
       token: addressBook.wrappedNativeToken,
-      from: addressBook.pow1MarketPooler,
-      to: addressBook.pow1MarketPool,
+      from: addressBook.yieldMarketPooler,
+      to: addressBook.yieldMarketPool,
       value: WETH_TOKEN_AMOUNT - 1n,
     });
 
     chai.expect(tokenRoutes[5]).to.deep.equal({
-      token: addressBook.pow1Token,
-      from: addressBook.pow1MarketPooler,
-      to: addressBook.pow1MarketPool,
-      value: INITIAL_POW1_SUPPLY - LPYIELD_POW1_DUST,
+      token: addressBook.yieldToken,
+      from: addressBook.yieldMarketPooler,
+      to: addressBook.yieldMarketPool,
+      value: INITIAL_YIELD_SUPPLY - LPYIELD_YIELD_DUST,
     });
 
     chai.expect(tokenRoutes[6]).to.deep.equal({
       token: addressBook.wrappedNativeToken,
-      from: addressBook.pow1MarketPooler,
-      to: testPow1MarketStakerContract.address,
+      from: addressBook.yieldMarketPooler,
+      to: testYieldMarketStakerContract.address,
       value: 1n,
     });
 
     chai.expect(tokenRoutes[7]).to.deep.equal({
-      token: addressBook.pow1Token,
-      from: addressBook.pow1MarketPooler,
-      to: testPow1MarketStakerContract.address,
-      value: LPYIELD_POW1_DUST,
+      token: addressBook.yieldToken,
+      from: addressBook.yieldMarketPooler,
+      to: testYieldMarketStakerContract.address,
+      value: LPYIELD_YIELD_DUST,
     });
 
     chai.expect(tokenRoutes[8]).to.deep.equal({
       token: addressBook.lpYieldToken,
       from: ZERO_ADDRESS,
-      to: await lpSftContract.tokenIdToAddress(POW1_LPNFT_TOKEN_ID),
+      to: await lpSftContract.tokenIdToAddress(YIELD_LPNFT_TOKEN_ID),
       value: INITIAL_LPYIELD_AMOUNT,
     });
 
     chai.expect(tokenRoutes[9]).to.deep.equal({
-      token: addressBook.pow1Token,
-      from: testPow1MarketStakerContract.address,
+      token: addressBook.yieldToken,
+      from: testYieldMarketStakerContract.address,
       to: deployerAddress,
-      value: LPYIELD_POW1_DUST,
+      value: LPYIELD_YIELD_DUST,
     });
     */
   });
 
   it("should check LPYIELD LP-NFT position", async function (): Promise<void> {
-    const { pow1Contract, uniswapV3NftManagerContract, wrappedNativeContract } =
-      deployerContracts;
+    const {
+      yieldContract,
+      uniswapV3NftManagerContract,
+      wrappedNativeContract,
+    } = deployerContracts;
 
     // Calculate DeFi metrics
     const lpYieldPrice: number = INITIAL_POW5_PRICE;
@@ -966,17 +971,17 @@ describe("Token Pools", () => {
       feeGrowthInside1LastX128: bigint;
       tokensOwed0: bigint;
       tokensOwed1: bigint;
-    } = await uniswapV3NftManagerContract.positions(POW1_LPNFT_TOKEN_ID);
+    } = await uniswapV3NftManagerContract.positions(YIELD_LPNFT_TOKEN_ID);
 
     chai.expect(position).to.deep.equal({
       nonce: 0n,
       operator: ZERO_ADDRESS,
-      token0: pow1IsToken0
-        ? pow1Contract.address
+      token0: yieldIsToken0
+        ? yieldContract.address
         : wrappedNativeContract.address,
-      token1: pow1IsToken0
+      token1: yieldIsToken0
         ? wrappedNativeContract.address
-        : pow1Contract.address,
+        : yieldContract.address,
       fee: LPYIELD_POOL_FEE,
       tickLower: getMinTick(LPYIELD_POOL_FEE),
       tickUpper: getMaxTick(LPYIELD_POOL_FEE),
@@ -988,45 +993,45 @@ describe("Token Pools", () => {
     });
   });
 
-  it("should check POW1 balances", async function (): Promise<void> {
-    const { pow1Contract, pow1MarketPoolContract } = deployerContracts;
+  it("should check YIELD balances", async function (): Promise<void> {
+    const { yieldContract, yieldMarketPoolContract } = deployerContracts;
 
     const deployerBalance: bigint =
-      await pow1Contract.balanceOf(deployerAddress);
-    chai.expect(deployerBalance).to.equal(LPYIELD_POW1_DUST);
+      await yieldContract.balanceOf(deployerAddress);
+    chai.expect(deployerBalance).to.equal(LPYIELD_YIELD_DUST);
 
     // Log DeFi metrics
     console.log(
-      `    Beneficiary POW1 dust: ${LPYIELD_POW1_DUST.toLocaleString()}`,
+      `    Beneficiary YIELD dust: ${LPYIELD_YIELD_DUST.toLocaleString()}`,
     );
 
-    const pow1MarketPoolBalance: bigint = await pow1Contract.balanceOf(
-      pow1MarketPoolContract.address as `0x${string}`,
+    const yieldMarketPoolBalance: bigint = await yieldContract.balanceOf(
+      yieldMarketPoolContract.address as `0x${string}`,
     );
     chai
-      .expect(pow1MarketPoolBalance)
-      .to.equal(INITIAL_POW1_SUPPLY - LPYIELD_POW1_DUST);
+      .expect(yieldMarketPoolBalance)
+      .to.equal(INITIAL_YIELD_SUPPLY - LPYIELD_YIELD_DUST);
   });
 
   it("should check WETH balances", async function (): Promise<void> {
-    const { pow1MarketPoolContract, wrappedNativeContract } = deployerContracts;
+    const { yieldMarketPoolContract, wrappedNativeContract } =
+      deployerContracts;
 
     const deployerBalance: bigint =
       await wrappedNativeContract.balanceOf(deployerAddress);
     chai.expect(deployerBalance).to.equal(LPYIELD_WETH_DUST);
 
-    const pow1MarketPoolBalance: bigint = await wrappedNativeContract.balanceOf(
-      pow1MarketPoolContract.address,
-    );
+    const yieldMarketPoolBalance: bigint =
+      await wrappedNativeContract.balanceOf(yieldMarketPoolContract.address);
     try {
       chai
-        .expect(pow1MarketPoolBalance)
+        .expect(yieldMarketPoolBalance)
         .to.equal(WETH_TOKEN_AMOUNT - LPYIELD_WETH_DUST);
     } catch (error: unknown) {
       if (error instanceof chai.AssertionError) {
         // Handle rounding error
         chai
-          .expect(pow1MarketPoolBalance)
+          .expect(yieldMarketPoolBalance)
           .to.equal(WETH_TOKEN_AMOUNT - LPYIELD_WETH_DUST - 1n);
       }
     }
@@ -1043,17 +1048,17 @@ describe("Token Pools", () => {
 
     // Test ownerOf()
     const owner: `0x${string}` =
-      await lpSftContract.ownerOf(POW1_LPNFT_TOKEN_ID);
+      await lpSftContract.ownerOf(YIELD_LPNFT_TOKEN_ID);
     chai.expect(owner).to.equal(deployerAddress);
 
     // Test getTokenIds()
     const deployerTokenIds: bigint[] =
       await lpSftContract.getTokenIds(deployerAddress);
     chai.expect(deployerTokenIds.length).to.equal(1);
-    chai.expect(deployerTokenIds[0]).to.equal(POW1_LPNFT_TOKEN_ID);
+    chai.expect(deployerTokenIds[0]).to.equal(YIELD_LPNFT_TOKEN_ID);
 
     // Check token URI
-    const nftTokenUri: string = await lpSftContract.uri(POW1_LPNFT_TOKEN_ID);
+    const nftTokenUri: string = await lpSftContract.uri(YIELD_LPNFT_TOKEN_ID);
 
     // Check that data URI has correct mime type
     chai.expect(nftTokenUri).to.match(/data:application\/json;base64,.+/);
@@ -1405,7 +1410,7 @@ describe("Token Pools", () => {
     const deployerTokenIds: bigint[] =
       await lpSftContract.getTokenIds(deployerAddress);
     chai.expect(deployerTokenIds.length).to.equal(2);
-    chai.expect(deployerTokenIds[0]).to.equal(POW1_LPNFT_TOKEN_ID);
+    chai.expect(deployerTokenIds[0]).to.equal(YIELD_LPNFT_TOKEN_ID);
     chai.expect(deployerTokenIds[1]).to.equal(POW5_LPNFT_TOKEN_ID);
 
     // Check token URI

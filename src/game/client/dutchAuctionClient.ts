@@ -105,7 +105,7 @@ class DutchAuctionClient {
 
   async purchase(
     lpNftTokenId: bigint,
-    pow1Amount: bigint,
+    yieldAmount: bigint,
     marketTokenAmount: bigint,
     beneficiary: `0x${string}`,
     receiver: `0x${string}`,
@@ -149,7 +149,7 @@ class DutchAuctionClient {
 
     return this.dutchAuctionContract.purchase(
       lpNftTokenId,
-      pow1Amount,
+      yieldAmount,
       marketTokenAmount,
       beneficiary,
       receiver,

@@ -34,15 +34,15 @@ const setupTest = hardhat.deployments.createFixture(setupFixture);
 const INITIAL_ETH: string = "1"; // 1 ETH
 
 // Token IDs of LP-NFTs for sale
-const POW1_LPNFT_FIRST_TOKEN_ID: bigint = 2n;
-const POW1_LPNFT_SECOND_TOKEN_ID: bigint = 3n;
-const POW1_LPNFT_THIRD_TOKEN_ID: bigint = 4n;
+const YIELD_LPNFT_FIRST_TOKEN_ID: bigint = 2n;
+const YIELD_LPNFT_SECOND_TOKEN_ID: bigint = 3n;
+const YIELD_LPNFT_THIRD_TOKEN_ID: bigint = 4n;
 
 // Amount of WETH to use to purchase first LP-NFT for
-const POW1_LPNFT_FIRST_WETH_AMOUNT: bigint =
+const YIELD_LPNFT_FIRST_WETH_AMOUNT: bigint =
   ethers.parseEther("10") / BigInt(ETH_PRICE); // $10 in WETH
 
-const LPYIELD_AMOUNT: bigint = 972_835_178_603_057_829n; // About 97e16 LP-POW1
+const LPYIELD_AMOUNT: bigint = 972_835_178_603_057_829n; // About 97e16 LP-YIELD
 
 //
 // Test cases
@@ -115,9 +115,9 @@ describe("DutchAuctionClient", () => {
 
     // Initialize pools
     const poolManager: PoolManager = new PoolManager(deployer, {
-      pow1Token: addressBook.pow1Token!,
+      yieldToken: addressBook.yieldToken!,
       marketToken: addressBook.wrappedNativeToken!,
-      pow1MarketPool: addressBook.pow1MarketPool!,
+      yieldMarketPool: addressBook.yieldMarketPool!,
       pow5Token: addressBook.pow5Token!,
       stableToken: addressBook.usdcToken!,
       pow5StablePool: addressBook.pow5StablePool!,
@@ -128,7 +128,7 @@ describe("DutchAuctionClient", () => {
     const permissionManager: PermissionManager = new PermissionManager(
       deployer,
       {
-        pow1Token: addressBook.pow1Token!,
+        yieldToken: addressBook.yieldToken!,
         pow5Token: addressBook.pow5Token!,
         lpYieldToken: addressBook.lpYieldToken!,
         lpBorrowToken: addressBook.lpBorrowToken!,
@@ -139,9 +139,9 @@ describe("DutchAuctionClient", () => {
         yieldHarvest: addressBook.yieldHarvest!,
         liquidityForge: addressBook.liquidityForge!,
         reverseRepo: addressBook.reverseRepo!,
-        pow1LpNftStakeFarm: addressBook.pow1LpNftStakeFarm!,
+        yieldLpNftStakeFarm: addressBook.yieldLpNftStakeFarm!,
         pow5LpNftStakeFarm: addressBook.pow5LpNftStakeFarm!,
-        pow1LpSftLendFarm: addressBook.pow1LpSftLendFarm!,
+        yieldLpSftLendFarm: addressBook.yieldLpSftLendFarm!,
         pow5LpSftLendFarm: addressBook.pow5LpSftLendFarm!,
         defiManager: addressBook.defiManager!,
         pow5InterestFarm: addressBook.pow5InterestFarm!,
@@ -153,7 +153,7 @@ describe("DutchAuctionClient", () => {
     const dutchAuctionManager: DutchAuctionManager = new DutchAuctionManager(
       deployer,
       {
-        pow1Token: addressBook.pow1Token!,
+        yieldToken: addressBook.yieldToken!,
         marketToken: addressBook.wrappedNativeToken!,
         dutchAuction: addressBook.dutchAuction!,
       },
@@ -216,9 +216,9 @@ describe("DutchAuctionClient", () => {
     const currentAuctions: bigint[] =
       await dutchAuctionClient.getCurrentAuctions();
     chai.expect(currentAuctions.length).to.equal(3);
-    chai.expect(currentAuctions[0]).to.equal(POW1_LPNFT_FIRST_TOKEN_ID);
-    chai.expect(currentAuctions[1]).to.equal(POW1_LPNFT_SECOND_TOKEN_ID);
-    chai.expect(currentAuctions[2]).to.equal(POW1_LPNFT_THIRD_TOKEN_ID);
+    chai.expect(currentAuctions[0]).to.equal(YIELD_LPNFT_FIRST_TOKEN_ID);
+    chai.expect(currentAuctions[1]).to.equal(YIELD_LPNFT_SECOND_TOKEN_ID);
+    chai.expect(currentAuctions[2]).to.equal(YIELD_LPNFT_THIRD_TOKEN_ID);
 
     const currentAuctionStates: {
       lpNftTokenId: bigint;
@@ -231,7 +231,7 @@ describe("DutchAuctionClient", () => {
 
     chai
       .expect(currentAuctionStates[0].lpNftTokenId)
-      .to.equal(POW1_LPNFT_FIRST_TOKEN_ID);
+      .to.equal(YIELD_LPNFT_FIRST_TOKEN_ID);
     chai
       .expect(currentAuctionStates[0].startPriceBips)
       .to.equal(ethers.parseUnits("0.0002", 18));
@@ -243,7 +243,7 @@ describe("DutchAuctionClient", () => {
 
     chai
       .expect(currentAuctionStates[1].lpNftTokenId)
-      .to.equal(POW1_LPNFT_SECOND_TOKEN_ID);
+      .to.equal(YIELD_LPNFT_SECOND_TOKEN_ID);
     chai
       .expect(currentAuctionStates[1].startPriceBips)
       .to.equal(ethers.parseUnits("0.0002", 18));
@@ -255,7 +255,7 @@ describe("DutchAuctionClient", () => {
 
     chai
       .expect(currentAuctionStates[2].lpNftTokenId)
-      .to.equal(POW1_LPNFT_THIRD_TOKEN_ID);
+      .to.equal(YIELD_LPNFT_THIRD_TOKEN_ID);
     chai
       .expect(currentAuctionStates[2].startPriceBips)
       .to.equal(ethers.parseUnits("0.0002", 18));
@@ -273,9 +273,9 @@ describe("DutchAuctionClient", () => {
       endPriceBips: bigint;
       startTime: bigint;
       salePrice: bigint;
-    } = await dutchAuctionClient.getAuctionState(POW1_LPNFT_FIRST_TOKEN_ID);
+    } = await dutchAuctionClient.getAuctionState(YIELD_LPNFT_FIRST_TOKEN_ID);
 
-    chai.expect(auctionState.lpNftTokenId).to.equal(POW1_LPNFT_FIRST_TOKEN_ID);
+    chai.expect(auctionState.lpNftTokenId).to.equal(YIELD_LPNFT_FIRST_TOKEN_ID);
     chai
       .expect(auctionState.startPriceBips)
       .to.equal(ethers.parseUnits("0.0002", 18));
@@ -293,9 +293,11 @@ describe("DutchAuctionClient", () => {
       endPriceBips: bigint;
       startTime: bigint;
       salePrice: bigint;
-    } = await dutchAuctionClient.getAuctionState(POW1_LPNFT_SECOND_TOKEN_ID);
+    } = await dutchAuctionClient.getAuctionState(YIELD_LPNFT_SECOND_TOKEN_ID);
 
-    chai.expect(auctionState.lpNftTokenId).to.equal(POW1_LPNFT_SECOND_TOKEN_ID);
+    chai
+      .expect(auctionState.lpNftTokenId)
+      .to.equal(YIELD_LPNFT_SECOND_TOKEN_ID);
     chai
       .expect(auctionState.startPriceBips)
       .to.equal(ethers.parseUnits("0.0002", 18));
@@ -313,9 +315,9 @@ describe("DutchAuctionClient", () => {
       endPriceBips: bigint;
       startTime: bigint;
       salePrice: bigint;
-    } = await dutchAuctionClient.getAuctionState(POW1_LPNFT_THIRD_TOKEN_ID);
+    } = await dutchAuctionClient.getAuctionState(YIELD_LPNFT_THIRD_TOKEN_ID);
 
-    chai.expect(auctionState.lpNftTokenId).to.equal(POW1_LPNFT_THIRD_TOKEN_ID);
+    chai.expect(auctionState.lpNftTokenId).to.equal(YIELD_LPNFT_THIRD_TOKEN_ID);
     chai
       .expect(auctionState.startPriceBips)
       .to.equal(ethers.parseUnits("0.0002", 18));
@@ -328,7 +330,7 @@ describe("DutchAuctionClient", () => {
 
   it('should get current price for LP-NFT with token ID "2"', async function (): Promise<void> {
     const currentPrice: bigint = await dutchAuctionClient.getCurrentPriceBips(
-      POW1_LPNFT_FIRST_TOKEN_ID,
+      YIELD_LPNFT_FIRST_TOKEN_ID,
     );
 
     chai.expect(currentPrice).to.equal(ethers.parseUnits("0.0002", 18));
@@ -336,7 +338,7 @@ describe("DutchAuctionClient", () => {
 
   it('should get current price for LP-NFT with token ID "3"', async function (): Promise<void> {
     const currentPrice: bigint = await dutchAuctionClient.getCurrentPriceBips(
-      POW1_LPNFT_SECOND_TOKEN_ID,
+      YIELD_LPNFT_SECOND_TOKEN_ID,
     );
 
     chai.expect(currentPrice).to.equal(ethers.parseUnits("0.0002", 18));
@@ -344,7 +346,7 @@ describe("DutchAuctionClient", () => {
 
   it('should get current price for LP-NFT with token ID "4"', async function (): Promise<void> {
     const currentPrice: bigint = await dutchAuctionClient.getCurrentPriceBips(
-      POW1_LPNFT_THIRD_TOKEN_ID,
+      YIELD_LPNFT_THIRD_TOKEN_ID,
     );
 
     chai.expect(currentPrice).to.equal(ethers.parseUnits("0.0002", 18));
@@ -359,9 +361,9 @@ describe("DutchAuctionClient", () => {
 
     const receipt: ethers.ContractTransactionReceipt | null =
       await dutchAuctionClient.purchase(
-        POW1_LPNFT_FIRST_TOKEN_ID,
+        YIELD_LPNFT_FIRST_TOKEN_ID,
         0n,
-        POW1_LPNFT_FIRST_WETH_AMOUNT,
+        YIELD_LPNFT_FIRST_WETH_AMOUNT,
         deployerAddress,
         beneficiaryAddress,
       );
@@ -386,7 +388,7 @@ describe("DutchAuctionClient", () => {
 
     // Calculate DeFi metrics
     console.log(
-      `    LP-POW1: ${ethers.formatUnits(lpYieldAmount, LPYIELD_DECIMALS)}`,
+      `    LP-YIELD: ${ethers.formatUnits(lpYieldAmount, LPYIELD_DECIMALS)}`,
     );
 
     chai.expect(lpYieldAmount).to.equal(LPYIELD_AMOUNT);
@@ -403,9 +405,9 @@ describe("DutchAuctionClient", () => {
       endPriceBips: bigint;
       startTime: bigint;
       salePrice: bigint;
-    } = await dutchAuctionClient.getAuctionState(POW1_LPNFT_FIRST_TOKEN_ID);
+    } = await dutchAuctionClient.getAuctionState(YIELD_LPNFT_FIRST_TOKEN_ID);
 
-    chai.expect(auctionState.lpNftTokenId).to.equal(POW1_LPNFT_FIRST_TOKEN_ID);
+    chai.expect(auctionState.lpNftTokenId).to.equal(YIELD_LPNFT_FIRST_TOKEN_ID);
     chai
       .expect(auctionState.startPriceBips)
       .to.equal(ethers.parseUnits("0.0002", 18));
@@ -430,7 +432,7 @@ describe("DutchAuctionClient", () => {
 
     chai
       .expect(currentAuctionStates[0].lpNftTokenId)
-      .to.equal(POW1_LPNFT_THIRD_TOKEN_ID);
+      .to.equal(YIELD_LPNFT_THIRD_TOKEN_ID);
     chai
       .expect(currentAuctionStates[0].startPriceBips)
       .to.equal(ethers.parseUnits("0.0002", 18));
@@ -442,7 +444,7 @@ describe("DutchAuctionClient", () => {
 
     chai
       .expect(currentAuctionStates[1].lpNftTokenId)
-      .to.equal(POW1_LPNFT_SECOND_TOKEN_ID);
+      .to.equal(YIELD_LPNFT_SECOND_TOKEN_ID);
     chai
       .expect(currentAuctionStates[1].startPriceBips)
       .to.equal(ethers.parseUnits("0.0002", 18));

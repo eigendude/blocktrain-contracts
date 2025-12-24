@@ -32,8 +32,8 @@ function TheReserveRoutesMixin<T extends new (...args: any[]) => {}>(Base: T) {
       );
     }
 
-    async pow1Token(): Promise<`0x${string}`> {
-      return (await this.theReserveRoutes.pow1Token()) as `0x${string}`;
+    async yieldToken(): Promise<`0x${string}`> {
+      return (await this.theReserveRoutes.yieldToken()) as `0x${string}`;
     }
 
     async pow5Token(): Promise<`0x${string}`> {
@@ -68,8 +68,8 @@ function TheReserveRoutesMixin<T extends new (...args: any[]) => {}>(Base: T) {
       return (await this.theReserveRoutes.noLpSft()) as `0x${string}`;
     }
 
-    async pow1MarketPool(): Promise<`0x${string}`> {
-      return (await this.theReserveRoutes.pow1MarketPool()) as `0x${string}`;
+    async yieldMarketPool(): Promise<`0x${string}`> {
+      return (await this.theReserveRoutes.yieldMarketPool()) as `0x${string}`;
     }
 
     async pow5StablePool(): Promise<`0x${string}`> {
@@ -80,8 +80,8 @@ function TheReserveRoutesMixin<T extends new (...args: any[]) => {}>(Base: T) {
       return (await this.theReserveRoutes.marketStablePool()) as `0x${string}`;
     }
 
-    async pow1MarketSwapper(): Promise<`0x${string}`> {
-      return (await this.theReserveRoutes.pow1MarketSwapper()) as `0x${string}`;
+    async yieldMarketSwapper(): Promise<`0x${string}`> {
+      return (await this.theReserveRoutes.yieldMarketSwapper()) as `0x${string}`;
     }
 
     async pow5StableSwapper(): Promise<`0x${string}`> {
@@ -92,24 +92,24 @@ function TheReserveRoutesMixin<T extends new (...args: any[]) => {}>(Base: T) {
       return (await this.theReserveRoutes.marketStableSwapper()) as `0x${string}`;
     }
 
-    async pow1MarketPooler(): Promise<`0x${string}`> {
-      return (await this.theReserveRoutes.pow1MarketPooler()) as `0x${string}`;
+    async yieldMarketPooler(): Promise<`0x${string}`> {
+      return (await this.theReserveRoutes.yieldMarketPooler()) as `0x${string}`;
     }
 
     async pow5StablePooler(): Promise<`0x${string}`> {
       return (await this.theReserveRoutes.pow5StablePooler()) as `0x${string}`;
     }
 
-    async pow1LpNftStakeFarm(): Promise<`0x${string}`> {
-      return (await this.theReserveRoutes.pow1LpNftStakeFarm()) as `0x${string}`;
+    async yieldLpNftStakeFarm(): Promise<`0x${string}`> {
+      return (await this.theReserveRoutes.yieldLpNftStakeFarm()) as `0x${string}`;
     }
 
     async pow5LpNftStakeFarm(): Promise<`0x${string}`> {
       return (await this.theReserveRoutes.pow5LpNftStakeFarm()) as `0x${string}`;
     }
 
-    async pow1LpSftLendFarm(): Promise<`0x${string}`> {
-      return (await this.theReserveRoutes.pow1LpSftLendFarm()) as `0x${string}`;
+    async yieldLpSftLendFarm(): Promise<`0x${string}`> {
+      return (await this.theReserveRoutes.yieldLpSftLendFarm()) as `0x${string}`;
     }
 
     async pow5LpSftLendFarm(): Promise<`0x${string}`> {

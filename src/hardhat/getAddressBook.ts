@@ -28,13 +28,6 @@ import {
   LPYIELD_TOKEN_CONTRACT,
   MARKET_STABLE_SWAPPER_CONTRACT,
   NOLPSFT_CONTRACT,
-  POW1_LPNFT_STAKE_FARM_CONTRACT,
-  POW1_LPSFT_LEND_FARM_CONTRACT,
-  POW1_MARKET_POOL_CONTRACT,
-  POW1_MARKET_POOL_FACTORY_CONTRACT,
-  POW1_MARKET_POOLER_CONTRACT,
-  POW1_MARKET_SWAPPER_CONTRACT,
-  POW1_TOKEN_CONTRACT,
   POW5_INTEREST_FARM_CONTRACT,
   POW5_LPNFT_STAKE_FARM_CONTRACT,
   POW5_LPSFT_LEND_FARM_CONTRACT,
@@ -46,6 +39,13 @@ import {
   REVERSE_REPO_CONTRACT,
   THE_RESERVE_CONTRACT,
   YIELD_HARVEST_CONTRACT,
+  YIELD_LPNFT_STAKE_FARM_CONTRACT,
+  YIELD_LPSFT_LEND_FARM_CONTRACT,
+  YIELD_MARKET_POOL_CONTRACT,
+  YIELD_MARKET_POOL_FACTORY_CONTRACT,
+  YIELD_MARKET_POOLER_CONTRACT,
+  YIELD_MARKET_SWAPPER_CONTRACT,
+  YIELD_TOKEN_CONTRACT,
 } from "../names/dapp";
 import {
   UNISWAP_V3_FACTORY_CONTRACT,
@@ -58,11 +58,11 @@ import {
 import {
   TEST_ERC1155_ENUMERABLE_CONTRACT,
   TEST_LIQUIDITY_MATH_CONTRACT,
-  TEST_POW1_MARKET_STAKER_CONTRACT,
   TEST_POW5_STABLE_STAKER_CONTRACT,
   TEST_REWARD_MATH_CONTRACT,
   TEST_STRING_UTILS_CONTRACT,
   TEST_TICK_MATH_CONTRACT,
+  TEST_YIELD_MARKET_STAKER_CONTRACT,
   USDC_CONTRACT,
 } from "../names/testing";
 
@@ -113,39 +113,39 @@ async function getAddressBook(networkName: string): Promise<AddressBook> {
       DEBT_TOKEN_CONTRACT,
       networkName,
     ),
-    pow1LpNftStakeFarm: await getContractAddress(
-      "pow1LpNftStakeFarm",
-      POW1_LPNFT_STAKE_FARM_CONTRACT,
+    yieldLpNftStakeFarm: await getContractAddress(
+      "yieldLpNftStakeFarm",
+      YIELD_LPNFT_STAKE_FARM_CONTRACT,
       networkName,
     ),
-    pow1LpSftLendFarm: await getContractAddress(
-      "pow1LpSftLendFarm",
-      POW1_LPSFT_LEND_FARM_CONTRACT,
+    yieldLpSftLendFarm: await getContractAddress(
+      "yieldLpSftLendFarm",
+      YIELD_LPSFT_LEND_FARM_CONTRACT,
       networkName,
     ),
-    pow1MarketPool: await getContractAddress(
-      "pow1MarketPool",
-      POW1_MARKET_POOL_CONTRACT,
+    yieldMarketPool: await getContractAddress(
+      "yieldMarketPool",
+      YIELD_MARKET_POOL_CONTRACT,
       networkName,
     ),
-    pow1MarketPooler: await getContractAddress(
-      "pow1MarketPooler",
-      POW1_MARKET_POOLER_CONTRACT,
+    yieldMarketPooler: await getContractAddress(
+      "yieldMarketPooler",
+      YIELD_MARKET_POOLER_CONTRACT,
       networkName,
     ),
-    pow1MarketPoolFactory: await getContractAddress(
-      "pow1MarketPoolFactory",
-      POW1_MARKET_POOL_FACTORY_CONTRACT,
+    yieldMarketPoolFactory: await getContractAddress(
+      "yieldMarketPoolFactory",
+      YIELD_MARKET_POOL_FACTORY_CONTRACT,
       networkName,
     ),
-    pow1MarketSwapper: await getContractAddress(
-      "pow1MarketSwapper",
-      POW1_MARKET_SWAPPER_CONTRACT,
+    yieldMarketSwapper: await getContractAddress(
+      "yieldMarketSwapper",
+      YIELD_MARKET_SWAPPER_CONTRACT,
       networkName,
     ),
-    pow1Token: await getContractAddress(
-      "pow1Token",
-      POW1_TOKEN_CONTRACT,
+    yieldToken: await getContractAddress(
+      "yieldToken",
+      YIELD_TOKEN_CONTRACT,
       networkName,
     ),
     pow5InterestFarm: await getContractAddress(
@@ -203,9 +203,9 @@ async function getAddressBook(networkName: string): Promise<AddressBook> {
       TEST_LIQUIDITY_MATH_CONTRACT,
       networkName,
     ),
-    testPow1MarketStakerContract: await getContractAddress(
-      "testPow1MarketStakerContract",
-      TEST_POW1_MARKET_STAKER_CONTRACT,
+    testYieldMarketStakerContract: await getContractAddress(
+      "testYieldMarketStakerContract",
+      TEST_YIELD_MARKET_STAKER_CONTRACT,
       networkName,
     ),
     testPow5StableStakerContract: await getContractAddress(

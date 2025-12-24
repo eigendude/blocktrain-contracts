@@ -27,11 +27,6 @@ import {
   LPYIELD_TOKEN_CONTRACT,
   MARKET_STABLE_SWAPPER_CONTRACT,
   NOLPSFT_CONTRACT,
-  POW1_LPNFT_STAKE_FARM_CONTRACT,
-  POW1_LPSFT_LEND_FARM_CONTRACT,
-  POW1_MARKET_POOL_FACTORY_CONTRACT,
-  POW1_MARKET_POOLER_CONTRACT,
-  POW1_TOKEN_CONTRACT,
   POW5_INTEREST_FARM_CONTRACT,
   POW5_LPNFT_STAKE_FARM_CONTRACT,
   POW5_LPSFT_LEND_FARM_CONTRACT,
@@ -42,6 +37,11 @@ import {
   REVERSE_REPO_CONTRACT,
   THE_RESERVE_CONTRACT,
   YIELD_HARVEST_CONTRACT,
+  YIELD_LPNFT_STAKE_FARM_CONTRACT,
+  YIELD_LPSFT_LEND_FARM_CONTRACT,
+  YIELD_MARKET_POOL_FACTORY_CONTRACT,
+  YIELD_MARKET_POOLER_CONTRACT,
+  YIELD_TOKEN_CONTRACT,
 } from "../names/dapp";
 import {
   UNISWAP_V3_FACTORY_CONTRACT,
@@ -79,7 +79,7 @@ const JSON_RPC_URL: string =
   process.env.JSON_RPC_URL || "http://localhost:8545";
 
 // Token IDs of initial LP-NFT
-const INITIAL_POW1_LPNFT_TOKEN_ID: bigint = 1n;
+const INITIAL_YIELD_LPNFT_TOKEN_ID: bigint = 1n;
 
 // Get some ETH for beneficiary's gas fees
 const BENEFICIARY_ETH: bigint = ethers.parseEther("10") / BigInt(ETH_PRICE); // $10 in ETH
@@ -229,13 +229,14 @@ async function initializeGame(
       lpSft: contracts[LPSFT_CONTRACT]["address"],
       noLpSft: contracts[NOLPSFT_CONTRACT]["address"],
       debtToken: contracts[DEBT_TOKEN_CONTRACT]["address"],
-      pow1LpNftStakeFarm: contracts[POW1_LPNFT_STAKE_FARM_CONTRACT]["address"],
-      pow1LpSftLendFarm: contracts[POW1_LPSFT_LEND_FARM_CONTRACT]["address"],
-      pow1MarketPooler: contracts[POW1_MARKET_POOLER_CONTRACT]["address"],
-      pow1MarketPoolFactory:
-        contracts[POW1_MARKET_POOL_FACTORY_CONTRACT]["address"],
-      pow1MarketSwapper: contracts[POW1_MARKET_POOLER_CONTRACT]["address"],
-      pow1Token: contracts[POW1_TOKEN_CONTRACT]["address"],
+      yieldLpNftStakeFarm:
+        contracts[YIELD_LPNFT_STAKE_FARM_CONTRACT]["address"],
+      yieldLpSftLendFarm: contracts[YIELD_LPSFT_LEND_FARM_CONTRACT]["address"],
+      yieldMarketPooler: contracts[YIELD_MARKET_POOLER_CONTRACT]["address"],
+      yieldMarketPoolFactory:
+        contracts[YIELD_MARKET_POOL_FACTORY_CONTRACT]["address"],
+      yieldMarketSwapper: contracts[YIELD_MARKET_POOLER_CONTRACT]["address"],
+      yieldToken: contracts[YIELD_TOKEN_CONTRACT]["address"],
       pow5InterestFarm: contracts[POW5_INTEREST_FARM_CONTRACT]["address"],
       pow5LpNftStakeFarm: contracts[POW5_LPNFT_STAKE_FARM_CONTRACT]["address"],
       pow5LpSftLendFarm: contracts[POW5_LPSFT_LEND_FARM_CONTRACT]["address"],
@@ -275,8 +276,8 @@ async function initializeGame(
     // Get pool addresses
     const uniswapV3FactoryContract: UniswapV3FactoryContract =
       new UniswapV3FactoryContract(deployer, addressBook.uniswapV3Factory!);
-    addressBook.pow1MarketPool = await uniswapV3FactoryContract.getPool(
-      addressBook.pow1Token!,
+    addressBook.yieldMarketPool = await uniswapV3FactoryContract.getPool(
+      addressBook.yieldToken!,
       addressBook.wrappedNativeToken!,
       LPYIELD_POOL_FEE,
     );
@@ -299,9 +300,9 @@ async function initializeGame(
   console.log("Initializing Uniswap V3 pools...");
 
   const poolManager: PoolManager = new PoolManager(deployer, {
-    pow1Token: addressBook.pow1Token!,
+    yieldToken: addressBook.yieldToken!,
     marketToken: addressBook.wrappedNativeToken!,
-    pow1MarketPool: addressBook.pow1MarketPool!,
+    yieldMarketPool: addressBook.yieldMarketPool!,
     pow5Token: addressBook.pow5Token!,
     stableToken: addressBook.usdcToken!,
     pow5StablePool: addressBook.pow5StablePool!,
@@ -316,7 +317,7 @@ async function initializeGame(
   console.log("Granting roles...");
 
   const permissionManager: PermissionManager = new PermissionManager(deployer, {
-    pow1Token: addressBook.pow1Token!,
+    yieldToken: addressBook.yieldToken!,
     pow5Token: addressBook.pow5Token!,
     lpYieldToken: addressBook.lpYieldToken!,
     lpBorrowToken: addressBook.lpBorrowToken!,
@@ -327,9 +328,9 @@ async function initializeGame(
     yieldHarvest: addressBook.yieldHarvest!,
     liquidityForge: addressBook.liquidityForge!,
     reverseRepo: addressBook.reverseRepo!,
-    pow1LpNftStakeFarm: addressBook.pow1LpNftStakeFarm!,
+    yieldLpNftStakeFarm: addressBook.yieldLpNftStakeFarm!,
     pow5LpNftStakeFarm: addressBook.pow5LpNftStakeFarm!,
-    pow1LpSftLendFarm: addressBook.pow1LpSftLendFarm!,
+    yieldLpSftLendFarm: addressBook.yieldLpSftLendFarm!,
     pow5LpSftLendFarm: addressBook.pow5LpSftLendFarm!,
     defiManager: addressBook.defiManager!,
     pow5InterestFarm: addressBook.pow5InterestFarm!,
@@ -344,7 +345,7 @@ async function initializeGame(
   const dutchAuctionManager: DutchAuctionManager = new DutchAuctionManager(
     deployer,
     {
-      pow1Token: addressBook.pow1Token!,
+      yieldToken: addressBook.yieldToken!,
       marketToken: addressBook.wrappedNativeToken!,
       dutchAuction: addressBook.dutchAuction!,
     },
@@ -378,7 +379,7 @@ async function initializeGame(
   // Check if we own the LP-SFT
   const lpSftBalance: bigint = await lpSftContract.balanceOf(
     beneficiaryAddress,
-    INITIAL_POW1_LPNFT_TOKEN_ID,
+    INITIAL_YIELD_LPNFT_TOKEN_ID,
   );
 
   // Transfer the LP-SFT to Yield Harvest, if needed
@@ -389,7 +390,7 @@ async function initializeGame(
     await lpSftContract.safeTransferFrom(
       beneficiaryAddress,
       addressBook.yieldHarvest!,
-      INITIAL_POW1_LPNFT_TOKEN_ID,
+      INITIAL_YIELD_LPNFT_TOKEN_ID,
       1n,
     );
   } else {
@@ -410,7 +411,7 @@ async function initializeGame(
 
   // Get LP-SFT address
   const lpSftAddress: `0x${string}` = await lpSftContract.tokenIdToAddress(
-    INITIAL_POW1_LPNFT_TOKEN_ID,
+    INITIAL_YIELD_LPNFT_TOKEN_ID,
   );
 
   // Get DEBT balance of LP-SFT
@@ -422,7 +423,7 @@ async function initializeGame(
 
     // Borrow POW5 from LiquidityForge
     await liquidityForgeContract.borrowPow5(
-      INITIAL_POW1_LPNFT_TOKEN_ID, // tokenId
+      INITIAL_YIELD_LPNFT_TOKEN_ID, // tokenId
       INITIAL_POW5_AMOUNT - debtBalance, // amount
       beneficiaryAddress, // receiver
     );

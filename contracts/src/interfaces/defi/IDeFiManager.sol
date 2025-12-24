@@ -22,22 +22,22 @@ interface IDeFiManager is IERC165 {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev The POW1 balance of the LP-SFT
+   * @dev The YIELD balance of the LP-SFT
    *
    * @param tokenId The token ID of the LP-SFT
    *
-   * @return The POW1 balance
+   * @return The YIELD balance
    */
-  function pow1Balance(uint256 tokenId) external view returns (uint256);
+  function yieldBalance(uint256 tokenId) external view returns (uint256);
 
   /**
-   * @dev The POW1 balances of multiple LP-SFTs
+   * @dev The YIELD balances of multiple LP-SFTs
    *
    * @param tokenIds The token IDs of the LP-SFTs
    *
-   * @return The POW1 balances for all LP-SFTs
+   * @return The YIELD balances for all LP-SFTs
    */
-  function pow1BalanceBatch(
+  function yieldBalanceBatch(
     uint256[] memory tokenIds
   ) external view returns (uint256[] memory);
 

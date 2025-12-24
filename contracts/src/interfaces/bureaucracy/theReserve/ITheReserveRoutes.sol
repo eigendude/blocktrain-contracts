@@ -36,7 +36,7 @@ interface ITheReserveRoutes is IERC165 {
   //////////////////////////////////////////////////////////////////////////////
 
   struct Routes {
-    IERC20 pow1Token;
+    IERC20 yieldToken;
     IERC20 pow5Token;
     IERC20 lpYieldToken;
     IERC20 lpBorrowToken;
@@ -45,17 +45,17 @@ interface ITheReserveRoutes is IERC165 {
     IERC20 stableToken;
     ILPSFT lpSft;
     INOLPSFT noLpSft;
-    IUniswapV3Pool pow1MarketPool;
+    IUniswapV3Pool yieldMarketPool;
     IUniswapV3Pool pow5StablePool;
     IUniswapV3Pool marketStablePool;
-    IGameTokenSwapper pow1MarketSwapper;
+    IGameTokenSwapper yieldMarketSwapper;
     IGameTokenSwapper pow5StableSwapper;
     IMarketStableSwapper marketStableSwapper;
-    IGameTokenPooler pow1MarketPooler;
+    IGameTokenPooler yieldMarketPooler;
     IGameTokenPooler pow5StablePooler;
-    ILPNFTStakeFarm pow1LpNftStakeFarm;
+    ILPNFTStakeFarm yieldLpNftStakeFarm;
     IUniV3StakeFarm pow5LpNftStakeFarm;
-    ILPSFTLendFarm pow1LpSftLendFarm;
+    ILPSFTLendFarm yieldLpSftLendFarm;
     ILPSFTLendFarm pow5LpSftLendFarm;
     IUniswapV3Factory uniswapV3Factory;
     INonfungiblePositionManager uniswapV3NftManager;
@@ -72,9 +72,9 @@ interface ITheReserveRoutes is IERC165 {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev The POW1 game token
+   * @dev The YIELD game token
    */
-  function pow1Token() external view returns (IERC20);
+  function yieldToken() external view returns (IERC20);
 
   /**
    * @dev The POW5 game token
@@ -97,7 +97,7 @@ interface ITheReserveRoutes is IERC165 {
   function debtToken() external view returns (IERC20);
 
   /**
-   * @dev The market token paired with POW1
+   * @dev The market token paired with YIELD
    */
   function marketToken() external view returns (IERC20);
 
@@ -125,9 +125,9 @@ interface ITheReserveRoutes is IERC165 {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev The POW1-market liquidity pool
+   * @dev The YIELD-market liquidity pool
    */
-  function pow1MarketPool() external view returns (IUniswapV3Pool);
+  function yieldMarketPool() external view returns (IUniswapV3Pool);
 
   /**
    * @dev The POW5-stable liquidity pool
@@ -144,9 +144,9 @@ interface ITheReserveRoutes is IERC165 {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev The swapper for the POW1-market token pair
+   * @dev The swapper for the YIELD-market token pair
    */
-  function pow1MarketSwapper() external view returns (IGameTokenSwapper);
+  function yieldMarketSwapper() external view returns (IGameTokenSwapper);
 
   /**
    * @dev The swapper for the POW5-stable token pair
@@ -163,9 +163,9 @@ interface ITheReserveRoutes is IERC165 {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev The pooler for the POW1-market token pair
+   * @dev The pooler for the YIELD-market token pair
    */
-  function pow1MarketPooler() external view returns (IGameTokenPooler);
+  function yieldMarketPooler() external view returns (IGameTokenPooler);
 
   /**
    * @dev The pooler for the POW5-stable token pair
@@ -177,9 +177,9 @@ interface ITheReserveRoutes is IERC165 {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev The POW1 LP-NFT stake farm
+   * @dev The YIELD LP-NFT stake farm
    */
-  function pow1LpNftStakeFarm() external view returns (ILPNFTStakeFarm);
+  function yieldLpNftStakeFarm() external view returns (ILPNFTStakeFarm);
 
   /**
    * @dev The POW5 LP-NFT stake farm
@@ -191,9 +191,9 @@ interface ITheReserveRoutes is IERC165 {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev The POW1 LP-SFT lend farm
+   * @dev The YIELD LP-SFT lend farm
    */
-  function pow1LpSftLendFarm() external view returns (ILPSFTLendFarm);
+  function yieldLpSftLendFarm() external view returns (ILPSFTLendFarm);
 
   /**
    * @dev The POW5 LP-SFT lend farm

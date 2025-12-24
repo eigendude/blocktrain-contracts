@@ -73,10 +73,10 @@ contract TheReserveRoutes is ITheReserveRoutes {
   }
 
   /**
-   * @dev See {ITheReserveRoutes-pow1Token}
+   * @dev See {ITheReserveRoutes-yieldToken}
    */
-  function pow1Token() external view override returns (IERC20) {
-    return _routes.pow1Token;
+  function yieldToken() external view override returns (IERC20) {
+    return _routes.yieldToken;
   }
 
   /**
@@ -136,10 +136,10 @@ contract TheReserveRoutes is ITheReserveRoutes {
   }
 
   /**
-   * @dev See {ITheReserveRoutes-pow1MarketPool}
+   * @dev See {ITheReserveRoutes-yieldMarketPool}
    */
-  function pow1MarketPool() external view override returns (IUniswapV3Pool) {
-    return _routes.pow1MarketPool;
+  function yieldMarketPool() external view override returns (IUniswapV3Pool) {
+    return _routes.yieldMarketPool;
   }
 
   /**
@@ -157,15 +157,15 @@ contract TheReserveRoutes is ITheReserveRoutes {
   }
 
   /**
-   * @dev See {ITheReserveRoutes-pow1MarketSwapper}
+   * @dev See {ITheReserveRoutes-yieldMarketSwapper}
    */
-  function pow1MarketSwapper()
+  function yieldMarketSwapper()
     external
     view
     override
     returns (IGameTokenSwapper)
   {
-    return _routes.pow1MarketSwapper;
+    return _routes.yieldMarketSwapper;
   }
 
   /**
@@ -193,15 +193,15 @@ contract TheReserveRoutes is ITheReserveRoutes {
   }
 
   /**
-   * @dev See {ITheReserveRoutes-pow1MarketPooler}
+   * @dev See {ITheReserveRoutes-yieldMarketPooler}
    */
-  function pow1MarketPooler()
+  function yieldMarketPooler()
     external
     view
     override
     returns (IGameTokenPooler)
   {
-    return _routes.pow1MarketPooler;
+    return _routes.yieldMarketPooler;
   }
 
   /**
@@ -217,15 +217,15 @@ contract TheReserveRoutes is ITheReserveRoutes {
   }
 
   /**
-   * @dev See {ITheReserveRoutes-pow1LpNftStakeFarm}
+   * @dev See {ITheReserveRoutes-yieldLpNftStakeFarm}
    */
-  function pow1LpNftStakeFarm()
+  function yieldLpNftStakeFarm()
     external
     view
     override
     returns (ILPNFTStakeFarm)
   {
-    return _routes.pow1LpNftStakeFarm;
+    return _routes.yieldLpNftStakeFarm;
   }
 
   /**
@@ -241,10 +241,15 @@ contract TheReserveRoutes is ITheReserveRoutes {
   }
 
   /**
-   * @dev See {ITheReserveRoutes-pow1LpSftLendFarm}
+   * @dev See {ITheReserveRoutes-yieldLpSftLendFarm}
    */
-  function pow1LpSftLendFarm() external view override returns (ILPSFTLendFarm) {
-    return _routes.pow1LpSftLendFarm;
+  function yieldLpSftLendFarm()
+    external
+    view
+    override
+    returns (ILPSFTLendFarm)
+  {
+    return _routes.yieldLpSftLendFarm;
   }
 
   /**

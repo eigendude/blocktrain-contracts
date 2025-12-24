@@ -28,8 +28,8 @@ import marketStableSwapperAbi from "./contracts/src/interfaces/token/routes/IMar
 import debtTokenAbi from "./contracts/src/token/ERC20/DEBT.sol/DEBT.json";
 import lpBorrowTokenAbi from "./contracts/src/token/ERC20/LPBORROW.sol/LPBORROW.json";
 import lpYieldTokenAbi from "./contracts/src/token/ERC20/LPYIELD.sol/LPYIELD.json";
-import pow1TokenAbi from "./contracts/src/token/ERC20/POW1.sol/POW1.json";
 import pow5TokenAbi from "./contracts/src/token/ERC20/POW5.sol/POW5.json";
+import yieldTokenAbi from "./contracts/src/token/ERC20/YIELD.sol/YIELD.json";
 import uniV3PoolFactoryAbi from "./contracts/src/utils/helpers/UniV3PoolFactory.sol/UniV3PoolFactory.json";
 
 export {
@@ -48,7 +48,7 @@ export {
   marketStableSwapperAbi,
   noLpSftAbi,
   debtTokenAbi,
-  pow1TokenAbi,
+  yieldTokenAbi,
   pow5TokenAbi,
   reverseRepoAbi,
   uniV3PoolFactoryAbi,

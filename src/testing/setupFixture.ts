@@ -29,12 +29,12 @@ import {
   lpYieldTokenAbi,
   marketStableSwapperAbi,
   noLpSftAbi,
-  pow1TokenAbi,
   pow5TokenAbi,
   reverseRepoAbi,
   uniV3PoolFactoryAbi,
   uniV3StakeFarmAbi,
   yieldHarvestAbi,
+  yieldTokenAbi,
 } from "../abi/dapp";
 import {
   uniswapV3FactoryAbi,
@@ -118,39 +118,39 @@ async function setupFixture(
     debtTokenAbi,
     beneficiary,
   );
-  const pow1LpNftStakeFarmContract = new ethers.Contract(
-    addressBook.pow1LpNftStakeFarm!,
+  const yieldLpNftStakeFarmContract = new ethers.Contract(
+    addressBook.yieldLpNftStakeFarm!,
     lpNftStakeFarmAbi,
     beneficiary,
   );
-  const pow1LpSftLendFarmContract = new ethers.Contract(
-    addressBook.pow1LpSftLendFarm!,
+  const yieldLpSftLendFarmContract = new ethers.Contract(
+    addressBook.yieldLpSftLendFarm!,
     lpSftLendFarmAbi,
     beneficiary,
   );
-  const pow1MarketPoolContract = new ethers.Contract(
-    addressBook.pow1MarketPool!,
+  const yieldMarketPoolContract = new ethers.Contract(
+    addressBook.yieldMarketPool!,
     uniswapV3PoolAbi,
     beneficiary,
   );
-  const pow1MarketPoolerContract = new ethers.Contract(
-    addressBook.pow1MarketPooler!,
+  const yieldMarketPoolerContract = new ethers.Contract(
+    addressBook.yieldMarketPooler!,
     gameTokenPoolerAbi,
     beneficiary,
   );
-  const pow1MarketPoolFactoryContract = new ethers.Contract(
-    addressBook.pow1MarketPoolFactory!,
+  const yieldMarketPoolFactoryContract = new ethers.Contract(
+    addressBook.yieldMarketPoolFactory!,
     uniV3PoolFactoryAbi,
     beneficiary,
   );
-  const pow1MarketSwapperContract = new ethers.Contract(
-    addressBook.pow1MarketSwapper!,
+  const yieldMarketSwapperContract = new ethers.Contract(
+    addressBook.yieldMarketSwapper!,
     gameTokenSwapperAbi,
     beneficiary,
   );
-  const pow1TokenContract = await hardhat_re.ethers.getContractAt(
-    pow1TokenAbi,
-    addressBook.pow1Token!,
+  const yieldTokenContract = await hardhat_re.ethers.getContractAt(
+    yieldTokenAbi,
+    addressBook.yieldToken!,
     beneficiary,
   );
   const pow5InterestFarmContract = new ethers.Contract(
@@ -273,13 +273,13 @@ async function setupFixture(
     lpSftContract,
     noLpSftContract,
     debtTokenContract,
-    pow1LpNftStakeFarmContract,
-    pow1LpSftLendFarmContract,
-    pow1MarketPoolContract,
-    pow1MarketPoolerContract,
-    pow1MarketPoolFactoryContract,
-    pow1MarketSwapperContract,
-    pow1TokenContract,
+    yieldLpNftStakeFarmContract,
+    yieldLpSftLendFarmContract,
+    yieldMarketPoolContract,
+    yieldMarketPoolerContract,
+    yieldMarketPoolFactoryContract,
+    yieldMarketSwapperContract,
+    yieldTokenContract,
     pow5InterestFarmContract,
     pow5LpNftStakeFarmContract,
     pow5LpSftLendFarmContract,

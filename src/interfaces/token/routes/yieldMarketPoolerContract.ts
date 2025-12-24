@@ -13,7 +13,7 @@ import { GameTokenPoolerMixin } from "./gameTokenPoolerMixin";
 
 const GameTokenPoolerContract = GameTokenPoolerMixin(BaseContract);
 
-class POW1MarketPoolerContract extends GameTokenPoolerContract {
+class YIELDMarketPoolerContract extends GameTokenPoolerContract {
   constructor(
     contractRunner: ethers.Provider | ethers.Signer,
     contractAddress: `0x${string}`,
@@ -22,4 +22,4 @@ class POW1MarketPoolerContract extends GameTokenPoolerContract {
   }
 }
 
-export { POW1MarketPoolerContract };
+export { YIELDMarketPoolerContract };

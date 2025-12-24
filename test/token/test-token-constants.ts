@@ -21,11 +21,11 @@ import { ContractLibrary } from "../../src/interfaces/contractLibrary";
 import { setupFixture } from "../../src/testing/setupFixture";
 import {
   DEBT_DECIMALS,
-  INITIAL_POW1_SUPPLY,
+  INITIAL_YIELD_SUPPLY,
   LPBORROW_DECIMALS,
   LPYIELD_DECIMALS,
-  POW1_DECIMALS,
   POW5_DECIMALS,
+  YIELD_DECIMALS,
 } from "../../src/utils/constants";
 import { getContractLibrary } from "../../src/utils/getContractLibrary";
 
@@ -67,11 +67,11 @@ describe("Token Constants", () => {
   // Spec: Test token decimals
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should test POW1 decimals", async function () {
-    const { pow1Contract } = contracts;
+  it("should test YIELD decimals", async function () {
+    const { yieldContract } = contracts;
 
-    const pow1Decimals: number = await pow1Contract.decimals();
-    chai.expect(pow1Decimals).to.equal(POW1_DECIMALS);
+    const yieldDecimals: number = await yieldContract.decimals();
+    chai.expect(yieldDecimals).to.equal(YIELD_DECIMALS);
   });
 
   it("should test POW5 decimals", async function () {
@@ -106,11 +106,11 @@ describe("Token Constants", () => {
   // Spec: Test initial supply
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should test POW1 initial supply", async function () {
-    const { pow1Contract } = contracts;
+  it("should test YIELD initial supply", async function () {
+    const { yieldContract } = contracts;
 
-    const pow1Supply: bigint = await pow1Contract.totalSupply();
-    chai.expect(pow1Supply).to.equal(INITIAL_POW1_SUPPLY);
+    const yieldSupply: bigint = await yieldContract.totalSupply();
+    chai.expect(yieldSupply).to.equal(INITIAL_YIELD_SUPPLY);
   });
 
   it("should test POW5 initial supply", async function () {

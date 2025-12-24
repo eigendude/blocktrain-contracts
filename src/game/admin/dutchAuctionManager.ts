@@ -14,7 +14,7 @@ import { ERC20Contract } from "../../interfaces/zeppelin/token/erc20/erc20Contra
 import { ETH_PRICE } from "../../testing/defiMetrics";
 import {
   INITIAL_LPYIELD_WETH_VALUE,
-  INITIAL_POW1_SUPPLY,
+  INITIAL_YIELD_SUPPLY,
 } from "../../utils/constants";
 
 //////////////////////////////////////////////////////////////////////////////
@@ -39,7 +39,7 @@ const INITIAL_WETH_AMOUNT: bigint =
 type Addresses = {
   dutchAuction: `0x${string}`;
   marketToken: `0x${string}`;
-  pow1Token: `0x${string}`;
+  yieldToken: `0x${string}`;
 };
 
 //////////////////////////////////////////////////////////////////////////////
@@ -54,7 +54,7 @@ class DutchAuctionManager {
   private addresses: Addresses;
   private dutchAuctionContract: DutchAuctionContract;
   private marketTokenContract: WrappedNativeContract;
-  private pow1Contract: ERC20Contract;
+  private yieldContract: ERC20Contract;
 
   constructor(admin: ethers.Signer, addresses: Addresses) {
     this.admin = admin;
@@ -67,7 +67,10 @@ class DutchAuctionManager {
       this.admin,
       this.addresses.marketToken,
     );
-    this.pow1Contract = new ERC20Contract(this.admin, this.addresses.pow1Token);
+    this.yieldContract = new ERC20Contract(
+      this.admin,
+      this.addresses.yieldToken,
+    );
   }
 
   /**
@@ -92,8 +95,8 @@ class DutchAuctionManager {
       const setupPromises: Array<Promise<ethers.ContractTransactionReceipt>> =
         [];
 
-      // Approve Dutch Auction spending POW1, if needed
-      await this._approvePow1(INITIAL_POW1_SUPPLY, setupPromises);
+      // Approve Dutch Auction spending YIELD, if needed
+      await this._approveYield(INITIAL_YIELD_SUPPLY, setupPromises);
 
       // Obtain market token, if needed
       await this._depositMarketToken(INITIAL_WETH_AMOUNT, setupPromises);
@@ -105,7 +108,7 @@ class DutchAuctionManager {
       await Promise.all(setupPromises);
 
       return this.dutchAuctionContract.initialize(
-        INITIAL_POW1_SUPPLY,
+        INITIAL_YIELD_SUPPLY,
         INITIAL_WETH_AMOUNT,
         lpSftReceiver,
       );
@@ -150,22 +153,22 @@ class DutchAuctionManager {
     return this.dutchAuctionContract.getAuctionCount();
   }
 
-  private async _approvePow1(
+  private async _approveYield(
     amount: bigint,
     setupPromises: Array<Promise<ethers.ContractTransactionReceipt>>,
   ): Promise<void> {
     // Check current allowance
-    const pow1Allowance: bigint = await this.pow1Contract.allowance(
+    const yieldAllowance: bigint = await this.yieldContract.allowance(
       (await this.admin.getAddress()) as `0x${string}`,
       this.dutchAuctionContract.address,
     );
 
-    // Approve spending POW1, if needed
-    if (pow1Allowance < amount) {
+    // Approve spending YIELD, if needed
+    if (yieldAllowance < amount) {
       const tx: ethers.ContractTransactionResponse =
-        await this.pow1Contract.approveAsync(
+        await this.yieldContract.approveAsync(
           this.dutchAuctionContract.address,
-          amount - pow1Allowance,
+          amount - yieldAllowance,
         );
       setupPromises.push(
         tx.wait() as Promise<ethers.ContractTransactionReceipt>,

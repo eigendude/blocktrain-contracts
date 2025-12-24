@@ -67,33 +67,33 @@ abstract contract DutchAuctionBase is
    *
    * Tokens provided are returned, minus a small amount lost to dust.
    *
-   * @param pow1Amount The amount of POW1 used to mint the LP-NFT
+   * @param yieldAmount The amount of YIELD used to mint the LP-NFT
    * @param marketTokenAmount The amount of the market token used to mint the LP-NFT
    *
    * @return lpNftTokenId The token ID of the LP-NFT minted
    */
   function _mintLpNft(
-    uint256 pow1Amount,
+    uint256 yieldAmount,
     uint256 marketTokenAmount
   ) internal returns (uint256 lpNftTokenId) {
     // Uniswap V3 cannot mint a token with zero liquidity
-    require(pow1Amount > 0, "No POW1");
+    require(yieldAmount > 0, "No YIELD");
     require(marketTokenAmount > 0, "No market token");
 
     // Approve pooler to spend tokens
-    _routes.pow1Token.safeIncreaseAllowance(
-      address(_routes.pow1MarketPooler),
-      pow1Amount
+    _routes.yieldToken.safeIncreaseAllowance(
+      address(_routes.yieldMarketPooler),
+      yieldAmount
     );
     _routes.marketToken.safeIncreaseAllowance(
-      address(_routes.pow1MarketPooler),
+      address(_routes.yieldMarketPooler),
       marketTokenAmount
     );
 
     // Mint an LP-NFT
     // slither-disable-next-line calls-loop
-    lpNftTokenId = _routes.pow1MarketPooler.mintLpNftImbalance(
-      pow1Amount,
+    lpNftTokenId = _routes.yieldMarketPooler.mintLpNftImbalance(
+      yieldAmount,
       marketTokenAmount,
       address(this)
     );

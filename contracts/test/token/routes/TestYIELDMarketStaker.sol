@@ -14,10 +14,10 @@ pragma solidity 0.8.28;
 import {TestGameTokenStaker} from "./TestGameTokenStaker.sol";
 
 /**
- * @dev Token router send to liquidity to the POW1 pool in exchange for an
+ * @dev Token router send to liquidity to the YIELD pool in exchange for an
  *      LP-SFT
  */
-contract TestPOW1MarketStaker is TestGameTokenStaker {
+contract TestYIELDMarketStaker is TestGameTokenStaker {
   //////////////////////////////////////////////////////////////////////////////
   // Initialization
   //////////////////////////////////////////////////////////////////////////////
@@ -26,11 +26,11 @@ contract TestPOW1MarketStaker is TestGameTokenStaker {
    * @dev Initializes the contract
    *
    * @param owner_ The initial owner of the contract
-   * @param pow1Token_ The address of the POW1 token
+   * @param yieldToken_ The address of the YIELD token
    * @param marketToken_ The address of the market token
    * @param rewardToken_ The address of the reward token
-   * @param pow1MarketPool_ The address of the pool for the token pair
-   * @param pow1MarketPooler_ The address of the pooler for the token pair
+   * @param yieldMarketPool_ The address of the pool for the token pair
+   * @param yieldMarketPooler_ The address of the pooler for the token pair
    * @param uniswapV3NftManager_ The address of the upstream Uniswap V3 NFT
    *        manager
    * @param uniswapV3Staker_ The address of the upstream Uniswap V3 staker
@@ -38,22 +38,22 @@ contract TestPOW1MarketStaker is TestGameTokenStaker {
    */
   constructor(
     address owner_,
-    address pow1Token_,
+    address yieldToken_,
     address marketToken_,
     address rewardToken_,
-    address pow1MarketPool_,
-    address pow1MarketPooler_,
+    address yieldMarketPool_,
+    address yieldMarketPooler_,
     address uniswapV3NftManager_,
     address uniswapV3Staker_,
     address lpSft_
   )
     TestGameTokenStaker(
       owner_,
-      pow1Token_,
+      yieldToken_,
       marketToken_,
       rewardToken_,
-      pow1MarketPool_,
-      pow1MarketPooler_,
+      yieldMarketPool_,
+      yieldMarketPooler_,
       uniswapV3NftManager_,
       uniswapV3Staker_,
       lpSft_

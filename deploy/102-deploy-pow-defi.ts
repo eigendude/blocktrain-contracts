@@ -18,33 +18,33 @@ import {
   ERC20_INTEREST_FARM_CONTRACT,
   LPNFT_STAKE_FARM_CONTRACT,
   LPSFT_LEND_FARM_CONTRACT,
-  POW1_LPNFT_STAKE_FARM_CONTRACT,
-  POW1_LPSFT_LEND_FARM_CONTRACT,
   POW5_INTEREST_FARM_CONTRACT,
   POW5_LPNFT_STAKE_FARM_CONTRACT,
   POW5_LPSFT_LEND_FARM_CONTRACT,
   UNIV3_STAKE_FARM_CONTRACT,
+  YIELD_LPNFT_STAKE_FARM_CONTRACT,
+  YIELD_LPSFT_LEND_FARM_CONTRACT,
 } from "../src/names/dapp";
-import { POW1_DECIMALS } from "../src/utils/constants";
+import { YIELD_DECIMALS } from "../src/utils/constants";
 
 //
 // Deployment parameters
 //
 
-const POW1_LPNFT_STAKE_FARM_REWARD_RATE: bigint = ethers.parseUnits(
+const YIELD_LPNFT_STAKE_FARM_REWARD_RATE: bigint = ethers.parseUnits(
   "1",
-  POW1_DECIMALS,
-); // 1 POW1 per lent LPYIELD per second
-const POW1_LPSFT_LEND_FARM_REWARD_RATE: bigint = ethers.parseUnits(
+  YIELD_DECIMALS,
+); // 1 YIELD per lent LPYIELD per second
+const YIELD_LPSFT_LEND_FARM_REWARD_RATE: bigint = ethers.parseUnits(
   "1",
-  POW1_DECIMALS,
-); // 1 POW1 per lent LPYIELD per second
+  YIELD_DECIMALS,
+); // 1 YIELD per lent LPYIELD per second
 const POW5_LPSFT_LEND_FARM_REWARD_RATE: bigint = ethers.parseUnits(
   "1",
-  POW1_DECIMALS,
-); // 1 POW1 per lent LPBORROW per second
+  YIELD_DECIMALS,
+); // 1 YIELD per lent LPBORROW per second
 
-const POW5_INTEREST_RATE: bigint = ethers.parseUnits("1", POW1_DECIMALS); // 1 POW1 per lent POW5 per second
+const POW5_INTEREST_RATE: bigint = ethers.parseUnits("1", YIELD_DECIMALS); // 1 YIELD per lent POW5 per second
 
 //
 // Deploy the Uniswap V3 pool factory and token routes
@@ -78,7 +78,7 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
     ...opts,
     args: [
       deployer, // owner
-      addressBook.pow1Token!, // pow1Token
+      addressBook.yieldToken!, // yieldToken
       addressBook.pow5Token!, // pow5Token
       addressBook.lpYieldToken!, // lpYieldToken
       addressBook.lpBorrowToken!, // lpBorrowToken
@@ -89,53 +89,54 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
   addressBook.defiManager = defiManagerTx.address as `0x${string}`;
 
   //////////////////////////////////////////////////////////////////////////////
-  // Deploy POW1 DeFi farms
+  // Deploy YIELD DeFi farms
   //////////////////////////////////////////////////////////////////////////////
 
   //
-  // Deploy POW1LpNftStakeFarm
+  // Deploy YIELDLpNftStakeFarm
   //
 
-  console.log(`Deploying ${POW1_LPNFT_STAKE_FARM_CONTRACT}`);
-  const pow1LpNftStakeFarmTx = await deployments.deploy(
-    POW1_LPNFT_STAKE_FARM_CONTRACT,
+  console.log(`Deploying ${YIELD_LPNFT_STAKE_FARM_CONTRACT}`);
+  const yieldLpNftStakeFarmTx = await deployments.deploy(
+    YIELD_LPNFT_STAKE_FARM_CONTRACT,
     {
       ...opts,
       contract: LPNFT_STAKE_FARM_CONTRACT,
       args: [
         addressBook.lpSft!, // sftToken
-        addressBook.pow1Token!, // rewardToken
+        addressBook.yieldToken!, // rewardToken
         addressBook.lpYieldToken!, // lpToken
-        addressBook.pow1Token!, // pow1Token
+        addressBook.yieldToken!, // yieldToken
         addressBook.pow5Token!, // pow5Token
         addressBook.uniswapV3NftManager!, // uniswapV3NftManager
-        POW1_LPNFT_STAKE_FARM_REWARD_RATE, // rewardRate
+        YIELD_LPNFT_STAKE_FARM_REWARD_RATE, // rewardRate
       ],
     },
   );
-  addressBook.pow1LpNftStakeFarm =
-    pow1LpNftStakeFarmTx.address as `0x${string}`;
+  addressBook.yieldLpNftStakeFarm =
+    yieldLpNftStakeFarmTx.address as `0x${string}`;
 
   //
-  // Deploy POW1LpSftLendFarm
+  // Deploy YIELDLpSftLendFarm
   //
 
-  console.log(`Deploying ${POW1_LPSFT_LEND_FARM_CONTRACT}`);
-  const pow1LpSftLendFarmTx = await deployments.deploy(
-    POW1_LPSFT_LEND_FARM_CONTRACT,
+  console.log(`Deploying ${YIELD_LPSFT_LEND_FARM_CONTRACT}`);
+  const yieldLpSftLendFarmTx = await deployments.deploy(
+    YIELD_LPSFT_LEND_FARM_CONTRACT,
     {
       ...opts,
       contract: LPSFT_LEND_FARM_CONTRACT,
       args: [
         deployer, // owner
         addressBook.lpSft!, // sftToken
-        addressBook.pow1Token!, // rewardToken
+        addressBook.yieldToken!, // rewardToken
         addressBook.lpYieldToken!, // lpToken
-        POW1_LPSFT_LEND_FARM_REWARD_RATE, // rewardRate
+        YIELD_LPSFT_LEND_FARM_REWARD_RATE, // rewardRate
       ],
     },
   );
-  addressBook.pow1LpSftLendFarm = pow1LpSftLendFarmTx.address as `0x${string}`;
+  addressBook.yieldLpSftLendFarm =
+    yieldLpSftLendFarmTx.address as `0x${string}`;
 
   //////////////////////////////////////////////////////////////////////////////
   // Deploy POW5 DeFi farms
@@ -154,7 +155,7 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
       args: [
         deployer, // owner
         addressBook.lpSft!, // sftToken
-        addressBook.pow1Token!, // rewardToken
+        addressBook.yieldToken!, // rewardToken
         addressBook.pow5StablePool!, // uniswapV3Pool
         addressBook.uniswapV3NftManager!, // uniswapV3NftManager
         addressBook.uniswapV3Staker!, // uniswapV3Staker
@@ -177,7 +178,7 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
       args: [
         deployer, // owner
         addressBook.lpSft!, // sftToken
-        addressBook.pow1Token!, // rewardToken
+        addressBook.yieldToken!, // rewardToken
         addressBook.lpBorrowToken!, // lpToken
         POW5_LPSFT_LEND_FARM_REWARD_RATE, // rewardRate
       ],
@@ -197,7 +198,7 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
       contract: ERC20_INTEREST_FARM_CONTRACT,
       args: [
         deployer, // owner
-        addressBook.pow1Token!, // rewardToken
+        addressBook.yieldToken!, // rewardToken
         POW5_INTEREST_RATE, // rewardRate
       ],
     },

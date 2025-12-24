@@ -34,7 +34,7 @@ contract MarketStableSwapper is
   /**
    * @dev Initializes the contract
    *
-   * @param marketToken_ The address of the POW1 token
+   * @param marketToken_ The address of the YIELD token
    * @param stableToken_ The address of the stable token
    * @param marketStablePool_ The address of the pool contract for the token
    *        pair

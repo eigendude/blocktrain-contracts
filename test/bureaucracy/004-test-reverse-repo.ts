@@ -26,15 +26,15 @@ import {
   INITIAL_LPBORROW_USDC_VALUE,
   INITIAL_LPYIELD_AMOUNT,
   INITIAL_LPYIELD_WETH_VALUE,
-  INITIAL_POW1_PRICE,
-  INITIAL_POW1_SUPPLY,
   INITIAL_POW5_AMOUNT,
   INITIAL_POW5_DEPOSIT,
   INITIAL_POW5_PRICE,
-  //LPDEBT_DECIMALS,
-  POW1_DECIMALS,
+  INITIAL_YIELD_PRICE,
+  INITIAL_YIELD_SUPPLY,
   POW5_DECIMALS,
   USDC_DECIMALS,
+  //LPDEBT_DECIMALS,
+  YIELD_DECIMALS,
   ZERO_ADDRESS,
 } from "../../src/utils/constants";
 import { encodePriceSqrt } from "../../src/utils/fixedMath";
@@ -60,11 +60,14 @@ const INITIAL_USDC_AMOUNT: bigint =
   ethers.parseUnits(INITIAL_LPBORROW_USDC_VALUE.toString(), USDC_DECIMALS) /
   BigInt(USDC_PRICE); // 100 USDC ($100)
 
-// POW1 test reward for LPYIELD staking incentive
-const LPYIELD_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1 ($10)
+// YIELD test reward for LPYIELD staking incentive
+const LPYIELD_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", YIELD_DECIMALS); // 1,000 YIELD ($10)
 
-// POW1 test reward for LPBORROW staking incentive
-const LPBORROW_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1 ($10)
+// YIELD test reward for LPBORROW staking incentive
+const LPBORROW_REWARD_AMOUNT: bigint = ethers.parseUnits(
+  "1000",
+  YIELD_DECIMALS,
+); // 1,000 YIELD ($10)
 
 // Remaining dust balances after depositing into LP pool
 const LPBORROW_POW5_DUST: bigint = 355_055n;
@@ -174,7 +177,7 @@ describe("Bureau 4: Reverse Repo", () => {
     const permissionManager: PermissionManager = new PermissionManager(
       deployer,
       {
-        pow1Token: addressBook.pow1Token!,
+        yieldToken: addressBook.yieldToken!,
         pow5Token: addressBook.pow5Token!,
         lpYieldToken: addressBook.lpYieldToken!,
         lpBorrowToken: addressBook.lpBorrowToken!,
@@ -185,9 +188,9 @@ describe("Bureau 4: Reverse Repo", () => {
         yieldHarvest: addressBook.yieldHarvest!,
         liquidityForge: addressBook.liquidityForge!,
         reverseRepo: addressBook.reverseRepo!,
-        pow1LpNftStakeFarm: addressBook.pow1LpNftStakeFarm!,
+        yieldLpNftStakeFarm: addressBook.yieldLpNftStakeFarm!,
         pow5LpNftStakeFarm: addressBook.pow5LpNftStakeFarm!,
-        pow1LpSftLendFarm: addressBook.pow1LpSftLendFarm!,
+        yieldLpSftLendFarm: addressBook.yieldLpSftLendFarm!,
         pow5LpSftLendFarm: addressBook.pow5LpSftLendFarm!,
         defiManager: addressBook.defiManager!,
         pow5InterestFarm: addressBook.pow5InterestFarm!,
@@ -209,8 +212,8 @@ describe("Bureau 4: Reverse Repo", () => {
 
     const {
       dutchAuctionContract,
-      pow1Contract,
-      pow1MarketPoolContract,
+      yieldContract,
+      yieldMarketPoolContract,
       wrappedNativeContract,
     } = deployerContracts;
 
@@ -218,36 +221,36 @@ describe("Bureau 4: Reverse Repo", () => {
     await wrappedNativeContract.deposit(INITIAL_WETH_AMOUNT);
 
     // Get pool token order
-    let pow1IsToken0: boolean;
-    const token0: `0x${string}` = await pow1MarketPoolContract.token0();
-    const token1: `0x${string}` = await pow1MarketPoolContract.token1();
+    let yieldIsToken0: boolean;
+    const token0: `0x${string}` = await yieldMarketPoolContract.token0();
+    const token1: `0x${string}` = await yieldMarketPoolContract.token1();
     if (
-      token0.toLowerCase() === pow1Contract.address.toLowerCase() &&
+      token0.toLowerCase() === yieldContract.address.toLowerCase() &&
       token1.toLowerCase() === wrappedNativeContract.address.toLowerCase()
     ) {
-      pow1IsToken0 = true;
+      yieldIsToken0 = true;
     } else if (
       token0.toLowerCase() === wrappedNativeContract.address.toLowerCase() &&
-      token1.toLowerCase() === pow1Contract.address.toLowerCase()
+      token1.toLowerCase() === yieldContract.address.toLowerCase()
     ) {
-      pow1IsToken0 = false;
+      yieldIsToken0 = false;
     } else {
-      throw new Error("POW1 pool tokens are incorrect");
+      throw new Error("YIELD pool tokens are incorrect");
     }
 
     // The initial sqrt price [sqrt(amountToken1/amountToken0)] as a Q64.96 value
     const INITIAL_PRICE: bigint = encodePriceSqrt(
-      pow1IsToken0 ? INITIAL_WETH_AMOUNT : INITIAL_POW1_SUPPLY,
-      pow1IsToken0 ? INITIAL_POW1_SUPPLY : INITIAL_WETH_AMOUNT,
+      yieldIsToken0 ? INITIAL_WETH_AMOUNT : INITIAL_YIELD_SUPPLY,
+      yieldIsToken0 ? INITIAL_YIELD_SUPPLY : INITIAL_WETH_AMOUNT,
     );
 
     // Initialize the Uniswap V3 pool
-    await pow1MarketPoolContract.initialize(INITIAL_PRICE);
+    await yieldMarketPoolContract.initialize(INITIAL_PRICE);
 
     // Approve tokens
-    await pow1Contract.approve(
+    await yieldContract.approve(
       dutchAuctionContract.address,
-      INITIAL_POW1_SUPPLY,
+      INITIAL_YIELD_SUPPLY,
     );
     await wrappedNativeContract.approve(
       dutchAuctionContract.address,
@@ -256,7 +259,7 @@ describe("Bureau 4: Reverse Repo", () => {
 
     // Initialize DutchAuction
     await dutchAuctionContract.initialize(
-      INITIAL_POW1_SUPPLY, // pow1Amount
+      INITIAL_YIELD_SUPPLY, // yieldAmount
       INITIAL_WETH_AMOUNT, // marketTokenAmount
       beneficiaryAddress, // receiver
     );
@@ -269,16 +272,16 @@ describe("Bureau 4: Reverse Repo", () => {
   it("should initialize YieldHarvest", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { pow1Contract, pow1LpSftLendFarmContract, yieldHarvestContract } =
+    const { yieldContract, yieldLpSftLendFarmContract, yieldHarvestContract } =
       deployerContracts;
     const { lpSftContract } = beneficiaryContracts;
 
     // Grant roles
-    await pow1Contract.grantRole(ERC20_ISSUER_ROLE, deployerAddress);
+    await yieldContract.grantRole(ERC20_ISSUER_ROLE, deployerAddress);
 
-    // Mint POW1 to the POW1 LP-SFT lend farm
-    await pow1Contract.mint(
-      pow1LpSftLendFarmContract.address,
+    // Mint YIELD to the YIELD LP-SFT lend farm
+    await yieldContract.mint(
+      yieldLpSftLendFarmContract.address,
       LPYIELD_REWARD_AMOUNT,
     );
 
@@ -389,22 +392,22 @@ describe("Bureau 4: Reverse Repo", () => {
   // Spec: Create incentive for LPBORROW pool
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should mint POW1 for LPBORROW incentive reward", async function (): Promise<void> {
+  it("should mint YIELD for LPBORROW incentive reward", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { pow1Contract } = deployerContracts;
+    const { yieldContract } = deployerContracts;
 
-    // Mint POW1 for LPBORROW incentive reward
-    await pow1Contract.mint(deployerAddress, LPBORROW_REWARD_AMOUNT);
+    // Mint YIELD for LPBORROW incentive reward
+    await yieldContract.mint(deployerAddress, LPBORROW_REWARD_AMOUNT);
   });
 
-  it("should approve POW5LpNftStakeFarm spending POW1", async function (): Promise<void> {
+  it("should approve POW5LpNftStakeFarm spending YIELD", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { pow1Contract, pow5LpNftStakeFarmContract } = deployerContracts;
+    const { yieldContract, pow5LpNftStakeFarmContract } = deployerContracts;
 
-    // Approve POW5LpNftStakeFarm spending POW1
-    await pow1Contract.approve(
+    // Approve POW5LpNftStakeFarm spending YIELD
+    await yieldContract.approve(
       pow5LpNftStakeFarmContract.address,
       LPBORROW_REWARD_AMOUNT,
     );
@@ -416,15 +419,15 @@ describe("Bureau 4: Reverse Repo", () => {
     const { pow5LpNftStakeFarmContract } = deployerContracts;
 
     // Calculate DeFi properties
-    const pow1Value: string = ethers.formatUnits(
-      LPBORROW_REWARD_AMOUNT / BigInt(1 / INITIAL_POW1_PRICE),
-      POW1_DECIMALS,
+    const yieldValue: string = ethers.formatUnits(
+      LPBORROW_REWARD_AMOUNT / BigInt(1 / INITIAL_YIELD_PRICE),
+      YIELD_DECIMALS,
     );
     console.log(
       `    Creating LPBORROW incentive with ${ethers.formatUnits(
         LPBORROW_REWARD_AMOUNT,
-        POW1_DECIMALS,
-      )} POW1 ($${pow1Value})`,
+        YIELD_DECIMALS,
+      )} YIELD ($${yieldValue})`,
     );
 
     // Create incentive
@@ -892,13 +895,13 @@ describe("Bureau 4: Reverse Repo", () => {
   // Spec: Liquidate the purchased POW5 LP-SFT
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should check POW1 balance before liquidation to calculate earnings", async function (): Promise<void> {
-    const { pow1Contract } = beneficiaryContracts;
+  it("should check YIELD balance before liquidation to calculate earnings", async function (): Promise<void> {
+    const { yieldContract } = beneficiaryContracts;
 
-    // Check POW1 balance
-    const pow1Balance: bigint =
-      await pow1Contract.balanceOf(beneficiaryAddress);
-    chai.expect(pow1Balance).to.equal(0n);
+    // Check YIELD balance
+    const yieldBalance: bigint =
+      await yieldContract.balanceOf(beneficiaryAddress);
+    chai.expect(yieldBalance).to.equal(0n);
   });
 
   it("should approve ReverseRepo to manager POW5 LP-SFTs", async function (): Promise<void> {
@@ -925,22 +928,22 @@ describe("Bureau 4: Reverse Repo", () => {
 
   /*
   it("should check earnings and losses after liquidation", async function (): Promise<void> {
-    const { pow1Contract, pow5Contract } = beneficiaryContracts;
+    const { yieldContract, pow5Contract } = beneficiaryContracts;
     const usdcTokenContract: ERC20Contract = new ERC20Contract(
       deployer,
       addressBook.usdcToken!,
     );
 
     // Check balances
-    const pow1Balance: bigint =
-      await pow1Contract.balanceOf(beneficiaryAddress);
+    const yieldBalance: bigint =
+      await yieldContract.balanceOf(beneficiaryAddress);
     const pow5Balance: bigint =
       await pow5Contract.balanceOf(beneficiaryAddress);
     const usdcBalance: bigint =
       await usdcTokenContract.balanceOf(beneficiaryAddress);
 
     // Calculate token metrics
-    const pow1Returned: bigint = pow1Balance;
+    const yieldReturned: bigint = yieldBalance;
     const pow5Returned: bigint =
       pow5Balance -
       INITIAL_POW5_AMOUNT +
@@ -949,9 +952,9 @@ describe("Bureau 4: Reverse Repo", () => {
     const usdcLost: bigint = -(usdcBalance - PURCHASE_USDC_AMOUNT);
 
     // Calculate DeFi metrics
-    const pow1ReturnedValue: string = ethers.formatUnits(
-      pow1Returned / BigInt(1 / INITIAL_POW1_PRICE),
-      POW1_DECIMALS,
+    const yieldReturnedValue: string = ethers.formatUnits(
+      yieldReturned / BigInt(1 / INITIAL_YIELD_PRICE),
+      YIELD_DECIMALS,
     );
     const pow5ReturnedValue: string = ethers.formatUnits(
       pow5Returned / BigInt(1 / INITIAL_POW5_PRICE),
@@ -963,7 +966,7 @@ describe("Bureau 4: Reverse Repo", () => {
     );
     const totalLost: number =
       parseFloat(usdcLostValue) -
-      parseFloat(pow1ReturnedValue) -
+      parseFloat(yieldReturnedValue) -
       parseFloat(pow5ReturnedValue);
     const totalLostValue: string = totalLost.toLocaleString();
     const totalLostPercent: string = (
@@ -973,10 +976,10 @@ describe("Bureau 4: Reverse Repo", () => {
 
     // Log amounts
     console.log(
-      `    Earned POW1: ${ethers.formatUnits(
-        pow1Returned,
-        POW1_DECIMALS,
-      )} POW1 ($${pow1ReturnedValue})`,
+      `    Earned YIELD: ${ethers.formatUnits(
+        yieldReturned,
+        YIELD_DECIMALS,
+      )} YIELD ($${yieldReturnedValue})`,
     );
     console.log(
       `    Earned POW5: ${ethers.formatUnits(
@@ -992,7 +995,7 @@ describe("Bureau 4: Reverse Repo", () => {
     );
     console.log(`    Total loss: ${totalLostPercent}% ($${totalLostValue})`);
 
-    chai.expect(pow1Returned).to.equal(0n); // This will change after adding rewards
+    chai.expect(yieldReturned).to.equal(0n); // This will change after adding rewards
     chai.expect(pow5Returned).to.equal(PURCHASE_POW5_RETURNED);
     chai.expect(usdcLost).to.equal(PURCHASE_USDC_LOST);
   });
@@ -1000,24 +1003,24 @@ describe("Bureau 4: Reverse Repo", () => {
 
   /*
   it("should check balances after liquidation", async function (): Promise<void> {
-    const { pow1Contract, pow5Contract } = beneficiaryContracts;
+    const { yieldContract, pow5Contract } = beneficiaryContracts;
     const usdcTokenContract: ERC20Contract = new ERC20Contract(
       deployer,
       addressBook.usdcToken!,
     );
 
     // Check balances
-    const pow1Balance: bigint =
-      await pow1Contract.balanceOf(beneficiaryAddress);
+    const yieldBalance: bigint =
+      await yieldContract.balanceOf(beneficiaryAddress);
     const pow5Balance: bigint =
       await pow5Contract.balanceOf(beneficiaryAddress);
     const usdcBalance: bigint =
       await usdcTokenContract.balanceOf(beneficiaryAddress);
 
     // Calculate DeFi metrics
-    const pow1Value: string = ethers.formatUnits(
-      pow1Balance / BigInt(1 / INITIAL_POW1_PRICE),
-      POW1_DECIMALS,
+    const yieldValue: string = ethers.formatUnits(
+      yieldBalance / BigInt(1 / INITIAL_YIELD_PRICE),
+      YIELD_DECIMALS,
     );
     const pow5Value: string = ethers.formatUnits(
       pow5Balance / BigInt(1 / INITIAL_POW5_PRICE),
@@ -1030,10 +1033,10 @@ describe("Bureau 4: Reverse Repo", () => {
 
     // Log balances
     console.log(
-      `    Beneficiary POW1 balance: ${ethers.formatUnits(
-        pow1Balance,
-        POW1_DECIMALS,
-      )} POW1 ($${pow1Value})`,
+      `    Beneficiary YIELD balance: ${ethers.formatUnits(
+        yieldBalance,
+        YIELD_DECIMALS,
+      )} YIELD ($${yieldValue})`,
     );
     console.log(
       `    Beneficiary POW5 balance: ${ethers.formatUnits(
@@ -1048,7 +1051,7 @@ describe("Bureau 4: Reverse Repo", () => {
       )} USDC ($${usdcValue})`,
     );
 
-    chai.expect(pow1Balance).to.equal(0n); // TODO: Simulate rewards
+    chai.expect(yieldBalance).to.equal(0n); // TODO: Simulate rewards
     chai
       .expect(pow5Balance)
       .to.equal(
@@ -1096,7 +1099,7 @@ describe("Bureau 4: Reverse Repo", () => {
   // Spec: Mint POW5 to repay loan
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should check DEBT balance of POW1 LP-SFT", async function (): Promise<void> {
+  it("should check DEBT balance of YIELD LP-SFT", async function (): Promise<void> {
     const { defiManagerContract } = beneficiaryContracts;
 
     // Check DEBT balance
@@ -1112,7 +1115,7 @@ describe("Bureau 4: Reverse Repo", () => {
 
     // Log DEBT balance
     console.log(
-      `    DEBT balance of POW1 LP-SFT: ${ethers.formatUnits(
+      `    DEBT balance of YIELD LP-SFT: ${ethers.formatUnits(
         debtBalance,
         POW5_DECIMALS,
       )} DEBT ($${debtValue})`,
@@ -1246,10 +1249,10 @@ describe("Bureau 4: Reverse Repo", () => {
   it("should check LP-SFT balances after repaying POW5", async function (): Promise<void> {
     const { defiManagerContract } = beneficiaryContracts;
 
-    const pow1Amount: bigint = await defiManagerContract.pow1Balance(
+    const yieldAmount: bigint = await defiManagerContract.yieldBalance(
       LPYIELD_LPNFT_TOKEN_ID,
     );
-    chai.expect(pow1Amount).to.not.equal(0n);
+    chai.expect(yieldAmount).to.not.equal(0n);
 
     const lpYieldAmount: bigint = await defiManagerContract.lpYieldBalance(
       LPYIELD_LPNFT_TOKEN_ID,

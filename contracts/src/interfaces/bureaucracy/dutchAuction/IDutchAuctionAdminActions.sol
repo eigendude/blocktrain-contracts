@@ -23,20 +23,20 @@ interface IDutchAuctionAdminActions is IERC165 {
   /**
    * @dev Initialize the Dutch Auction
    *
-   * The Dutch Auction is initialized my minting the first POW1 LP-NFT and its
+   * The Dutch Auction is initialized my minting the first YIELD LP-NFT and its
    * holding LP-SFT. No creator tip is paid.
    *
    * It is assumed that this will be the first liquidity deposited in the pool,
-   * so both pow1Amount and marketTokenAmount are required to be non-zero.
+   * so both yieldAmount and marketTokenAmount are required to be non-zero.
    *
-   * @param pow1Amount The amount of the game token to deposit
+   * @param yieldAmount The amount of the game token to deposit
    * @param marketTokenAmount The amount of the asset token to deposit
-   * @param receiver The receiver of the POW1 LP-SFT
+   * @param receiver The receiver of the YIELD LP-SFT
    *
    * @return nftTokenId The initial LP-NFT/LP-SFT token ID
    */
   function initialize(
-    uint256 pow1Amount,
+    uint256 yieldAmount,
     uint256 marketTokenAmount,
     address receiver
   ) external returns (uint256 nftTokenId);

@@ -96,11 +96,11 @@ interface ILPNFT is IERC165 {
   function pool() external view returns (Pool);
 
   /**
-   * @dev Get the POW1 balance of the LP-NFT
+   * @dev Get the YIELD balance of the LP-NFT
    *
-   * @return The POW1 balance
+   * @return The YIELD balance
    */
-  function pow1Balance() external view returns (uint256);
+  function yieldBalance() external view returns (uint256);
 
   /**
    * @dev Get the POW5 balance of the LP-NFT

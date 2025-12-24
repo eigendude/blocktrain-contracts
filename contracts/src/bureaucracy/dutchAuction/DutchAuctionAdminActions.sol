@@ -70,7 +70,7 @@ abstract contract DutchAuctionAdminActions is
    * @dev See {IDutchAuction-initialize}
    */
   function initialize(
-    uint256 pow1Amount,
+    uint256 yieldAmount,
     uint256 marketTokenAmount,
     address receiver
   ) external override nonReentrant returns (uint256 nftTokenId) {
@@ -78,7 +78,7 @@ abstract contract DutchAuctionAdminActions is
     _checkRole(DEFAULT_ADMIN_ROLE);
 
     // Validate parameters
-    require(pow1Amount > 0, "Invalid POW1 amount");
+    require(yieldAmount > 0, "Invalid YIELD amount");
     require(marketTokenAmount > 0, "Invalid market amount");
     require(receiver != address(0), "Invalid receiver");
 
@@ -89,25 +89,29 @@ abstract contract DutchAuctionAdminActions is
     _initialized = true;
 
     // Call external contracts
-    _routes.pow1Token.safeTransferFrom(_msgSender(), address(this), pow1Amount);
+    _routes.yieldToken.safeTransferFrom(
+      _msgSender(),
+      address(this),
+      yieldAmount
+    );
     _routes.marketToken.safeTransferFrom(
       _msgSender(),
       address(this),
       marketTokenAmount
     );
 
-    _routes.pow1Token.safeIncreaseAllowance(
-      address(_routes.pow1MarketPooler),
-      pow1Amount
+    _routes.yieldToken.safeIncreaseAllowance(
+      address(_routes.yieldMarketPooler),
+      yieldAmount
     );
     _routes.marketToken.safeIncreaseAllowance(
-      address(_routes.pow1MarketPooler),
+      address(_routes.yieldMarketPooler),
       marketTokenAmount
     );
 
     // Mint an LP-NFT
-    nftTokenId = _routes.pow1MarketPooler.mintLpNftImbalance(
-      pow1Amount,
+    nftTokenId = _routes.yieldMarketPooler.mintLpNftImbalance(
+      yieldAmount,
       marketTokenAmount,
       address(this)
     );
@@ -115,7 +119,7 @@ abstract contract DutchAuctionAdminActions is
     // Stake LP-NFT in the stake farm
     _routes.uniswapV3NftManager.safeTransferFrom(
       address(this),
-      address(_routes.pow1LpNftStakeFarm),
+      address(_routes.yieldLpNftStakeFarm),
       nftTokenId,
       ""
     );
@@ -124,10 +128,10 @@ abstract contract DutchAuctionAdminActions is
     address lpSftAddress = _routes.lpSft.tokenIdToAddress(nftTokenId);
     require(lpSftAddress != address(0), "Invalid LP-SFT");
 
-    // Send POW1 dust to the LP-SFT
-    uint256 pow1Dust = _routes.pow1Token.balanceOf(address(this));
-    if (pow1Dust > 0) {
-      _routes.pow1Token.safeTransfer(lpSftAddress, pow1Dust);
+    // Send YIELD dust to the LP-SFT
+    uint256 yieldDust = _routes.yieldToken.balanceOf(address(this));
+    if (yieldDust > 0) {
+      _routes.yieldToken.safeTransfer(lpSftAddress, yieldDust);
     }
 
     // Send asset token dust to the receiver
@@ -206,11 +210,11 @@ abstract contract DutchAuctionAdminActions is
   ) private {
     // Get market token reserve
     uint256 marketTokenReserve = _routes.marketToken.balanceOf(
-      address(_routes.pow1MarketPool)
+      address(_routes.yieldMarketPool)
     );
 
     // Get the pool fee
-    uint24 poolFee = _routes.pow1MarketPool.fee();
+    uint24 poolFee = _routes.yieldMarketPool.fee();
 
     // Calculate swap amount
     uint256 swapAmount = LiquidityMath.computeSwapAmountV2(
@@ -222,19 +226,19 @@ abstract contract DutchAuctionAdminActions is
 
     // Approve swap
     _routes.marketToken.safeIncreaseAllowance(
-      address(_routes.pow1MarketSwapper),
+      address(_routes.yieldMarketSwapper),
       swapAmount
     );
 
     // Perform swap
     // slither-disable-next-line unused-return,reentrancy-benign
-    _routes.pow1MarketSwapper.buyGameToken(swapAmount, address(this));
+    _routes.yieldMarketSwapper.buyGameToken(swapAmount, address(this));
 
     // Mint LP-NFTs
     for (uint256 i = 0; i < lpNftsToMint; i++) {
       // Read external state
       // slither-disable-next-line calls-loop
-      uint256 currentPow1Amount = _routes.pow1Token.balanceOf(address(this));
+      uint256 currentYieldAmount = _routes.yieldToken.balanceOf(address(this));
       // slither-disable-next-line calls-loop
       uint256 currentMarketTokenAmount = _routes.marketToken.balanceOf(
         address(this)
@@ -242,7 +246,7 @@ abstract contract DutchAuctionAdminActions is
 
       // Mint an LP-NFT
       uint256 lpNftTokenId = _mintLpNft(
-        currentPow1Amount,
+        currentYieldAmount,
         currentMarketTokenAmount
       );
 
@@ -253,19 +257,19 @@ abstract contract DutchAuctionAdminActions is
 
   function _handleRemainingTokens() private {
     // Read external state
-    uint256 remainingPow1 = _routes.pow1Token.balanceOf(address(this));
+    uint256 remainingYield = _routes.yieldToken.balanceOf(address(this));
 
-    // Swap the POW1 dust back into the market token
-    if (remainingPow1 > 0) {
+    // Swap the YIELD dust back into the market token
+    if (remainingYield > 0) {
       // Approve swap
-      _routes.pow1Token.safeIncreaseAllowance(
-        address(_routes.pow1MarketSwapper),
-        remainingPow1
+      _routes.yieldToken.safeIncreaseAllowance(
+        address(_routes.yieldMarketSwapper),
+        remainingYield
       );
 
       // Perform swap
       // slither-disable-next-line unused-return
-      _routes.pow1MarketSwapper.sellGameToken(remainingPow1, address(this));
+      _routes.yieldMarketSwapper.sellGameToken(remainingYield, address(this));
     }
 
     // Read external state

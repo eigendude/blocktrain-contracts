@@ -22,7 +22,7 @@ import {UniV3Pooler} from "./UniV3Pooler.sol";
  * @dev Token router send to liquidity to the Uniswap V3 pool in exchange for
  *      an LP-NFT
  */
-contract POW1MarketPooler is
+contract YIELDMarketPooler is
   Context,
   ReentrancyGuard,
   UniV3Pooler,
@@ -35,19 +35,24 @@ contract POW1MarketPooler is
   /**
    * @dev Initializes the contract
    *
-   * @param pow1Token_ The address of the POW1 token
+   * @param yieldToken_ The address of the YIELD token
    * @param marketToken_ The address of the market token
-   * @param pow1MarketPool_ The address of the Uniswap V3 pool contract
+   * @param yieldMarketPool_ The address of the Uniswap V3 pool contract
    * @param uniswapV3NftManager_ The address of the upstream Uniswap V3 NFT
    *        manager
    */
   constructor(
-    address pow1Token_,
+    address yieldToken_,
     address marketToken_,
-    address pow1MarketPool_,
+    address yieldMarketPool_,
     address uniswapV3NftManager_
   )
-    UniV3Pooler(pow1Token_, marketToken_, pow1MarketPool_, uniswapV3NftManager_)
+    UniV3Pooler(
+      yieldToken_,
+      marketToken_,
+      yieldMarketPool_,
+      uniswapV3NftManager_
+    )
   {}
 
   //////////////////////////////////////////////////////////////////////////////

@@ -36,14 +36,14 @@ function DutchAuctionAdminActionsMixin<T extends new (...args: any[]) => {}>(
     }
 
     async initialize(
-      pow1Amount: bigint,
+      yieldAmount: bigint,
       marketTokenAmount: bigint,
       receiver: `0x${string}`,
     ): Promise<ethers.ContractTransactionReceipt> {
       return this.withSigner(async () => {
         const tx: ethers.ContractTransactionResponse =
           await this.dutchAuctionAdminActions.initialize(
-            pow1Amount,
+            yieldAmount,
             marketTokenAmount,
             receiver,
           );

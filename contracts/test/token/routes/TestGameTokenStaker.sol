@@ -42,7 +42,7 @@ abstract contract TestGameTokenStaker is
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev Emitted when a new incentive is created for the POW1 staker
+   * @dev Emitted when a new incentive is created for the YIELD staker
    *
    * @param creator The address of the creator
    * @param rewardToken The reward token
@@ -51,7 +51,7 @@ abstract contract TestGameTokenStaker is
    * @param endTime The end time of the incentive
    * @param refundee The incentive's refundee address
    */
-  event POW1IncentiveCreated(
+  event YIELDIncentiveCreated(
     address indexed creator,
     address rewardToken,
     uint256 rewardAmount,
@@ -68,7 +68,7 @@ abstract contract TestGameTokenStaker is
    * @param nftAddress The address of the NFT manager contract
    * @param lpNftTokenId The ID of the NFT
    */
-  event POW1LpNftStaked(
+  event YIELDLpNftStaked(
     address indexed sender,
     address indexed recipient,
     address nftAddress,
@@ -86,7 +86,7 @@ abstract contract TestGameTokenStaker is
    * @param assetTokenReturned The amount of the asset token returned to the
    *                           recipient
    */
-  event POW1LpNftUnstaked(
+  event YIELDLpNftUnstaked(
     address indexed sender,
     address indexed recipient,
     address nftAddress,
@@ -105,7 +105,7 @@ abstract contract TestGameTokenStaker is
    * @param endTime The end time of the incentive
    * @param refundee The incentive's refundee address
    */
-  event POW1LpNftIncentiveCreated(
+  event YIELDLpNftIncentiveCreated(
     address indexed creator,
     address rewardToken,
     uint256 rewardAmount,

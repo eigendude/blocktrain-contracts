@@ -45,9 +45,9 @@ contract YieldHarvest is Context, ReentrancyGuard, IYieldHarvest {
   ILPSFTIssuable public immutable noLpSft;
 
   /**
-   * @dev The POW1 LP-SFT lend farm
+   * @dev The YIELD LP-SFT lend farm
    */
-  ILPSFTLendFarm public immutable pow1LpSftLendFarm;
+  ILPSFTLendFarm public immutable yieldLpSftLendFarm;
 
   /**
    * @dev The DeFi interface for LP-SFTs
@@ -73,7 +73,7 @@ contract YieldHarvest is Context, ReentrancyGuard, IYieldHarvest {
     theReserve = ITheReserve(theReserve_);
     lpSft = ITheReserve(theReserve_).lpSft();
     noLpSft = ITheReserve(theReserve_).noLpSft();
-    pow1LpSftLendFarm = ITheReserve(theReserve_).pow1LpSftLendFarm();
+    yieldLpSftLendFarm = ITheReserve(theReserve_).yieldLpSftLendFarm();
     defiManager = IDeFiManager(defiManager_);
   }
 
@@ -116,7 +116,7 @@ contract YieldHarvest is Context, ReentrancyGuard, IYieldHarvest {
 
     if (_msgSender() == address(lpSft)) {
       // Call external contracts
-      pow1LpSftLendFarm.lendLpSft(id);
+      yieldLpSftLendFarm.lendLpSft(id);
       noLpSft.mint(from, id, data);
     } else {
       // Verify no POW5 debt
@@ -124,7 +124,7 @@ contract YieldHarvest is Context, ReentrancyGuard, IYieldHarvest {
 
       // Call external contracts
       noLpSft.burn(address(this), id);
-      pow1LpSftLendFarm.withdrawLpSft(id);
+      yieldLpSftLendFarm.withdrawLpSft(id);
       lpSft.safeTransferFrom(address(this), from, id, 1, data);
     }
 
@@ -154,10 +154,10 @@ contract YieldHarvest is Context, ReentrancyGuard, IYieldHarvest {
 
     if (_msgSender() == address(lpSft)) {
       // Call external contracts
-      pow1LpSftLendFarm.lendLpSftBatch(ids);
+      yieldLpSftLendFarm.lendLpSftBatch(ids);
       noLpSft.mintBatch(from, ids, data);
     } else {
-      pow1LpSftLendFarm.withdrawLpSftBatch(ids);
+      yieldLpSftLendFarm.withdrawLpSftBatch(ids);
       noLpSft.burnBatch(address(this), ids);
       lpSft.safeBatchTransferFrom(address(this), from, ids, values, data);
     }

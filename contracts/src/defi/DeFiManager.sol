@@ -41,9 +41,9 @@ contract DeFiManager is ReentrancyGuard, AccessControl, IDeFiManager {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev The POW1 token
+   * @dev The YIELD token
    */
-  IERC20 public immutable pow1Token;
+  IERC20 public immutable yieldToken;
 
   /**
    * @dev The POW5 token
@@ -51,7 +51,7 @@ contract DeFiManager is ReentrancyGuard, AccessControl, IDeFiManager {
   IERC20Issuable public immutable pow5Token;
 
   /**
-   * @dev The LP POW1 token
+   * @dev The LP YIELD token
    */
   IERC20Issuable public immutable lpYieldToken;
 
@@ -87,7 +87,7 @@ contract DeFiManager is ReentrancyGuard, AccessControl, IDeFiManager {
    * @dev Initializes the ERC-1155 contract
    *
    * @param owner_ The owner of the contract
-   * @param pow1Token_ The POW1 token
+   * @param yieldToken_ The YIELD token
    * @param pow5Token_ The POW5 token
    * @param lpYieldToken_ The LPYIELD token
    * @param lpBorrowToken_ The LPBORROW token
@@ -96,7 +96,7 @@ contract DeFiManager is ReentrancyGuard, AccessControl, IDeFiManager {
    */
   constructor(
     address owner_,
-    address pow1Token_,
+    address yieldToken_,
     address pow5Token_,
     address lpYieldToken_,
     address lpBorrowToken_,
@@ -105,7 +105,7 @@ contract DeFiManager is ReentrancyGuard, AccessControl, IDeFiManager {
   ) {
     // Validate parameters
     require(owner_ != address(0), "Invalid owner");
-    require(pow1Token_ != address(0), "Invalid POW1");
+    require(yieldToken_ != address(0), "Invalid YIELD");
     require(pow5Token_ != address(0), "Invalid POW5");
     require(lpYieldToken_ != address(0), "Invalid LPYIELD");
     require(lpBorrowToken_ != address(0), "Invalid LPBORROW");
@@ -116,7 +116,7 @@ contract DeFiManager is ReentrancyGuard, AccessControl, IDeFiManager {
     _grantRole(DEFAULT_ADMIN_ROLE, owner_);
 
     // Initialize routes
-    pow1Token = IERC20(pow1Token_);
+    yieldToken = IERC20(yieldToken_);
     pow5Token = IERC20Issuable(pow5Token_);
     lpYieldToken = IERC20Issuable(lpYieldToken_);
     lpBorrowToken = IERC20Issuable(lpBorrowToken_);
@@ -144,9 +144,9 @@ contract DeFiManager is ReentrancyGuard, AccessControl, IDeFiManager {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev See {IDeFiManager-pow1Balance}
+   * @dev See {IDeFiManager-yieldBalance}
    */
-  function pow1Balance(
+  function yieldBalance(
     uint256 tokenId
   ) external view override returns (uint256) {
     // Read state
@@ -158,13 +158,13 @@ contract DeFiManager is ReentrancyGuard, AccessControl, IDeFiManager {
     }
 
     // Read external state
-    return pow1Token.balanceOf(lpNftAddress);
+    return yieldToken.balanceOf(lpNftAddress);
   }
 
   /**
-   * @dev See {IDeFiManager-pow1BalanceBatch}
+   * @dev See {IDeFiManager-yieldBalanceBatch}
    */
-  function pow1BalanceBatch(
+  function yieldBalanceBatch(
     uint256[] memory tokenIds
   ) external view override returns (uint256[] memory) {
     // Return value
@@ -186,7 +186,7 @@ contract DeFiManager is ReentrancyGuard, AccessControl, IDeFiManager {
 
       // Update return value
       // slither-disable-next-line calls-loop
-      balances[i] = pow1Token.balanceOf(lpNftAddress);
+      balances[i] = yieldToken.balanceOf(lpNftAddress);
     }
 
     return balances;

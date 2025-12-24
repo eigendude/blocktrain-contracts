@@ -16,7 +16,7 @@ import { getNetworkName } from "../../src/hardhat/hardhatUtils";
 import { AddressBook } from "../../src/interfaces/addressBook";
 import { ContractLibrary } from "../../src/interfaces/contractLibrary";
 import { setupFixture } from "../../src/testing/setupFixture";
-import { POW1_DECIMALS } from "../../src/utils/constants";
+import { YIELD_DECIMALS } from "../../src/utils/constants";
 import { getContractLibrary } from "../../src/utils/getContractLibrary";
 
 // Setup Hardhat
@@ -29,8 +29,8 @@ const setupTest = hardhat.deployments.createFixture(setupFixture);
 // Initial amount of ETH to start with
 const INITIAL_ETH: string = "1"; // 1 ETH
 
-// Amount of POW1 to give to the stake farm for rewards
-const POW1_REWARD_AMOUNT: bigint = ethers.parseUnits("10000", 18); // 10,000 POW1
+// Amount of YIELD to give to the stake farm for rewards
+const YIELD_REWARD_AMOUNT: bigint = ethers.parseUnits("10000", 18); // 10,000 YIELD
 
 // Amount of POW5 to stake in the stake farm
 const POW5_LOAN_AMOUNT: bigint = ethers.parseUnits("100", 18); // 100 POW5
@@ -38,9 +38,9 @@ const POW5_LOAN_AMOUNT: bigint = ethers.parseUnits("100", 18); // 100 POW5
 // Duration of time to stake POW5
 const POW5_LOAN_DURATION: number = 10 * 60; // 10 minutes
 
-// Amount of POW1 to yield from staking POW5
-const POW1_YIELD_AMOUNT: bigint =
-  ethers.parseUnits("1", 18) * BigInt(POW5_LOAN_DURATION); // 600 POW1
+// Amount of YIELD to yield from staking POW5
+const YIELD_YIELD_AMOUNT: bigint =
+  ethers.parseUnits("1", 18) * BigInt(POW5_LOAN_DURATION); // 600 YIELD
 
 //
 // Test cases
@@ -118,13 +118,13 @@ describe("ERC20 Interest Farm", () => {
   // Test setup: Mint tokens
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should grant POW1 issuer role to deployer", async function (): Promise<void> {
+  it("should grant YIELD issuer role to deployer", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { pow1Contract } = deployerContracts;
+    const { yieldContract } = deployerContracts;
 
     // Grant issuer role to deployer
-    await pow1Contract.grantRole(ERC20_ISSUER_ROLE, deployerAddress);
+    await yieldContract.grantRole(ERC20_ISSUER_ROLE, deployerAddress);
   });
 
   it("should grant POW5 issuer role to deployer", async function (): Promise<void> {
@@ -136,13 +136,16 @@ describe("ERC20 Interest Farm", () => {
     await pow5Contract.grantRole(ERC20_ISSUER_ROLE, deployerAddress);
   });
 
-  it("should mint POW1 reward to POW5 interest farm", async function (): Promise<void> {
+  it("should mint YIELD reward to POW5 interest farm", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { pow1Contract } = deployerContracts;
+    const { yieldContract } = deployerContracts;
 
-    // Mint POW1
-    await pow1Contract.mint(addressBook.pow5InterestFarm!, POW1_REWARD_AMOUNT);
+    // Mint YIELD
+    await yieldContract.mint(
+      addressBook.pow5InterestFarm!,
+      YIELD_REWARD_AMOUNT,
+    );
   });
 
   it("should mint POW5 principal to beneficiary", async function (): Promise<void> {
@@ -163,7 +166,7 @@ describe("ERC20 Interest Farm", () => {
 
     const { pow5InterestFarmContract } = deployerContracts;
 
-    // Approve POW1Staker spending POW1
+    // Approve YIELDStaker spending YIELD
     await pow5InterestFarmContract.grantRole(
       ERC20_FARM_OPERATOR_ROLE,
       deployerAddress,
@@ -179,7 +182,7 @@ describe("ERC20 Interest Farm", () => {
 
     const { pow5Contract } = beneficiaryContracts;
 
-    // Approve POW1Staker spending POW1
+    // Approve YIELDStaker spending YIELD
     await pow5Contract.approve(addressBook.pow5InterestFarm!, POW5_LOAN_AMOUNT);
   });
 
@@ -255,18 +258,18 @@ describe("ERC20 Interest Farm", () => {
       await pow5InterestFarmContract.earned(beneficiaryAddress);
 
     try {
-      chai.expect(rewardAmount).to.equal(POW1_YIELD_AMOUNT);
+      chai.expect(rewardAmount).to.equal(YIELD_YIELD_AMOUNT);
     } catch (error: unknown) {
       if (error instanceof AssertionError) {
-        // Handle small delay causing accrual of additional POW1
+        // Handle small delay causing accrual of additional YIELD
         try {
-          chai.expect(rewardAmount).to.equal(POW1_YIELD_AMOUNT + 1n);
+          chai.expect(rewardAmount).to.equal(YIELD_YIELD_AMOUNT + 1n);
         } catch (error: unknown) {
           if (error instanceof AssertionError) {
-            // Handle large delay causing accrual of additional POW1
+            // Handle large delay causing accrual of additional YIELD
             chai
               .expect(rewardAmount)
-              .to.equal(POW1_YIELD_AMOUNT + ethers.parseUnits("1", 18));
+              .to.equal(YIELD_YIELD_AMOUNT + ethers.parseUnits("1", 18));
           }
         }
       }
@@ -285,48 +288,50 @@ describe("ERC20 Interest Farm", () => {
     await pow5InterestFarmContract.claimReward(beneficiaryAddress);
   });
 
-  it("should check POW1 balances", async function () {
-    const { pow1Contract } = beneficiaryContracts;
+  it("should check YIELD balances", async function () {
+    const { yieldContract } = beneficiaryContracts;
 
     const beneficiaryBalance: bigint =
-      await pow1Contract.balanceOf(beneficiaryAddress);
+      await yieldContract.balanceOf(beneficiaryAddress);
 
     try {
-      // Add 1 second of POW1
+      // Add 1 second of YIELD
       chai
         .expect(beneficiaryBalance)
-        .to.equal(POW1_YIELD_AMOUNT + ethers.parseUnits("1", POW1_DECIMALS));
+        .to.equal(YIELD_YIELD_AMOUNT + ethers.parseUnits("1", YIELD_DECIMALS));
     } catch (error: unknown) {
       if (error instanceof AssertionError) {
-        // Add 2 seconds of POW1
+        // Add 2 seconds of YIELD
         chai
           .expect(beneficiaryBalance)
-          .to.equal(POW1_YIELD_AMOUNT + ethers.parseUnits("2", POW1_DECIMALS));
+          .to.equal(
+            YIELD_YIELD_AMOUNT + ethers.parseUnits("2", YIELD_DECIMALS),
+          );
       }
     }
 
-    const remainingBalance: bigint = await pow1Contract.balanceOf(
+    const remainingBalance: bigint = await yieldContract.balanceOf(
       addressBook.pow5InterestFarm!,
     );
 
     try {
-      // Subtract 1 second of POW1
+      // Subtract 1 second of YIELD
       chai
         .expect(remainingBalance)
         .to.equal(
-          POW1_REWARD_AMOUNT -
-            POW1_YIELD_AMOUNT -
-            ethers.parseUnits("1", POW1_DECIMALS),
+          YIELD_REWARD_AMOUNT -
+            YIELD_YIELD_AMOUNT -
+            ethers.parseUnits("1", YIELD_DECIMALS),
         );
     } catch (error: unknown) {
       if (error instanceof AssertionError) {
-        // Subtract 2 seconds of POW1
+        // Subtract 2 seconds of YIELD
         chai
           .expect(remainingBalance)
           .to.equal(
-            POW1_REWARD_AMOUNT -
-              POW1_YIELD_AMOUNT -
-              ethers.parseUnits("2", POW1_DECIMALS),
+            YIELD_REWARD_AMOUNT -
+              YIELD_YIELD_AMOUNT -
+              ethers.parseUnits("2", YIELD_DECIMALS),
           );
       }
     }

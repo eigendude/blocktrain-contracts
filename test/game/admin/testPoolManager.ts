@@ -59,16 +59,16 @@ describe("PoolManager", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
-  // Spec: Initialize the POW1 and POW5 pools
+  // Spec: Initialize the YIELD and POW5 pools
   //////////////////////////////////////////////////////////////////////////////
 
   it("should fail to initialize pools with bad addresses", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     const poolManager: PoolManager = new PoolManager(deployer, {
-      pow1Token: addressBook.pow1Token!,
+      yieldToken: addressBook.yieldToken!,
       marketToken: ZERO_ADDRESS,
-      pow1MarketPool: addressBook.pow1MarketPool!,
+      yieldMarketPool: addressBook.yieldMarketPool!,
       pow5Token: addressBook.pow5Token!,
       stableToken: ZERO_ADDRESS,
       pow5StablePool: addressBook.pow5StablePool!,
@@ -79,13 +79,13 @@ describe("PoolManager", () => {
       .to.be.rejectedWith("Pool tokens are incorrect");
   });
 
-  it("should initialize the POW1 and POW5 pools", async function (): Promise<void> {
+  it("should initialize the YIELD and POW5 pools", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
     const poolManager: PoolManager = new PoolManager(deployer, {
-      pow1Token: addressBook.pow1Token!,
+      yieldToken: addressBook.yieldToken!,
       marketToken: addressBook.wrappedNativeToken!,
-      pow1MarketPool: addressBook.pow1MarketPool!,
+      yieldMarketPool: addressBook.yieldMarketPool!,
       pow5Token: addressBook.pow5Token!,
       stableToken: addressBook.usdcToken!,
       pow5StablePool: addressBook.pow5StablePool!,
@@ -101,9 +101,9 @@ describe("PoolManager", () => {
     this.timeout(60 * 1000);
 
     const poolManager: PoolManager = new PoolManager(deployer, {
-      pow1Token: addressBook.pow1Token!,
+      yieldToken: addressBook.yieldToken!,
       marketToken: addressBook.wrappedNativeToken!,
-      pow1MarketPool: addressBook.pow1MarketPool!,
+      yieldMarketPool: addressBook.yieldMarketPool!,
       pow5Token: addressBook.pow5Token!,
       stableToken: addressBook.usdcToken!,
       pow5StablePool: addressBook.pow5StablePool!,

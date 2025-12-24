@@ -20,7 +20,7 @@ import {ERC20Issuable} from "./extensions/ERC20Issuable.sol";
  *
  * @dev See https://eips.ethereum.org/EIPS/eip-20
  */
-contract POW1 is ERC20Issuable {
+contract YIELD is ERC20Issuable {
   //////////////////////////////////////////////////////////////////////////////
   // Constants
   //////////////////////////////////////////////////////////////////////////////
@@ -34,7 +34,7 @@ contract POW1 is ERC20Issuable {
    * @dev The ERC 20 token symbol used as an abbreviation of the token, such
    * as BTC, ETH, AUG or SJCX.
    */
-  string private constant TOKEN_SYMBOL = "POW1";
+  string private constant TOKEN_SYMBOL = "YIELD";
 
   /**
    * @dev The number of decimal places to which the token is divisible
@@ -42,7 +42,7 @@ contract POW1 is ERC20Issuable {
   uint8 private constant DECIMALS = 18;
 
   /**
-   * @dev Initial supply of the token. 1 POW1 = $0.01
+   * @dev Initial supply of the token. 1 YIELD = $0.01
    */
   uint256 private constant INITIAL_SUPPLY = 10_000 * (10 ** uint256(DECIMALS)); // $100
 

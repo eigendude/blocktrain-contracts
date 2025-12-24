@@ -99,7 +99,7 @@ const func: DeployFunction = async (hardhat_re: HardhatRuntimeEnvironment) => {
   let sqrtPriceX96: bigint = (await wrappedNativeUsdcPoolContract.slot0())
     .sqrtPriceX96;
 
-  // Initialize POW1 pool if not initialized
+  // Initialize YIELD pool if not initialized
   if (sqrtPriceX96 === 0n) {
     // Calculate price
     sqrtPriceX96 = encodePriceSqrt(

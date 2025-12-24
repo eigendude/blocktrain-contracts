@@ -34,8 +34,8 @@ function DutchAuctionRoutesMixin<T extends new (...args: any[]) => {}>(
       );
     }
 
-    async pow1Token(): Promise<`0x${string}`> {
-      return (await this.dutchAuctionRoutes.pow1Token()) as `0x${string}`;
+    async yieldToken(): Promise<`0x${string}`> {
+      return (await this.dutchAuctionRoutes.yieldToken()) as `0x${string}`;
     }
 
     async pow5Token(): Promise<`0x${string}`> {
@@ -54,12 +54,12 @@ function DutchAuctionRoutesMixin<T extends new (...args: any[]) => {}>(
       return (await this.dutchAuctionRoutes.lpSft()) as `0x${string}`;
     }
 
-    async pow1MarketPool(): Promise<`0x${string}`> {
-      return (await this.dutchAuctionRoutes.pow1MarketPool()) as `0x${string}`;
+    async yieldMarketPool(): Promise<`0x${string}`> {
+      return (await this.dutchAuctionRoutes.yieldMarketPool()) as `0x${string}`;
     }
 
-    async pow1MarketSwapper(): Promise<`0x${string}`> {
-      return (await this.dutchAuctionRoutes.pow1MarketSwapper()) as `0x${string}`;
+    async yieldMarketSwapper(): Promise<`0x${string}`> {
+      return (await this.dutchAuctionRoutes.yieldMarketSwapper()) as `0x${string}`;
     }
 
     async pow5StableSwapper(): Promise<`0x${string}`> {
@@ -70,12 +70,12 @@ function DutchAuctionRoutesMixin<T extends new (...args: any[]) => {}>(
       return (await this.dutchAuctionRoutes.marketStableSwapper()) as `0x${string}`;
     }
 
-    async pow1MarketPooler(): Promise<`0x${string}`> {
-      return (await this.dutchAuctionRoutes.pow1MarketPooler()) as `0x${string}`;
+    async yieldMarketPooler(): Promise<`0x${string}`> {
+      return (await this.dutchAuctionRoutes.yieldMarketPooler()) as `0x${string}`;
     }
 
-    async pow1LpNftStakeFarm(): Promise<`0x${string}`> {
-      return (await this.dutchAuctionRoutes.pow1LpNftStakeFarm()) as `0x${string}`;
+    async yieldLpNftStakeFarm(): Promise<`0x${string}`> {
+      return (await this.dutchAuctionRoutes.yieldLpNftStakeFarm()) as `0x${string}`;
     }
 
     async uniswapV3NftManager(): Promise<`0x${string}`> {

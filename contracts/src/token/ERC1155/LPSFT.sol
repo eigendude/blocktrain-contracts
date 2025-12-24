@@ -41,9 +41,9 @@ contract LPSFT is ILPSFT, ERC1155Enumerable, LPNFTHolder, LPSFTIssuable {
   //////////////////////////////////////////////////////////////////////////////
 
   /**
-   * @dev The POW1 token
+   * @dev The YIELD token
    */
-  IERC20 public pow1Token;
+  IERC20 public yieldToken;
 
   /**
    * @dev The POW5 token
@@ -51,7 +51,7 @@ contract LPSFT is ILPSFT, ERC1155Enumerable, LPNFTHolder, LPSFTIssuable {
   IERC20 public pow5Token;
 
   /**
-   * @dev The LP POW1 token
+   * @dev The LP YIELD token
    */
   IERC20Issuable public lpYieldToken;
 
@@ -75,7 +75,7 @@ contract LPSFT is ILPSFT, ERC1155Enumerable, LPNFTHolder, LPSFTIssuable {
   constructor(
     address owner_,
     address lpNftTemplate_,
-    address pow1Token_,
+    address yieldToken_,
     address pow5Token_,
     address lpYieldToken_,
     address lpBorrowToken_,
@@ -84,7 +84,7 @@ contract LPSFT is ILPSFT, ERC1155Enumerable, LPNFTHolder, LPSFTIssuable {
     initialize(
       owner_,
       lpNftTemplate_,
-      pow1Token_,
+      yieldToken_,
       pow5Token_,
       lpYieldToken_,
       lpBorrowToken_,
@@ -97,7 +97,7 @@ contract LPSFT is ILPSFT, ERC1155Enumerable, LPNFTHolder, LPSFTIssuable {
    *
    * @param owner_ The owner of the ERC-1155 contract
    * @param lpNftTemplate_ The LP-NFT contract used for clones
-   * @param pow1Token_ The POW1 token
+   * @param yieldToken_ The YIELD token
    * @param pow5Token_ The POW5 token
    * @param lpYieldToken_ The LPYIELD token
    * @param lpBorrowToken_ The LPBORROW token
@@ -106,7 +106,7 @@ contract LPSFT is ILPSFT, ERC1155Enumerable, LPNFTHolder, LPSFTIssuable {
   function initialize(
     address owner_,
     address lpNftTemplate_,
-    address pow1Token_,
+    address yieldToken_,
     address pow5Token_,
     address lpYieldToken_,
     address lpBorrowToken_,
@@ -115,7 +115,7 @@ contract LPSFT is ILPSFT, ERC1155Enumerable, LPNFTHolder, LPSFTIssuable {
     // Validate parameters
     require(owner_ != address(0), "Invalid owner");
     require(lpNftTemplate_ != address(0), "Invalid LPNFT");
-    require(pow1Token_ != address(0), "Invalid POW1");
+    require(yieldToken_ != address(0), "Invalid YIELD");
     require(pow5Token_ != address(0), "Invalid POW5");
     require(lpYieldToken_ != address(0), "Invalid LPYIELD");
     require(lpBorrowToken_ != address(0), "Invalid LPBORROW");
@@ -133,7 +133,7 @@ contract LPSFT is ILPSFT, ERC1155Enumerable, LPNFTHolder, LPSFTIssuable {
     _grantRole(DEFAULT_ADMIN_ROLE, owner_);
 
     // Initialize routes
-    pow1Token = IERC20(pow1Token_);
+    yieldToken = IERC20(yieldToken_);
     pow5Token = IERC20(pow5Token_);
     lpYieldToken = IERC20Issuable(lpYieldToken_);
     lpBorrowToken = IERC20Issuable(lpBorrowToken_);
@@ -283,7 +283,7 @@ contract LPSFT is ILPSFT, ERC1155Enumerable, LPNFTHolder, LPSFTIssuable {
         ) = uniswapV3NftManager.positions(tokenId);
 
         // Increase LP token balance
-        if (token0 == address(pow1Token) || token1 == address(pow1Token)) {
+        if (token0 == address(yieldToken) || token1 == address(yieldToken)) {
           lpYieldToken.mint(tokenAddress, uint256(liquidityAmount));
         } else if (
           token0 == address(pow5Token) || token1 == address(pow5Token)
@@ -296,11 +296,11 @@ contract LPSFT is ILPSFT, ERC1155Enumerable, LPNFTHolder, LPSFTIssuable {
     // If any tokens were returned to the contract after burning the LP-SFT,
     // transfer them to the sender
     if (to == address(0)) {
-      uint256 pow1Balance = pow1Token.balanceOf(address(this));
+      uint256 yieldBalance = yieldToken.balanceOf(address(this));
       uint256 pow5Balance = pow5Token.balanceOf(address(this));
 
-      if (pow1Balance > 0) {
-        pow1Token.safeTransfer(from, pow1Balance);
+      if (yieldBalance > 0) {
+        yieldToken.safeTransfer(from, yieldBalance);
       }
       if (pow5Balance > 0) {
         pow5Token.safeTransfer(from, pow5Balance);

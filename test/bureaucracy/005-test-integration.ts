@@ -24,11 +24,11 @@ import { setupFixture } from "../../src/testing/setupFixture";
 import {
   INITIAL_LPBORROW_USDC_VALUE,
   INITIAL_LPYIELD_WETH_VALUE,
-  INITIAL_POW1_SUPPLY,
   INITIAL_POW5_AMOUNT,
   INITIAL_POW5_DEPOSIT,
-  POW1_DECIMALS,
+  INITIAL_YIELD_SUPPLY,
   USDC_DECIMALS,
+  YIELD_DECIMALS,
 } from "../../src/utils/constants";
 import { getContractLibrary } from "../../src/utils/getContractLibrary";
 
@@ -51,11 +51,14 @@ const INITIAL_USDC_AMOUNT: bigint =
   ethers.parseUnits(INITIAL_LPBORROW_USDC_VALUE.toString(), USDC_DECIMALS) /
   BigInt(USDC_PRICE); // 100 USDC ($100)
 
-// POW1 test reward for LPYIELD staking incentive
-const LPYIELD_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1 ($10)
+// YIELD test reward for LPYIELD staking incentive
+const LPYIELD_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", YIELD_DECIMALS); // 1,000 YIELD ($10)
 
-// POW1 test reward for LPBORROW staking incentive
-const LPBORROW_REWARD_AMOUNT: bigint = ethers.parseUnits("1000", POW1_DECIMALS); // 1,000 POW1 ($10)
+// YIELD test reward for LPBORROW staking incentive
+const LPBORROW_REWARD_AMOUNT: bigint = ethers.parseUnits(
+  "1000",
+  YIELD_DECIMALS,
+); // 1,000 YIELD ($10)
 
 // Token IDs of minted LP-NFTs
 const LPYIELD_LPNFT_TOKEN_ID: bigint = 1n;
@@ -136,9 +139,9 @@ describe("Bureau integration test", () => {
     this.timeout(60 * 1000);
 
     const poolManager: PoolManager = new PoolManager(deployer, {
-      pow1Token: addressBook.pow1Token!,
+      yieldToken: addressBook.yieldToken!,
       marketToken: addressBook.wrappedNativeToken!,
-      pow1MarketPool: addressBook.pow1MarketPool!,
+      yieldMarketPool: addressBook.yieldMarketPool!,
       pow5Token: addressBook.pow5Token!,
       stableToken: addressBook.usdcToken!,
       pow5StablePool: addressBook.pow5StablePool!,
@@ -157,7 +160,7 @@ describe("Bureau integration test", () => {
     const permissionManager: PermissionManager = new PermissionManager(
       deployer,
       {
-        pow1Token: addressBook.pow1Token!,
+        yieldToken: addressBook.yieldToken!,
         pow5Token: addressBook.pow5Token!,
         lpYieldToken: addressBook.lpYieldToken!,
         lpBorrowToken: addressBook.lpBorrowToken!,
@@ -168,9 +171,9 @@ describe("Bureau integration test", () => {
         yieldHarvest: addressBook.yieldHarvest!,
         liquidityForge: addressBook.liquidityForge!,
         reverseRepo: addressBook.reverseRepo!,
-        pow1LpNftStakeFarm: addressBook.pow1LpNftStakeFarm!,
+        yieldLpNftStakeFarm: addressBook.yieldLpNftStakeFarm!,
         pow5LpNftStakeFarm: addressBook.pow5LpNftStakeFarm!,
-        pow1LpSftLendFarm: addressBook.pow1LpSftLendFarm!,
+        yieldLpSftLendFarm: addressBook.yieldLpSftLendFarm!,
         pow5LpSftLendFarm: addressBook.pow5LpSftLendFarm!,
         defiManager: addressBook.defiManager!,
         pow5InterestFarm: addressBook.pow5InterestFarm!,
@@ -187,18 +190,18 @@ describe("Bureau integration test", () => {
   // Test setup: Obtain tokens
   //////////////////////////////////////////////////////////////////////////////
 
-  it("should grant POW1 minting role to deployer", async function (): Promise<void> {
+  it("should grant YIELD minting role to deployer", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { pow1Contract }: ContractLibrary = deployerContracts;
+    const { yieldContract }: ContractLibrary = deployerContracts;
 
-    await pow1Contract.grantRole(ERC20_ISSUER_ROLE, deployerAddress);
+    await yieldContract.grantRole(ERC20_ISSUER_ROLE, deployerAddress);
   });
 
   it("should obtain tokens", async function (): Promise<void> {
     this.timeout(60 * 1000);
 
-    const { pow1Contract, pow1LpSftLendFarmContract, wrappedNativeContract } =
+    const { yieldContract, yieldLpSftLendFarmContract, wrappedNativeContract } =
       deployerContracts;
     const testErc20MintableContract: TestERC20MintableContract =
       new TestERC20MintableContract(deployer, addressBook.usdcToken!);
@@ -206,12 +209,12 @@ describe("Bureau integration test", () => {
     // Deposit W-ETH
     await wrappedNativeContract.deposit(INITIAL_WETH_AMOUNT);
 
-    // Mint POW1
-    await pow1Contract.mint(
-      pow1LpSftLendFarmContract.address,
+    // Mint YIELD
+    await yieldContract.mint(
+      yieldLpSftLendFarmContract.address,
       LPYIELD_REWARD_AMOUNT,
     );
-    await pow1Contract.mint(deployerAddress, LPBORROW_REWARD_AMOUNT);
+    await yieldContract.mint(deployerAddress, LPBORROW_REWARD_AMOUNT);
 
     // Mint USDC
     await testErc20MintableContract.mint(deployerAddress, INITIAL_USDC_AMOUNT);
@@ -226,7 +229,7 @@ describe("Bureau integration test", () => {
 
     const {
       dutchAuctionContract,
-      pow1Contract,
+      yieldContract,
       pow5Contract,
       pow5LpNftStakeFarmContract,
       reverseRepoContract,
@@ -238,9 +241,9 @@ describe("Bureau integration test", () => {
     );
 
     // Approve Dutch Auction
-    await pow1Contract.approve(
+    await yieldContract.approve(
       dutchAuctionContract.address,
-      INITIAL_POW1_SUPPLY,
+      INITIAL_YIELD_SUPPLY,
     );
     await wrappedNativeContract.approve(
       dutchAuctionContract.address,
@@ -248,7 +251,7 @@ describe("Bureau integration test", () => {
     );
 
     // Approve LPBORROW stake farm
-    await pow1Contract.approve(
+    await yieldContract.approve(
       pow5LpNftStakeFarmContract.address,
       LPBORROW_REWARD_AMOUNT,
     );
@@ -288,7 +291,7 @@ describe("Bureau integration test", () => {
 
     // Initialize DutchAuction
     await dutchAuctionContract.initialize(
-      INITIAL_POW1_SUPPLY, // gameTokenAmount
+      INITIAL_YIELD_SUPPLY, // gameTokenAmount
       INITIAL_WETH_AMOUNT, // assetTokenAmount
       beneficiaryAddress, // receiver
     );
