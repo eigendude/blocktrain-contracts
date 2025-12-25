@@ -209,6 +209,11 @@ contract LPSFT is ILPSFT, ERC1155Enumerable, LPNFTHolder, LPSFTIssuable {
     override(ERC1155Upgradeable, ERC1155Enumerable, LPNFTHolder)
     nonReentrantLPSFT
   {
+    // Cap user-controlled batch sizes to bound gas and Base calldata/L1 fees.
+    if (ids.length > MAX_BATCH) {
+      revert BatchTooLarge(ids.length, MAX_BATCH);
+    }
+
     // Translate parameters
     uint256 tokenCount = ids.length;
 

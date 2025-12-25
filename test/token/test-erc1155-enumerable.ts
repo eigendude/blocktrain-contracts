@@ -34,6 +34,10 @@ const nftTokenId1: bigint = 0n;
 const nftTokenId2: bigint = 666n;
 const nftTokenId3: bigint = 42n;
 const nftTokenIdNonexistent: bigint = 999n;
+const MAX_BATCH: number = 32;
+
+const buildTokenIds = (count: number, start: bigint): bigint[] =>
+  Array.from({ length: count }, (_, index) => start + BigInt(index));
 
 //
 // Test cases
@@ -478,6 +482,75 @@ describe("ERC1155Enumerable", () => {
   });
 
   //////////////////////////////////////////////////////////////////////////////
+  // Spec: Batch size limits
+  //////////////////////////////////////////////////////////////////////////////
+
+  it("should allow batch operations up to the max size", async function () {
+    this.timeout(60 * 1000);
+
+    const tokenIds: bigint[] = buildTokenIds(MAX_BATCH, 1000n);
+    const tokenAmounts: bigint[] = Array.from({ length: MAX_BATCH }, () => 1n);
+
+    await testERC1155EnumerableContract.batchMintNFT(
+      beneficiaryAddress,
+      tokenIds,
+    );
+
+    const receipt: ethers.ContractTransactionReceipt =
+      await testERC1155EnumerableContract.safeBatchTransferFrom(
+        beneficiaryAddress,
+        deployerAddress,
+        tokenIds,
+        tokenAmounts,
+      );
+    chai.expect(receipt).to.not.be.null;
+  });
+
+  it("should reject batch operations above the max size", async function () {
+    this.timeout(60 * 1000);
+
+    const tokenIds: bigint[] = buildTokenIds(MAX_BATCH + 1, 2000n);
+
+    try {
+      await testERC1155EnumerableContract.batchMintNFT(
+        beneficiaryAddress,
+        tokenIds,
+      );
+      chai.assert.fail("Expected to fail");
+    } catch (error: unknown) {
+      chai.expect(error).to.be.an("error");
+      chai.expect((error as Error).message).to.include("BatchTooLarge");
+      chai.expect((error as Error).message).to.include("33");
+      chai.expect((error as Error).message).to.include("32");
+    }
+  });
+
+  it("should revert batch transfers that exceed the max size", async function () {
+    this.timeout(60 * 1000);
+
+    const tokenIds: bigint[] = buildTokenIds(MAX_BATCH + 1, 3000n);
+    const tokenAmounts: bigint[] = Array.from(
+      { length: MAX_BATCH + 1 },
+      () => 1n,
+    );
+
+    try {
+      await testERC1155EnumerableContract.safeBatchTransferFrom(
+        beneficiaryAddress,
+        deployerAddress,
+        tokenIds,
+        tokenAmounts,
+      );
+      chai.assert.fail("Expected to fail");
+    } catch (error: unknown) {
+      chai.expect(error).to.be.an("error");
+      chai.expect((error as Error).message).to.include("BatchTooLarge");
+      chai.expect((error as Error).message).to.include("33");
+      chai.expect((error as Error).message).to.include("32");
+    }
+  });
+
+  //////////////////////////////////////////////////////////////////////////////
   // Spec: Test getTokenIds()
   //////////////////////////////////////////////////////////////////////////////
 
@@ -488,9 +561,11 @@ describe("ERC1155Enumerable", () => {
 
     const deployerTokenIds: bigint[] =
       await testERC1155EnumerableContract.getTokenIds(deployerAddress);
-    chai.expect(deployerTokenIds.length).to.equal(3);
-    chai.expect(deployerTokenIds[0]).to.equal(nftTokenId3);
-    chai.expect(deployerTokenIds[1]).to.equal(nftTokenId1);
-    chai.expect(deployerTokenIds[2]).to.equal(nftTokenId2);
+    chai.expect(deployerTokenIds.length).to.equal(3 + MAX_BATCH);
+    chai.expect(deployerTokenIds).to.include(nftTokenId3);
+    chai.expect(deployerTokenIds).to.include(nftTokenId1);
+    chai.expect(deployerTokenIds).to.include(nftTokenId2);
+    chai.expect(deployerTokenIds).to.include(1000n);
+    chai.expect(deployerTokenIds).to.include(1031n);
   });
 });

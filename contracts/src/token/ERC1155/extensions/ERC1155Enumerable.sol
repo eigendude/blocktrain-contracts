@@ -80,6 +80,11 @@ abstract contract ERC1155Enumerable is IERC1155Enumerable, ERC1155NonReentrant {
     uint256[] memory ids,
     uint256[] memory values
   ) internal virtual override nonReentrantERC1155Enumerable {
+    // Cap user-controlled batch sizes to bound gas and Base calldata/L1 fees.
+    if (ids.length > MAX_BATCH) {
+      revert BatchTooLarge(ids.length, MAX_BATCH);
+    }
+
     // Validate parameters
     ERC1155Helpers.checkAmountArray(ids, values);
 
