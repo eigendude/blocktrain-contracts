@@ -1,0 +1,372 @@
+/*
+ * Copyright (C) 2025-2026 brick.credit
+ * https://github.com/brick-dot-credit/brick-contracts
+ *
+ * SPDX-License-Identifier: GPL-3.0-or-later
+ * See the file LICENSE.txt for more information.
+ */
+
+pragma solidity 0.8.28;
+
+import {IERC20} from "@openzeppelin/contracts/token/ERC20/IERC20.sol";
+import {SafeERC20} from "@openzeppelin/contracts/token/ERC20/utils/SafeERC20.sol";
+import {IERC165} from "@openzeppelin/contracts/utils/introspection/IERC165.sol";
+import {EnumerableSet} from "@openzeppelin/contracts/utils/structs/EnumerableSet.sol";
+
+import {INonfungiblePositionManager} from "../../../interfaces/uniswap-v3-periphery/INonfungiblePositionManager.sol";
+
+import {IDutchAuctionActions} from "../../interfaces/bureaucracy/dutchAuction/IDutchAuctionActions.sol";
+import {VRGDA} from "../../utils/auction/VRGDA.sol";
+import {LiquidityMath} from "../../utils/math/LiquidityMath.sol";
+
+import {DutchAuctionBase} from "./DutchAuctionBase.sol";
+
+/**
+ * @title Bureau of the Dutch Auction
+ */
+abstract contract DutchAuctionActions is
+  IDutchAuctionActions,
+  DutchAuctionBase
+{
+  using EnumerableSet for EnumerableSet.UintSet;
+  using SafeERC20 for IERC20;
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Implementation of {IERC165} via {IDutchAuctionActions},
+  // {DutchAuctionRoutes} and {DutchAuctionState}
+  //////////////////////////////////////////////////////////////////////////////
+
+  /**
+   * @dev See {IERC165-supportsInterface}
+   */
+  function supportsInterface(
+    bytes4 interfaceId
+  ) public view virtual override(IERC165, DutchAuctionBase) returns (bool) {
+    return
+      super.supportsInterface(interfaceId) ||
+      interfaceId == type(IDutchAuctionActions).interfaceId;
+  }
+
+  //////////////////////////////////////////////////////////////////////////////
+  // Implementation of {IYIELDSupplyActions}
+  //////////////////////////////////////////////////////////////////////////////
+
+  function supply(
+    uint256 stableTokenAmount,
+    uint256 marketTokenAmount,
+    uint256 yieldTokenAmount,
+    uint256 borrowTokenAmount,
+    uint32 tipBips,
+    address receiver
+  ) external override nonReentrant {
+    // Validate parameters
+    require(receiver != address(0), "Invalid receiver");
+
+    // Call external contracts
+    if (stableTokenAmount > 0) {
+      _routes.stableToken.safeTransferFrom(
+        _msgSender(),
+        address(this),
+        stableTokenAmount
+      );
+    }
+    if (marketTokenAmount > 0) {
+      _routes.marketToken.safeTransferFrom(
+        _msgSender(),
+        address(this),
+        marketTokenAmount
+      );
+    }
+    if (yieldTokenAmount > 0) {
+      _routes.yieldToken.safeTransferFrom(
+        _msgSender(),
+        address(this),
+        yieldTokenAmount
+      );
+    }
+    if (borrowTokenAmount > 0) {
+      _routes.borrowToken.safeTransferFrom(
+        _msgSender(),
+        address(this),
+        borrowTokenAmount
+      );
+    }
+
+    // Swap borrow token to stable token
+    if (borrowTokenAmount > 0) {
+      _routes.lendFarm.lendBorrowTokenForStable(
+        borrowTokenAmount,
+        address(this)
+      );
+    }
+
+    // Swap stable token to market token
+    if (stableTokenAmount > 0) {
+      _routes.marketStableSwapper.swapStableForMarketToken(
+        stableTokenAmount,
+        address(this)
+      );
+    }
+
+    // Supply market token and yield token
+    if (marketTokenAmount > 0 || yieldTokenAmount > 0) {
+      _routes.yieldLpNftStakeFarm.supplyTokensImbalance(
+        marketTokenAmount,
+        yieldTokenAmount,
+        address(this)
+      );
+    }
+
+    // TODO
+    uint256 lpNftTokenId = 0;
+
+    // Stake LP-NFT in the stake farm
+    _routes.uniswapV3NftManager.safeTransferFrom(
+      address(this),
+      address(_routes.yieldLpNftStakeFarm),
+      lpNftTokenId,
+      ""
+    );
+
+    // Return the LP-SFT to the receiver
+    _routes.lpSft.safeTransferFrom(
+      address(this),
+      receiver,
+      lpNftTokenId,
+      1,
+      ""
+    );
+  }
+
+  function withdraw(
+    uint256 tokenChoice,
+    address receiver
+  ) external override nonReentrant {
+    // TODO
+  }
+
+  function withdrawImbalance(
+    address receiver
+  ) external override nonReentrant {
+    // TODO
+  }
+
+  function exit() external override nonReentrant {
+    // TODO
+  }
+
+  /**
+   * @dev See {IDutchAuctionActions-purchase}
+   *
+  function purchase(
+    uint256 lpNftTokenId,
+    uint256 yieldAmount,
+    uint256 marketTokenAmount,
+    address beneficiary,
+    address receiver
+  ) external override nonReentrant {
+    // Validate parameters
+    require(lpNftTokenId != 0, "Invalid LP-NFT ID");
+    require(yieldAmount > 0 || marketTokenAmount > 0, "Invalid payment");
+    require(beneficiary != address(0), "Invalid beneficiary");
+    require(receiver != address(0), "Invalid receiver");
+
+    // Read state
+    AuctionState storage auction = _auctionStates[lpNftTokenId];
+
+    // Validate state
+    // slither-disable-next-line timestamp
+    require(auction.lpNftTokenId != 0, "LP-NFT not for sale");
+    // slither-disable-next-line incorrect-equality,timestamp
+    require(auction.salePrice == 0, "Auction already sold");
+
+    // Get the current price in bips of the LP-NFT
+    uint256 currentPriceBips = getCurrentPriceBips(lpNftTokenId);
+
+    // Update state
+    _bureauState.lastSalePriceBips = currentPriceBips;
+    auction.salePrice = currentPriceBips;
+
+    // Call external contracts
+    if (yieldAmount > 0) {
+      _routes.yieldToken.safeTransferFrom(
+        _msgSender(),
+        address(this),
+        yieldAmount
+      );
+    }
+    if (marketTokenAmount > 0) {
+      _routes.marketToken.safeTransferFrom(
+        _msgSender(),
+        address(this),
+        marketTokenAmount
+      );
+    }
+
+    // Amounts to deposit
+    uint256 yieldDepositAmount = yieldAmount;
+    uint256 marketDepositAmount = marketTokenAmount;
+
+    // Handle the tip
+    {
+      // Calculate the auction tip amounts
+      uint256 yieldTipAmount = (yieldAmount * currentPriceBips) / 1e18;
+      uint256 marketTipAmount = (marketTokenAmount * currentPriceBips) / 1e18;
+
+      require(yieldTipAmount > 0 || marketTipAmount > 0, "Invalid tips");
+
+      // Send the tip to the beneficiary (TODO)
+      if (yieldTipAmount > 0) {
+        _routes.yieldToken.safeTransfer(beneficiary, yieldTipAmount);
+        yieldDepositAmount -= yieldTipAmount;
+      }
+      if (marketTipAmount > 0) {
+        _routes.marketToken.safeTransfer(beneficiary, marketTipAmount);
+        marketDepositAmount -= marketTipAmount;
+      }
+    }
+
+    // Get the pool fee
+    uint24 poolFee = _routes.yieldMarketPool.fee();
+
+    // Perform single-sided supply swap
+    // slither-disable-next-line incorrect-equality
+    if (yieldDepositAmount == 0) {
+      // Get market token reserve
+      uint256 marketTokenReserve = _routes.marketToken.balanceOf(
+        address(_routes.yieldMarketPool)
+      );
+
+      // Calculate market swap amount
+      uint256 marketSwapAmount = LiquidityMath.computeSwapAmountV2(
+        marketTokenReserve,
+        marketDepositAmount,
+        poolFee
+      );
+      require(marketSwapAmount <= marketDepositAmount, "Bad liquidity math");
+
+      // Approve swap
+      _routes.marketToken.safeIncreaseAllowance(
+        address(_routes.yieldMarketSwapper),
+        marketSwapAmount
+      );
+
+      // Perform swap
+      // slither-disable-next-line reentrancy-no-eth
+      yieldDepositAmount = _routes.yieldMarketSwapper.buyGameToken(
+        marketSwapAmount,
+        address(this)
+      );
+
+      // Update amount
+      marketDepositAmount -= marketSwapAmount;
+      // slither-disable-next-line incorrect-equality
+    } else if (marketDepositAmount == 0) {
+      // Get YIELD reserve
+      uint256 yieldReserve = _routes.yieldToken.balanceOf(
+        address(_routes.yieldMarketPool)
+      );
+
+      // Calculate YIELD swap amount
+      uint256 yieldSwapAmount = LiquidityMath.computeSwapAmountV2(
+        yieldReserve,
+        yieldDepositAmount,
+        poolFee
+      );
+      require(yieldSwapAmount <= yieldDepositAmount, "Bad liquidity math");
+
+      // Approve swap
+      _routes.yieldToken.safeIncreaseAllowance(
+        address(_routes.yieldMarketSwapper),
+        yieldSwapAmount
+      );
+
+      // Perform swap
+      marketDepositAmount = _routes.yieldMarketSwapper.sellGameToken(
+        yieldSwapAmount,
+        address(this)
+      );
+
+      // Update amount
+      yieldDepositAmount -= yieldSwapAmount;
+    }
+
+    // Read state
+    uint256 mintDustAmount = _auctionSettings.mintDustAmount;
+
+    // Validate amounts
+    require(
+      yieldDepositAmount > mintDustAmount &&
+        marketDepositAmount > mintDustAmount,
+      "Not enough for dust"
+    );
+
+    // Remove the LP-NFT token ID from current auctions
+    require(_currentAuctions.remove(lpNftTokenId), "Auction not found");
+
+    // Mint a new LP-NFT and establish its auction state
+    // slither-disable-next-line reentrancy-no-eth
+    uint256 newLpNftTokenId = _mintLpNft(mintDustAmount, mintDustAmount);
+    _establishAuctionState(newLpNftTokenId);
+
+    // Call external contracts
+    if (yieldDepositAmount > 0) {
+      _routes.yieldToken.safeIncreaseAllowance(
+        address(_routes.uniswapV3NftManager),
+        yieldDepositAmount
+      );
+    }
+    if (marketDepositAmount > 0) {
+      _routes.marketToken.safeIncreaseAllowance(
+        address(_routes.uniswapV3NftManager),
+        marketDepositAmount
+      );
+    }
+
+    // Deposit liquidity
+    // slither-disable-next-line unused-return
+    _routes.uniswapV3NftManager.increaseLiquidity(
+      INonfungiblePositionManager.IncreaseLiquidityParams({
+        tokenId: lpNftTokenId,
+        amount0Desired: address(_routes.yieldToken) <
+          address(_routes.marketToken)
+          ? yieldDepositAmount
+          : marketDepositAmount,
+        amount1Desired: address(_routes.yieldToken) <
+          address(_routes.marketToken)
+          ? marketDepositAmount
+          : yieldDepositAmount,
+        amount0Min: 0,
+        amount1Min: 0,
+        // slither-disable-next-line timestamp
+        deadline: block.timestamp
+      })
+    );
+
+    // Stake LP-NFT in the stake farm
+    _routes.uniswapV3NftManager.safeTransferFrom(
+      address(this),
+      address(_routes.yieldLpNftStakeFarm),
+      lpNftTokenId,
+      ""
+    );
+
+    // Return the LP-SFT to the receiver
+    _routes.lpSft.safeTransferFrom(
+      address(this),
+      receiver,
+      lpNftTokenId,
+      1,
+      ""
+    );
+
+    // Refund any excess tokens to the buyer
+    uint256 remainingMarketTokens = _routes.marketToken.balanceOf(
+      address(this)
+    );
+    if (remainingMarketTokens > 0) {
+      _routes.marketToken.safeTransfer(msg.sender, remainingMarketTokens);
+    }
+  }
+  */
+}
