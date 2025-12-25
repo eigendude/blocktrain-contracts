@@ -113,6 +113,11 @@ contract NOLPSFT is INOLPSFT, ERC1155Enumerable, LPSFTIssuable {
     uint256[] memory ids,
     uint256[] memory values
   ) internal virtual override(ERC1155Upgradeable, ERC1155Enumerable) {
+    // Cap user-controlled batch sizes to bound gas and Base calldata/L1 fees.
+    if (ids.length > MAX_BATCH) {
+      revert BatchTooLarge(ids.length, MAX_BATCH);
+    }
+
     // Call ancestors
     super._update(from, to, ids, values);
   }

@@ -125,11 +125,11 @@ jobs:
         if: steps.restore-contract-artifacts.outputs.cache-hit != 'true'
         run: pnpm lint:solhint
 
-      #- name: pnpm lint:slither
-      #  if: steps.restore-contract-artifacts.outputs.cache-hit != 'true'
-      #  run: |
-      #    . ./.venv/bin/activate
-      #    slither .
+      - name: pnpm lint:slither
+        if: steps.restore-contract-artifacts.outputs.cache-hit != 'true'
+        run: |
+          . ./.venv/bin/activate
+          slither .
 
       - name: pnpm build:solidity
         run: pnpm build:solidity
